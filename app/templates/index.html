@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="space-y-6">
+    <h1 class="text-3xl font-bold text-gray-900">Playlist Sync</h1>
+    
+    <form hx-post="/playlists" hx-target="#playlist-list" class="space-y-4">
+        <div class="flex gap-4">
+            <input type="text" name="url_or_id" 
+                   placeholder="Enter Spotify playlist URL or ID"
+                   class="flex-1 p-2 border rounded-lg">
+            <button type="submit" 
+                    class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                Add Playlist
+            </button>
+        </div>
+    </form>
+
+    <div class="space-y-4">
+        <div class="flex gap-4">
+            <button hx-post="/playlists/sync" 
+                    hx-target="#playlist-list"
+                    hx-include="[name='playlist_ids']:checked"
+                    class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
+                Sync All
+            </button>
+            <button hx-delete="/playlists" 
+                    hx-target="#playlist-list"
+                    hx-include="[name='playlist_ids']:checked"
+                    class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">
+                Delete Selected
+            </button>
+        </div>
+
+        <div id="playlist-list" hx-get="/playlists" hx-trigger="load">
+            <!-- Playlist list will be loaded here -->
+        </div>
+    </div>
+</div>
+{% endblock %}

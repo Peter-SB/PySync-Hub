@@ -1,0 +1,40 @@
+<form id="playlist-form" class="space-y-2">
+    {% for playlist in playlists %}
+    <div class="flex items-center p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow">
+        <input type="checkbox" name="playlist_ids" value="{{ playlist.id }}"
+               class="mr-4 h-4 w-4"
+               {% if playlist.id|string in selected_ids %}checked{% endif %}>
+
+                <!-- Playlist Album Art -->
+        {% if playlist.image_url %}
+        <img src="{{ playlist.image_url }}" alt="Playlist cover"
+             class="w-12 h-12 rounded-lg object-cover mr-4">
+        {% endif %}
+
+        <div class="flex-1">
+            <h3 class="font-medium text-gray-900">{{ playlist.name }}</h3>
+            <div class="text-sm text-gray-500">
+                <span>{{ playlist.service|title }}</span>
+                {% if playlist.last_synced %}
+                <span>• Last synced: {{ playlist.last_synced.strftime('%Y-%m-%d %H:%M') }}</span>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="text-sm text-gray-500 ml-auto">
+            {{ playlist.track_count }} songs
+        </div>
+
+        <button hx-post="/playlists/sync"
+                hx-include="[name='playlist_ids']"
+                hx-target="#playlist-list"
+                class="px-3 py-1 text-sm bg-gray-100 rounded-lg hover:bg-gray-200">
+            Sync
+        </button>
+    </div>
+    {% else %}
+    <div class="p-4 text-center text-gray-500 bg-white rounded-lg">
+        No playlists added yet
+    </div>
+    {% endfor %}
+</form>

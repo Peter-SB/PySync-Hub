@@ -1,0 +1,7 @@
+spotipy~=2.25.0
+Flask~=3.1.0
+flask
+sqlalchemy
+flask-sqlalchemy
+python-dotenv
+gunicorn

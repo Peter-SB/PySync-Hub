@@ -1,0 +1,19 @@
+#services:
+#  pysync-hub:
+#    build: .
+#    ports:
+#      - "5000:5000"
+#    env_file:
+#      - .env
+#    volumes:
+#      - ./instance:/app/instance
+services:
+  pysync-hub:
+    build: .
+    ports:
+      - "5000:5000"
+    volumes:
+      - .:/app
+    env_file:
+          - .env
+    restart: always
