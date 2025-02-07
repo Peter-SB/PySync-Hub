@@ -4,8 +4,6 @@
 <div class="space-y-6">
     <h1 class="text-3xl font-bold text-gray-900">PySync DJ Hub</h1>
 
-    <div id="error-message"></div>
-
     <!-- Playlist Search and Add Playlist -->
     <form hx-post="/playlists" hx-target="#playlist-list" class="space-y-4">
         <div class="flex gap-4">
@@ -20,6 +18,8 @@
             </button>
         </div>
     </form>
+
+    <div id="error-message"></div>
 
 
     <!-- Sync All and Delete Selected -->
