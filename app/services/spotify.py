@@ -11,8 +11,8 @@ class SpotifyService:
     @staticmethod
     def get_client():
         return Spotify(auth_manager=SpotifyClientCredentials(
-            client_id=os.getenv('SPOTIFY_CLIENT_ID'),
-            client_secret=os.getenv('SPOTIFY_CLIENT_SECRET')
+            client_id=os.environ.get('SPOTIFY_CLIENT_ID'),
+            client_secret=os.environ.get('SPOTIFY_CLIENT_SECRET')
         ))
 
     @staticmethod
@@ -27,11 +27,14 @@ class SpotifyService:
 
             response = client.playlist(playlist_id)
 
+            logger.info(response.get('tracks', []))
+
             data = {
                 'name': response['name'],
                 'external_id': playlist_id,
                 'image_url': response['images'][0]['url'],
-                'track_count': len(response.get('tracks', []))
+                'track_count': response.get('tracks', {}).get("total", "0"),
+                'url': response.get("external_urls", {}).get("spotify", "")
             }
             logger.info(f"{data}")
 

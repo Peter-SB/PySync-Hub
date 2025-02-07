@@ -11,6 +11,9 @@ class Config:
 
     # Flask
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'your-secret-key'
+    FLASK_APP = "app.py"
+    FLASK_ENV = "development"
+    DEBUG = True  # Enables auto-reload
 
     # Spotify
     SPOTIFY_CLIENT_ID = os.environ.get('SPOTIFY_CLIENT_ID')
@@ -19,3 +22,8 @@ class Config:
     # Downloads Folder
     DOWNLOAD_FOLDER = '/downloads'
     os.makedirs(DOWNLOAD_FOLDER, exist_ok=True)
+
+class TestConfig(Config):
+    TESTING = True
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///:memory:'
+

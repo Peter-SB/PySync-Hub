@@ -2,20 +2,27 @@
 
 {% block content %}
 <div class="space-y-6">
-    <h1 class="text-3xl font-bold text-gray-900">Playlist Sync</h1>
-    
+    <h1 class="text-3xl font-bold text-gray-900">PySync DJ Hub</h1>
+
+    <div id="error-message"></div>
+
+    <!-- Playlist Search and Add Playlist -->
     <form hx-post="/playlists" hx-target="#playlist-list" class="space-y-4">
         <div class="flex gap-4">
-            <input type="text" name="url_or_id" 
+            <input type="text" id="playlist-input" name="url_or_id"
                    placeholder="Enter Spotify playlist URL or ID"
-                   class="flex-1 p-2 border rounded-lg">
-            <button type="submit" 
-                    class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                   class="flex-1 p-2 border rounded-lg"
+                   id="playlist-input">
+            <button type="submit" id="add-playlist-btn"
+                    class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:cursor-not-allowed"
+                    disabled>
                 Add Playlist
             </button>
         </div>
     </form>
 
+
+    <!-- Sync All and Delete Selected -->
     <div class="space-y-4">
         <div class="flex gap-4">
             <button hx-post="/playlists/sync" 
@@ -36,5 +43,19 @@
             <!-- Playlist list will be loaded here -->
         </div>
     </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const input = document.querySelector('input[name="url_or_id"]');
+            const button = document.querySelector('form button[type="submit"]');
+
+            function updateButtonState() {
+                button.disabled = input.value.trim() === '';
+            }
+
+            input.addEventListener('input', updateButtonState);
+            // Initial check in case of browser autofill
+            updateButtonState();
+        });
+    </script>
 </div>
 {% endblock %}
