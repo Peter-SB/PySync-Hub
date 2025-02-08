@@ -1,7 +1,7 @@
 # tests/test_playlist_sync_service.py
 import pytest
 from app.models import Playlist
-from app.services.playlists_service import PlaylistService
+from app.services.playlist_service import PlaylistService
 from app import db
 
 def fake_get_playlist_data(external_id: str) -> dict:
@@ -34,7 +34,7 @@ def test_sync_playlists_unit(monkeypatch, db):
     )
 
     # Run sync on this playlist
-    PlaylistService.update_playlists([playlist.id])
+    PlaylistService.fetch_playlists([playlist.id])
 
     # Refresh the playlist from the database
     synced_playlist = Playlist.query.get(playlist.id)

@@ -25,8 +25,8 @@
             {{ playlist.track_count }} songs
         </div>
 
-        <button hx-post="/playlists/sync"
-                hx-include="[name='playlist_ids']"
+        <button hx-post="/playlists/fetch"
+                hx-vals='{"playlist_ids": [{{ playlist.id }}]}'
                 hx-target="#playlist-list"
                 class="px-3 py-1 text-sm bg-gray-100 rounded-lg hover:bg-gray-200">
             Sync

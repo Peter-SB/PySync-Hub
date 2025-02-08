@@ -2,7 +2,7 @@ import logging
 from flask import Blueprint, render_template, request, Response
 
 from app.repositories.playlist_repository import PlaylistRepository
-from app.services.playlists_service import PlaylistService
+from app.services.playlist_service import PlaylistService
 
 logger = logging.getLogger(__name__)
 
@@ -29,16 +29,15 @@ def add_playlist() -> str:
 
     playlists_html = get_playlists()
     if error:
-        logging.error(error)
         error_box = render_template('partials/error_box.html', error=error)
         return error_box + playlists_html
 
     return playlists_html
 
-@main.route('/playlists/update', methods=['POST'])
-def update_playlists() -> str:
+@main.route('/playlists/fetch', methods=['POST'])
+def fetch_playlists() -> str:
     selected_ids: list[int] = request.form.getlist('playlist_ids', int)
-    PlaylistService.update_playlists(selected_ids)
+    PlaylistService.fetch_playlists(selected_ids)
     return get_playlists()
 
 @main.route('/playlists', methods=['DELETE'])

@@ -4,7 +4,7 @@ import sys
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 
-from app.services.spotify import SpotifyService
+from app.services.spotify_service import SpotifyService
 from config import Config
 
 #import flask_migrate
@@ -42,3 +42,5 @@ def create_app():
     SpotifyService.get_client()
 
     return app
+
+# python -m flask run --debug

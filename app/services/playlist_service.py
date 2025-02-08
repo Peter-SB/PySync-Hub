@@ -9,13 +9,16 @@ from spotipy import SpotifyException
 from app import db
 from app.models import Playlist
 from app.repositories.playlist_repository import PlaylistRepository
-from app.services.spotify import SpotifyService
+from app.services.spotify_download_service import SpotifyDownloadService
+from app.services.spotify_service import SpotifyService
+from app.services.track_service import TrackService
 
 logger = logging.getLogger(__name__)
 
+
 class PlaylistService:
     @staticmethod
-    def update_playlists(selected_ids: Optional[List[int]] = None) -> List[Playlist]:
+    def fetch_playlists(selected_ids: Optional[List[int]] = None) -> List[Playlist]:
         """
         Sync playlists from external platform (e.g., Spotify).
 
@@ -26,9 +29,9 @@ class PlaylistService:
         :return: List of playlists that were processed.
         """
         if selected_ids is not None:
-            playlists = PlaylistRepository.get_by_ids(selected_ids)
+            playlists = PlaylistRepository.get_playlists_by_ids(selected_ids)
         else:
-            playlists = PlaylistRepository.get_all()
+            playlists = PlaylistRepository.get_all_playlists()
 
         for playlist in playlists:
             if playlist.platform == 'spotify':
@@ -38,7 +41,13 @@ class PlaylistService:
                     playlist.last_synced = datetime.utcnow()
                     playlist.image_url = data['image_url']
                     playlist.track_count = data['track_count']
-                    logger.info("Synced playlist (ID: %s, external_id: %s)", playlist.id, playlist.external_id)
+                    logger.info("Pulled latest playlist info (ID: %s, external_id: %s)", playlist.id,
+                                playlist.external_id)
+
+                    TrackService.fetch_playlist_tracks(playlist.id)
+
+                    SpotifyDownloadService.download_tracks_for_playlist(playlist.id)
+
                 except Exception as e:
                     logger.error("Failed to sync playlist ID %s: %s", playlist.id, e, exc_info=True)
 

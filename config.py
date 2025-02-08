@@ -20,7 +20,7 @@ class Config:
     SPOTIFY_CLIENT_SECRET = os.environ.get('SPOTIFY_CLIENT_SECRET')
 
     # Downloads Folder
-    DOWNLOAD_FOLDER = '/downloads'
+    DOWNLOAD_FOLDER = './downloads'
     os.makedirs(DOWNLOAD_FOLDER, exist_ok=True)
 
 class TestConfig(Config):
