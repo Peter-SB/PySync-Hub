@@ -15,7 +15,6 @@ class TrackService:
         Syncs the tracks for a given playlist by fetching track data from Spotify
         and then updating the Track and PlaylistTrack tables.
         """
-        # Retrieve the playlist from the database
         playlist = PlaylistRepository.get_playlist(playlist_id)
         if not playlist:
             logger.error("Playlist with id %s not found", playlist_id)
@@ -68,8 +67,6 @@ class TrackService:
                     )
                     db.session.add(playlist_track)
 
-            # Update the track count in the Playlist model
-            # playlist.track_count = len(tracks_data)
             db.session.commit()
             logger.info("Successfully synced tracks for playlist: %s", playlist.name)
             return "Tracks synced successfully"

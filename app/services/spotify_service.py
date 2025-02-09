@@ -62,7 +62,6 @@ class SpotifyService:
                     if not track or track.get('id') is None:
                         continue  # Skip items that aren't valid tracks (e.g., episodes, missing tracks)
 
-                    # Extract track details
                     track_data = {
                         'platform_id': track['id'],
                         'platform': 'spotify',
