@@ -1,4 +1,5 @@
 import logging
+import os
 import sys
 
 from flask import Flask
@@ -7,14 +8,15 @@ from flask_sqlalchemy import SQLAlchemy
 from app.services.spotify_service import SpotifyService
 from config import Config
 
-#import flask_migrate
-#import flask_wtf
+# import flask_migrate
+# import flask_wtf
 
 db = SQLAlchemy()
 
-def create_app():
+
+def create_app(app_config=Config):
     app = Flask(__name__)
-    app.config.from_object(Config)  # Load config from file
+    app.config.from_object(app_config)  # Load config from file
 
     db.init_app(app)
 
@@ -39,7 +41,13 @@ def create_app():
     from app.routes import main
     app.register_blueprint(main)
 
-    SpotifyService.get_client()
+    app.spotipy_service = SpotifyService(
+        client_id=app.config['SPOTIFY_CLIENT_ID'],
+        client_secret=app.config['SPOTIFY_CLIENT_SECRET']
+    )
+
+    if not app.config.get("TESTING"):
+        os.makedirs(app.config.get("DOWNLOAD_FOLDER"), exist_ok=True)
 
     return app
 

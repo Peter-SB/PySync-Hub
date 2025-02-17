@@ -21,9 +21,10 @@ class Config:
 
     # Downloads Folder
     DOWNLOAD_FOLDER = './downloads'
-    os.makedirs(DOWNLOAD_FOLDER, exist_ok=True)
 
 class TestConfig(Config):
     TESTING = True
     SQLALCHEMY_DATABASE_URI = 'sqlite:///:memory:'
 
+    SPOTIFY_CLIENT_ID = 'dummy_client_id'
+    SPOTIFY_CLIENT_SECRET = 'dummy_client_secret'

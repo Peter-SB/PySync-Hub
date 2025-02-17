@@ -5,3 +5,6 @@ sqlalchemy
 flask-sqlalchemy
 python-dotenv
 gunicorn
+
+pytubefix~=8.12.1
+pytest~=8.3.4

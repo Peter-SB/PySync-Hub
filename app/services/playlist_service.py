@@ -4,8 +4,10 @@ from typing import List, Optional
 
 import logging
 
+from flask import current_app
 from spotipy import SpotifyException
 
+import app
 from app import db
 from app.models import Playlist
 from app.repositories.playlist_repository import PlaylistRepository
@@ -36,7 +38,7 @@ class PlaylistService:
         for playlist in playlists:
             if playlist.platform == 'spotify':
                 try:
-                    data = SpotifyService.get_playlist_data(playlist.external_id)
+                    data = SpotifyService().get_playlist_data(playlist.external_id)
                     playlist.name = data['name']
                     playlist.last_synced = datetime.utcnow()
                     playlist.image_url = data['image_url']
@@ -46,7 +48,7 @@ class PlaylistService:
 
                     TrackService.fetch_playlist_tracks(playlist.id)
 
-                    SpotifyDownloadService.download_tracks_for_playlist(playlist.id)
+                    #SpotifyDownloadService.download_tracks_for_playlist(playlist.id)
 
                 except Exception as e:
                     logger.error("Failed to sync playlist ID %s: %s", playlist.id, e, exc_info=True)
@@ -60,8 +62,8 @@ class PlaylistService:
 
         return playlists
 
-    @classmethod
-    def add_playlists(self, url_or_id) -> Optional[str]:
+    @staticmethod
+    def add_playlists(url_or_id) -> Optional[str]:
         logger.info("Attempting to add playlist with url_or_id: %s", url_or_id)
         platform = 'spotify'  # Will be extended for SoundCloud
 
@@ -70,7 +72,7 @@ class PlaylistService:
             return "No URL or ID Detected"
 
         try:
-            playlist_data = SpotifyService.get_playlist_data(url_or_id)
+            playlist_data = SpotifyService().get_playlist_data(url_or_id)
             logger.debug("Fetched playlist data: %s", playlist_data)
 
             existing = Playlist.query.filter_by(
@@ -89,6 +91,7 @@ class PlaylistService:
                     image_url=playlist_data['image_url'],
                     track_count=playlist_data['track_count'],
                     url=playlist_data['url'],
+                    download_status="ready"
                 )
                 db.session.add(playlist)
                 db.session.commit()
@@ -104,8 +107,8 @@ class PlaylistService:
             logger.error("Error adding playlist with url_or_id '%s': %s (%s)", url_or_id, e, type(e), exc_info=True)
             # Optionally, handle the error further (e.g., flash a message or return an error response)
 
-    @classmethod
-    def delete_playlists(cls, selected_ids):
+    @staticmethod
+    def delete_playlists(selected_ids):
         logger.info("Deleting playlists with IDs: %s", selected_ids)
 
         if selected_ids:

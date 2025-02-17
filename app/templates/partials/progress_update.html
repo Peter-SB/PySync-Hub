@@ -1,0 +1,13 @@
+<div id="sync-progress-{{ playlist_id }}" class="my-2 border p-2 rounded">
+  <div class="flex items-center justify-between">
+    <div class="w-full">
+      <!-- The progress bar will be updated by streamed chunks -->
+      <div id="progress-{{ playlist_id }}"></div>
+    </div>
+    <button
+      hx-post="/playlists/stop-sync"
+      hx-include="[name='playlist_ids']"
+      class="ml-4 px-2 py-1 bg-red-500 text-white rounded"
+      >Stop</button>
+  </div>
+</div>

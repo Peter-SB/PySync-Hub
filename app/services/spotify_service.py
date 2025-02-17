@@ -1,35 +1,36 @@
 import logging
 
+from flask import current_app
 from spotipy import Spotify
 from spotipy.oauth2 import SpotifyClientCredentials
 import os
+from config import Config
 
 logger = logging.getLogger(__name__)
 
 
 class SpotifyService:
+    def __init__(self, spotify_client: Spotify = None, client_id: str = None, client_secret: str = None):
+        if spotify_client:
+            self.client = spotify_client
+        elif client_id and client_secret:
+            self.client = Spotify(
+                auth_manager=SpotifyClientCredentials(client_id=client_id, client_secret=client_secret))
+        else:
+            raise ValueError("Either a Spotify client or credentials must be provided")
 
-    @staticmethod
-    def get_client():
-        return Spotify(auth_manager=SpotifyClientCredentials(
-            client_id=os.environ.get('SPOTIFY_CLIENT_ID'),
-            client_secret=os.environ.get('SPOTIFY_CLIENT_SECRET')
-        ))
-
-    @staticmethod
-    def get_playlist_data(url_or_id):
+    def get_playlist_data(self, url_or_id):
         try:
-            playlist_id = SpotifyService._extract_playlist_id(url_or_id)
+            playlist_id = self._extract_playlist_id(url_or_id)
 
-            client = SpotifyService.get_client()
-            response = client.playlist(playlist_id)
+            response = self.client.playlist(playlist_id)
 
             logger.debug(response.get('tracks', []))
 
             data = {
                 'name': response['name'],
                 'external_id': playlist_id,
-                'image_url': response['images'][0]['url'],
+                'image_url': next(iter(response.get('images', [])), {}).get('url'),
                 'track_count': response.get('tracks', {}).get("total", "0"),
                 'url': response.get("external_urls", {}).get("spotify", "")
             }
@@ -39,15 +40,13 @@ class SpotifyService:
         except Exception as e:
             raise e
 
-    @staticmethod
-    def get_playlist_tracks(url_or_id):
+    def get_playlist_tracks(self, url_or_id):
         """
         Fetches the tracks for a given Spotify playlist.
         Returns a list of dictionaries with track information.
         """
         try:
-            playlist_id = SpotifyService._extract_playlist_id(url_or_id)
-            client = SpotifyService.get_client()
+            playlist_id = self._extract_playlist_id(url_or_id)
 
             tracks_data = []
             limit = 100
@@ -55,7 +54,7 @@ class SpotifyService:
 
             while True:
                 # Fetch a batch of playlist items (tracks)
-                results = client.playlist_items(playlist_id, limit=limit, offset=offset)
+                results = self.client.playlist_items(playlist_id, limit=limit, offset=offset)
 
                 for item in results.get('items', []):
                     track = item.get('track')

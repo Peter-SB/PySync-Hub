@@ -26,7 +26,7 @@ class TrackService:
 
         try:
             # Fetch the track data from Spotify using the playlist's external ID
-            tracks_data = SpotifyService.get_playlist_tracks(playlist.external_id)
+            tracks_data = SpotifyService().get_playlist_tracks(playlist.external_id)
             logger.info("Fetched %d tracks for playlist %s", len(tracks_data), playlist.name)
 
             # Iterate over the fetched tracks; use the index to set the track order

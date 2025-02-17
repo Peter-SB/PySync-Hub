@@ -1,11 +1,12 @@
 import logging
-from flask import Blueprint, render_template, request, Response
+from flask import Blueprint, render_template, request, Response, stream_with_context, current_app
 
 from app.repositories.playlist_repository import PlaylistRepository
 from app.services.playlist_service import PlaylistService
+from app.services.spotify_download_service import SpotifyDownloadService
+from app.services.track_service import TrackService
 
 logger = logging.getLogger(__name__)
-
 main = Blueprint('main', __name__)
 
 @main.route('/')
@@ -22,7 +23,7 @@ def get_playlists() -> str:
 
 @main.route('/playlists', methods=['POST'])
 def add_playlist() -> str:
-    url_or_id: str = request.form.get('url_or_id', str)
+    url_or_id: str = request.form.get('url_or_id', '')
     logger.info(f"Adding playlist: {url_or_id}")
 
     error = PlaylistService.add_playlists(url_or_id)
