@@ -4,23 +4,21 @@ from typing import List, Optional
 
 import logging
 
-from flask import current_app
 from spotipy import SpotifyException
 
-import app
 from app import db
 from app.models import Playlist
 from app.repositories.playlist_repository import PlaylistRepository
-from app.services.spotify_download_service import SpotifyDownloadService
 from app.services.spotify_service import SpotifyService
-from app.services.track_service import TrackService
+from app.services.track_manager_service import TrackManagerService
 
 logger = logging.getLogger(__name__)
 
 
-class PlaylistService:
+class PlaylistManagerService:
+
     @staticmethod
-    def fetch_playlists(selected_ids: Optional[List[int]] = None) -> List[Playlist]:
+    def refresh_playlists(selected_ids: Optional[List[int]] = None) -> List[Playlist]:
         """
         Sync playlists from external platform (e.g., Spotify).
 
@@ -38,7 +36,7 @@ class PlaylistService:
         for playlist in playlists:
             if playlist.platform == 'spotify':
                 try:
-                    data = SpotifyService().get_playlist_data(playlist.external_id)
+                    data = SpotifyService.get_playlist_data(playlist.external_id)
                     playlist.name = data['name']
                     playlist.last_synced = datetime.utcnow()
                     playlist.image_url = data['image_url']
@@ -46,7 +44,7 @@ class PlaylistService:
                     logger.info("Pulled latest playlist info (ID: %s, external_id: %s)", playlist.id,
                                 playlist.external_id)
 
-                    TrackService.fetch_playlist_tracks(playlist.id)
+                    TrackManagerService.fetch_playlist_tracks(playlist.id)
 
                     #SpotifyDownloadService.download_tracks_for_playlist(playlist.id)
 
@@ -72,7 +70,7 @@ class PlaylistService:
             return "No URL or ID Detected"
 
         try:
-            playlist_data = SpotifyService().get_playlist_data(url_or_id)
+            playlist_data = SpotifyService.get_playlist_data(url_or_id)
             logger.debug("Fetched playlist data: %s", playlist_data)
 
             existing = Playlist.query.filter_by(

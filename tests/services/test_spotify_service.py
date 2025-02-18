@@ -38,9 +38,14 @@ def mock_spotify_client():
 
 
 @pytest.fixture
-def spotify_service(mock_spotify_client):
-    """Creates an instance of SpotifyService with a mocked Spotify client"""
-    return SpotifyService(spotify_client=mock_spotify_client)
+def spotify_service(mock_spotify_client, monkeypatch):
+    """
+    Patch SpotifyService.get_client so it returns the mock_spotify_client.
+    Since all SpotifyService methods are static, we don't create an instance;
+    we simply return the class after patching.
+    """
+    monkeypatch.setattr(SpotifyService, "get_client", lambda: mock_spotify_client)
+    return SpotifyService
 
 
 # ======================================================================================================================

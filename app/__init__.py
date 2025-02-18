@@ -37,14 +37,8 @@ def create_app(app_config=Config):
         from app.models import Playlist
         db.create_all()
 
-    #
     from app.routes import main
     app.register_blueprint(main)
-
-    app.spotipy_service = SpotifyService(
-        client_id=app.config['SPOTIFY_CLIENT_ID'],
-        client_secret=app.config['SPOTIFY_CLIENT_SECRET']
-    )
 
     if not app.config.get("TESTING"):
         os.makedirs(app.config.get("DOWNLOAD_FOLDER"), exist_ok=True)

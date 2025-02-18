@@ -1,10 +1,11 @@
 import logging
 from flask import Blueprint, render_template, request, Response, stream_with_context, current_app
 
+import app
 from app.repositories.playlist_repository import PlaylistRepository
-from app.services.playlist_service import PlaylistService
+from app.services.playlist_manager_service import PlaylistManagerService
 from app.services.spotify_download_service import SpotifyDownloadService
-from app.services.track_service import TrackService
+from app.services.track_manager_service import TrackManagerService
 
 logger = logging.getLogger(__name__)
 main = Blueprint('main', __name__)
@@ -14,6 +15,7 @@ def index():
     logger.info("Index page requested")
     return render_template('index.html')
 
+
 @main.route('/playlists')
 def get_playlists() -> str:
     selected_ids: list[int] = request.args.getlist('selected_ids', type=int)
@@ -21,12 +23,13 @@ def get_playlists() -> str:
     playlists = PlaylistRepository.get_all_playlists()
     return render_template('partials/playlist_list.html', playlists=playlists, selected_ids=selected_ids)
 
+
 @main.route('/playlists', methods=['POST'])
 def add_playlist() -> str:
     url_or_id: str = request.form.get('url_or_id', '')
     logger.info(f"Adding playlist: {url_or_id}")
 
-    error = PlaylistService.add_playlists(url_or_id)
+    error = PlaylistManagerService.add_playlists(url_or_id)
 
     playlists_html = get_playlists()
     if error:
@@ -35,14 +38,18 @@ def add_playlist() -> str:
 
     return playlists_html
 
-@main.route('/playlists/fetch', methods=['POST'])
-def fetch_playlists() -> str:
+
+@main.route('/playlists/refresh', methods=['POST'])
+def refresh_playlists() -> str:
     selected_ids: list[int] = request.form.getlist('playlist_ids', int)
-    PlaylistService.fetch_playlists(selected_ids)
+
+    PlaylistManagerService.refresh_playlists(selected_ids)
+
     return get_playlists()
+
 
 @main.route('/playlists', methods=['DELETE'])
 def delete_playlists() -> str:
     selected_ids: list[int] = request.form.getlist('playlist_ids', int)
-    PlaylistService.delete_playlists(selected_ids)
+    PlaylistManagerService.delete_playlists(selected_ids)
     return get_playlists()

@@ -8,7 +8,7 @@ from app.services.spotify_service import SpotifyService
 logger = logging.getLogger(__name__)
 
 
-class TrackService:
+class TrackManagerService:
     @staticmethod
     def fetch_playlist_tracks(playlist_id: int):
         """
@@ -26,7 +26,7 @@ class TrackService:
 
         try:
             # Fetch the track data from Spotify using the playlist's external ID
-            tracks_data = SpotifyService().get_playlist_tracks(playlist.external_id)
+            tracks_data = SpotifyService.get_playlist_tracks(playlist.external_id)
             logger.info("Fetched %d tracks for playlist %s", len(tracks_data), playlist.name)
 
             # Iterate over the fetched tracks; use the index to set the track order

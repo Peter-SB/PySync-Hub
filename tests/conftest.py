@@ -32,20 +32,3 @@ def db_session(app):
 def client(app):
     """Returns a test client for making requests."""
     return app.test_client()
-
-
-@pytest.fixture(scope="function")
-def mock_spotify_service(app):
-    """Replace app.spotify_service with a mock instance."""
-    mock_spotify = MagicMock(spec=SpotifyService)
-    mock_spotify.get_playlist_data.return_value = {
-        "name": "Fake Test Playlist",
-        "external_id": "test123",
-        "image_url": "http://test.com/image.jpg",
-        "track_count": 5
-    }
-
-    with app.app_context():
-        app.spotify_service = mock_spotify  # Override the real instance
-
-    yield mock_spotify  # Provide the mock for assertion if needed
