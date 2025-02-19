@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 class PlaylistManagerService:
 
     @staticmethod
-    def refresh_playlists(selected_ids: Optional[List[int]] = None) -> List[Playlist]:
+    def refresh_playlists(playlists: list[Playlist]) -> List[Playlist]:
         """
         Sync playlists from external platform (e.g., Spotify).
 
@@ -28,12 +28,6 @@ class PlaylistManagerService:
         :param selected_ids: Optional list of playlist IDs to sync.
         :return: List of playlists that were processed.
         """
-        logger.info("Refreshing Playlists %s", selected_ids)
-
-        if selected_ids is not None:
-            playlists = PlaylistRepository.get_playlists_by_ids(selected_ids)
-        else:
-            playlists = PlaylistRepository.get_all_playlists()
 
         for playlist in playlists:
             if playlist.platform == 'spotify':

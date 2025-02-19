@@ -3,7 +3,7 @@ import os
 import sys
 
 from flask import Flask
-from app.extensions import db
+from app.extensions import db, socketio
 from app.services.spotify_service import SpotifyService
 from app.workers.download_worker import DownloadManager
 from config import Config
@@ -11,6 +11,8 @@ from config import Config
 def create_app(app_config=Config):
     app = Flask(__name__)
     app.config.from_object(app_config)
+    socketio.init_app(app)
+
 
     db.init_app(app)
 

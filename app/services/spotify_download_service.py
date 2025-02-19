@@ -1,11 +1,12 @@
 import os
 import logging
 import threading
+import time
 
 from config import Config
 from app.models import Playlist, Track
 from pytubefix import YouTube, Search
-from app.extensions import db
+from app.extensions import db, socketio
 
 logger = logging.getLogger(__name__)
 
@@ -91,15 +92,15 @@ class SpotifyDownloadService:
         # Update the playlist status to 'downloading'
         playlist.download_status = 'downloading'
         db.session.commit()
+        socketio.emit("download_status", {"id": playlist.id, "status": "downloading", "progress": 0})
 
         # Iterate over the tracks and download each one.
         tracks = [pt.track for pt in playlist.tracks]
-        for track in tracks:
+        total_tracks = len(tracks)
+        for i, track in enumerate(tracks, start=1):
             # Check if cancellation has been requested.
             if cancellation_flags[playlist.id].is_set():
                 print(f"Download for playlist {playlist.name} cancelled. (id: {playlist.id})")
-                playlist.download_status = 'ready'
-                db.session.commit()
                 break
 
             try:
@@ -107,10 +108,21 @@ class SpotifyDownloadService:
             except Exception as e:
                 print(f"Error downloading track {track.name}: {e}")
 
+            progress_percent = int((i / total_tracks) * 100)
+            socketio.emit("download_status", {
+                "id": playlist.id,
+                "status": "downloading",
+                "progress": progress_percent
+            })
+
+            time.sleep(0.005)  # To reduce bot detection
+
         # After finishing (or if cancelled) update status back to 'ready'
         logger.info("Download Finished for Playlist '%s'", playlist.name)
         playlist.download_status = 'ready'
         db.session.commit()
+        socketio.emit("download_status", {"id": playlist.id, "status": "ready"})
+
         # Clear the cancellation flag for future downloads.
         cancellation_flags[playlist.id].clear()
 
@@ -118,6 +130,9 @@ class SpotifyDownloadService:
     def download_track(track: Track):
         if track.download_location and os.path.isfile(track.download_location):
             logger.info("Track '%s' already downloaded, skipping.", track.name)
+            track.notes_errors = "Already Downloaded, Skipped"
+            db.session.add(track)
+            db.session.commit()
             return
 
         # Build a search query combining the track name and artist
