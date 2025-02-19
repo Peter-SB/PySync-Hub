@@ -28,6 +28,8 @@ class PlaylistManagerService:
         :param selected_ids: Optional list of playlist IDs to sync.
         :return: List of playlists that were processed.
         """
+        logger.info("Refreshing Playlists %s", selected_ids)
+
         if selected_ids is not None:
             playlists = PlaylistRepository.get_playlists_by_ids(selected_ids)
         else:
@@ -45,8 +47,6 @@ class PlaylistManagerService:
                                 playlist.external_id)
 
                     TrackManagerService.fetch_playlist_tracks(playlist.id)
-
-                    #SpotifyDownloadService.download_tracks_for_playlist(playlist.id)
 
                 except Exception as e:
                     logger.error("Failed to sync playlist ID %s: %s", playlist.id, e, exc_info=True)

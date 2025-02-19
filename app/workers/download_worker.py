@@ -50,3 +50,4 @@ class DownloadManager:
     def cancel_download(self, playlist_id):
         if playlist_id in self.cancellation_flags:
             self.cancellation_flags[playlist_id].set()
+

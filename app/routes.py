@@ -39,6 +39,8 @@ def add_playlist() -> str:
 
 @main.route('/playlists/refresh', methods=['POST'])
 def refresh_playlists() -> str:
+    logger.info("Refreshing Playlists")
+
     selected_ids: list[int] = request.form.getlist('playlist_ids', int)
 
     PlaylistManagerService.refresh_playlists(selected_ids)
@@ -58,3 +60,8 @@ def download_playlist(playlist_id):
     """Endpoint to queue a playlist for download."""
     current_app.download_manager.add_to_queue(playlist_id)
     return jsonify({"message": "Download started", "playlist_id": playlist_id})
+
+@main.route("/download/cancel/<int:playlist_id>", methods=["POST"])
+def cancel_download(playlist_id):
+    current_app.download_manager.cancel_download(playlist_id)
+    return jsonify({"message": "Download canceled", "playlist_id": playlist_id})

@@ -1,40 +1,50 @@
 <form id="playlist-form" class="space-y-2">
-    {% for playlist in playlists %}
-    <div class="flex items-center p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow">
-        <input type="checkbox" name="playlist_ids" value="{{ playlist.id }}"
-               class="mr-4 h-4 w-4"
-               {% if playlist.id|string in selected_ids %}checked{% endif %}>
+  {% for playlist in playlists %}
+  <div class="flex items-center p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow">
+    <input type="checkbox" name="playlist_ids" value="{{ playlist.id }}"
+           class="mr-4 h-4 w-4"
+           {% if playlist.id|string in selected_ids %}checked{% endif %}>
 
-                <!-- Playlist Album Art -->
-        {% if playlist.image_url %}
-        <img src="{{ playlist.image_url }}" alt="Playlist cover"
-             class="w-12 h-12 rounded-lg object-cover mr-4">
+    <!-- Playlist Album Art -->
+    {% if playlist.image_url %}
+    <img src="{{ playlist.image_url }}" alt="Playlist cover"
+         class="w-12 h-12 rounded-lg object-cover mr-4">
+    {% endif %}
+
+    <div class="flex-1">
+      <h3 class="font-medium text-gray-900">{{ playlist.name }}</h3>
+      <div class="text-sm text-gray-500">
+        <span>{{ playlist.platform|title }}</span>
+        {% if playlist.last_synced %}
+          <span>• Last synced: {{ playlist.last_synced.strftime('%Y-%m-%d %H:%M') }}</span>
         {% endif %}
+      </div>
+    </div>
 
-        <div class="flex-1">
-            <h3 class="font-medium text-gray-900">{{ playlist.name }}</h3>
-            <div class="text-sm text-gray-500">
-                <span>{{ playlist.service|title }}</span>
-                {% if playlist.last_synced %}
-                <span>• Last synced: {{ playlist.last_synced.strftime('%Y-%m-%d %H:%M') }}</span>
-                {% endif %}
-            </div>
-        </div>
+    <div class="text-sm text-gray-500 ml-auto">
+      {{ playlist.track_count }} songs
+    </div>
 
-        <div class="text-sm text-gray-500 ml-auto">
-            {{ playlist.track_count }} songs
-        </div>
-
+    <!-- Sync Status / Action -->
+    <div id="sync-status-{{ playlist.id }}" class="ml-4">
+      {% if playlist.download_status == "queued" %}
+        <span class="text-blue-500 font-semibold">Queued</span>
+      {% elif playlist.download_status == "downloading" %}
+        {% include "partials/progress_update.html" %}
+      {% else %}
         <button hx-post="/playlists/refresh"
                 hx-vals='{"playlist_ids": [{{ playlist.id }}]}'
                 hx-target="#playlist-list"
-                class="px-3 py-1 text-sm bg-gray-100 rounded-lg hover:bg-gray-200">
-            Sync
+                class="px-3 py-1 text-sm bg-gray-100 rounded-lg hover:bg-gray-200"
+                onclick="document.getElementById('sync-status-{{ playlist.id }}').innerHTML='<span class=\'text-blue-500 font-semibold\'>Queued</span>';">
+          Sync
         </button>
+      {% endif %}
     </div>
-    {% else %}
-    <div class="p-4 text-center text-gray-500 bg-white rounded-lg">
-        No playlists added yet
-    </div>
-    {% endfor %}
+  </div>
+  {% else %}
+  <div class="p-4 text-center text-gray-500 bg-white rounded-lg">
+    No playlists added yet
+  </div>
+  {% endfor %}
 </form>

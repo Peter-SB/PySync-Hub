@@ -89,7 +89,7 @@ class SpotifyDownloadService:
             cancellation_flags[playlist.id] = threading.Event()
 
         # Update the playlist status to 'downloading'
-        playlist.status = 'downloading'
+        playlist.download_status = 'downloading'
         db.session.commit()
 
         # Iterate over the tracks and download each one.
@@ -98,6 +98,8 @@ class SpotifyDownloadService:
             # Check if cancellation has been requested.
             if cancellation_flags[playlist.id].is_set():
                 print(f"Download for playlist {playlist.name} cancelled. (id: {playlist.id})")
+                playlist.download_status = 'ready'
+                db.session.commit()
                 break
 
             try:
@@ -107,7 +109,7 @@ class SpotifyDownloadService:
 
         # After finishing (or if cancelled) update status back to 'ready'
         logger.info("Download Finished for Playlist '%s'", playlist.name)
-        playlist.status = 'ready'
+        playlist.download_status = 'ready'
         db.session.commit()
         # Clear the cancellation flag for future downloads.
         cancellation_flags[playlist.id].clear()
