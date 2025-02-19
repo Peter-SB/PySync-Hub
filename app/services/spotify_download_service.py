@@ -3,9 +3,9 @@ import logging
 import threading
 
 from config import Config
-from app import db
 from app.models import Playlist, Track
 from pytubefix import YouTube, Search
+from app.extensions import db
 
 logger = logging.getLogger(__name__)
 
@@ -86,7 +86,7 @@ class SpotifyDownloadService:
     def download_playlist(playlist: Playlist, cancellation_flags: dict[threading.Event]):
         # Ensure a cancellation flag exists for this playlist.
         if playlist.id not in cancellation_flags:
-            cancellation_flags[Playlist.id] = threading.Event()
+            cancellation_flags[playlist.id] = threading.Event()
 
         # Update the playlist status to 'downloading'
         playlist.status = 'downloading'
@@ -106,6 +106,7 @@ class SpotifyDownloadService:
                 print(f"Error downloading track {track.name}: {e}")
 
         # After finishing (or if cancelled) update status back to 'ready'
+        logger.info("Download Finished for Playlist '%s'", playlist.name)
         playlist.status = 'ready'
         db.session.commit()
         # Clear the cancellation flag for future downloads.
@@ -113,7 +114,7 @@ class SpotifyDownloadService:
 
     @staticmethod
     def download_track(track: Track):
-        if track.download_location:
+        if track.download_location and os.path.isfile(track.download_location):
             logger.info("Track '%s' already downloaded, skipping.", track.name)
             return
 

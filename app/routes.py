@@ -1,11 +1,9 @@
 import logging
-from flask import Blueprint, render_template, request, Response, stream_with_context, current_app
+from flask import Blueprint, render_template, request, jsonify, current_app
 
-import app
 from app.repositories.playlist_repository import PlaylistRepository
 from app.services.playlist_manager_service import PlaylistManagerService
-from app.services.spotify_download_service import SpotifyDownloadService
-from app.services.track_manager_service import TrackManagerService
+
 
 logger = logging.getLogger(__name__)
 main = Blueprint('main', __name__)
@@ -44,6 +42,7 @@ def refresh_playlists() -> str:
     selected_ids: list[int] = request.form.getlist('playlist_ids', int)
 
     PlaylistManagerService.refresh_playlists(selected_ids)
+    current_app.download_manager.add_to_queue(selected_ids[0])
 
     return get_playlists()
 
@@ -53,3 +52,9 @@ def delete_playlists() -> str:
     selected_ids: list[int] = request.form.getlist('playlist_ids', int)
     PlaylistManagerService.delete_playlists(selected_ids)
     return get_playlists()
+
+@main.route("/download/<int:playlist_id>", methods=["POST"])
+def download_playlist(playlist_id):
+    """Endpoint to queue a playlist for download."""
+    current_app.download_manager.add_to_queue(playlist_id)
+    return jsonify({"message": "Download started", "playlist_id": playlist_id})

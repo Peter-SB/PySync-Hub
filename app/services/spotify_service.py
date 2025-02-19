@@ -1,10 +1,8 @@
 import logging
 
-from flask import current_app
 from spotipy import Spotify
 from spotipy.oauth2 import SpotifyClientCredentials
 import os
-from config import Config
 
 logger = logging.getLogger(__name__)
 

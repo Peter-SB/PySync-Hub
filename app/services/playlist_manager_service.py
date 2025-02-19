@@ -6,7 +6,7 @@ import logging
 
 from spotipy import SpotifyException
 
-from app import db
+from app.extensions import db
 from app.models import Playlist
 from app.repositories.playlist_repository import PlaylistRepository
 from app.services.spotify_service import SpotifyService

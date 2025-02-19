@@ -1,6 +1,6 @@
 import pytest
 from unittest.mock import MagicMock
-from app import create_app, db
+from app import create_app, extensions
 from config import TestConfig
 from app.services.spotify_service import SpotifyService
 

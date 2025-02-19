@@ -1,6 +1,5 @@
 import logging
 
-from app import db
 from app.models import *
 from app.repositories.playlist_repository import PlaylistRepository
 from app.services.spotify_service import SpotifyService

@@ -1,31 +1,52 @@
+import logging
 import threading
 import queue
-import time
 
-from app import create_app, db
 from app.models import Playlist
 from app.services.spotify_download_service import SpotifyDownloadService
-from flask import current_app
+from flask import current_app, Flask
 
-download_queue = queue.Queue()
-cancellation_flags: dict[threading.Event] = {}
-
-
-def download_worker():
-    """Background worker that processes download tasks."""
-    while True:
-        playlist_id = download_queue.get()  # blocks until a task is available
-        with current_app.app_context():
-            playlist = Playlist.query.get(playlist_id)
-            if not playlist:
-                download_queue.task_done()
-                continue
-
-            SpotifyDownloadService.download_playlist(playlist, cancellation_flags)
-
-        download_queue.task_done()
+logger = logging.getLogger(__name__)
 
 
-# Start the background worker thread (daemon=True so it ends when the app stops)
-worker_thread = threading.Thread(target=download_worker, daemon=True)
-worker_thread.start()
+class DownloadManager:
+    def __init__(self, app: Flask):
+        logger.info("Initialising Download Manager")
+        self.download_queue = queue.Queue()
+        self.cancellation_flags: dict[threading.Event] = {}
+        self.app = app
+
+        # Start the background worker thread (daemon=True so it ends when the app stops)
+        self.worker_thread = threading.Thread(target=self._download_worker, daemon=True)
+        self.worker_thread.start()
+
+        logger.info("Download Manager Initialised")
+
+
+    def _download_worker(self):
+        """ Background worker that processes the download queue. """
+        logger.info("Download Worker Started")
+        while True:
+            playlist_id = self.download_queue.get()  # blocks until a task is available
+            with self.app.app_context():
+                playlist = Playlist.query.get(playlist_id)
+                if not playlist:
+                    self.download_queue.task_done()
+                    continue
+
+                logger.info(f"Downloading playlist {playlist}")
+
+                SpotifyDownloadService.download_playlist(playlist, self.cancellation_flags)
+
+            self.download_queue.task_done()
+
+    def add_to_queue(self, playlist_id):
+        self.download_queue.put(playlist_id)
+
+    def add_playlists_to_queue(self, playlist_ids):
+        for playlist_id in playlist_ids:
+            self.add_to_queue(playlist_id)
+
+    def cancel_download(self, playlist_id):
+        if playlist_id in self.cancellation_flags:
+            self.cancellation_flags[playlist_id].set()
