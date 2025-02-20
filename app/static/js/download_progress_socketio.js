@@ -11,7 +11,12 @@ socket.on("download_status", function(data) {
     if (!statusEl) return;
 
     if (data.status === "queued") {
-        statusEl.innerHTML = '<span class="text-yellow-500 font-bold">Queued</span>';
+        statusEl.innerHTML = `
+        <span class="text-yellow-500 font-bold">Queued</span>
+        <button onclick="cancelDownload({{ playlist.id }})" class="px-2 py-1 bg-red-600 text-white rounded">
+            Cancel
+        </button>
+        `;
     } else if (data.status === "downloading") {
         statusEl.innerHTML = `
             <div class="flex items-center">

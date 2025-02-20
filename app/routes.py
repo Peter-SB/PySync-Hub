@@ -50,14 +50,17 @@ def refresh_playlists() -> str:
     selected_ids: list[int] = request.form.getlist('playlist_ids', int)
 
     playlists = PlaylistRepository.get_playlists_by_ids(selected_ids) if selected_ids else PlaylistRepository.get_all_playlists()
+    playlists = [p for p in playlists if not p.disabled]
+
     for playlist in playlists:
         playlist.download_status = "queued"
         socketio.emit("download_status", {"id": playlist.id, "status": "queued"})
 
     db.session.commit()
 
-    PlaylistManagerService.refresh_playlists(playlists)
+
     for playlist in playlists:
+        PlaylistManagerService.refresh_playlists([playlist])
         current_app.download_manager.add_to_queue(playlist.id)
 
     return get_playlists()
@@ -86,3 +89,24 @@ def cancel_download(playlist_id):
         db.session.commit()
         socketio.emit("download_status", {"id": playlist.id, "status": "ready"})
     return get_playlists()
+
+
+@main.route('/playlists/toggle', methods=['POST'])
+def toggle_playlist():
+    # Get the playlist ID and the desired disabled value from the request
+    playlist_id = request.form.get('playlist_id', type=int)
+    disabled_value = request.form.get('disabled')
+    if playlist_id is None or disabled_value is None:
+        return ("Missing parameters", 400)
+
+    playlist = PlaylistRepository.get_playlist(playlist_id)
+    if not playlist:
+        return ("Playlist not found", 404)
+
+    # Convert the string value ("true"/"false") to a boolean
+    playlist.disabled = True if disabled_value.lower() == 'true' else False
+    from app.extensions import db
+    db.session.commit()
+
+    # Re-render only this playlist item so that the new styling reflects the change
+    return render_template('partials/playlist_item.html', playlist=playlist, selected_ids=[])

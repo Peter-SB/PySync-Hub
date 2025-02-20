@@ -24,20 +24,30 @@
 
     <!-- Sync All and Delete Selected -->
     <div class="space-y-4">
+      <div class="flex items-center justify-between">
         <div class="flex gap-4">
-            <button hx-post="/playlists/refresh"
-                    hx-target="#playlist-list"
-                    hx-include="[name='playlist_ids']:checked"
-                    class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
+            <button id="sync-all-btn"
+                  hx-post="/playlists/refresh"
+                  hx-target="#playlist-list"
+                  hx-include="[name='playlist_ids']:checked"
+                  class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
                 Sync All
             </button>
-            <button hx-delete="/playlists" 
+            <button hx-delete="/playlists"
                     hx-target="#playlist-list"
                     hx-include="[name='playlist_ids']:checked"
                     class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">
                 Delete Selected
             </button>
         </div>
+        <button id="toggle-disabled-btn" type="button" class="flex items-center text-gray-600 hover:text-gray-800">
+        <!-- Eye Icon -->
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+            </svg>
+        </button>
+      </div>
 
         <div id="playlist-list" hx-get="/playlists" hx-trigger="load">
             <!-- Playlist list will be loaded here -->
@@ -58,4 +68,44 @@
         });
     </script>
 </div>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const syncAllBtn = document.getElementById('sync-all-btn');
+
+    function updateSyncButtonText() {
+      const selected = document.querySelectorAll('input[name="playlist_ids"]:checked');
+      if (selected.length > 0) {
+        syncAllBtn.textContent = `Sync Selected (${selected.length})`;
+      } else {
+        syncAllBtn.textContent = 'Sync All';
+      }
+    }
+
+    // Attach change listeners to checkboxes (including dynamically added ones)
+    document.body.addEventListener('change', function(e) {
+      if (e.target && e.target.matches('input[name="playlist_ids"]')) {
+        updateSyncButtonText();
+      }
+    });
+
+    // Initial update in case checkboxes are pre-selected
+    updateSyncButtonText();
+  });
+</script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    let showDisabled = true; // Initially, show disabled playlists
+    const toggleBtn = document.getElementById('toggle-disabled-btn');
+
+    toggleBtn.addEventListener('click', function() {
+      showDisabled = !showDisabled;
+      document.querySelectorAll('.disabled-playlist').forEach(el => {
+        el.style.display = showDisabled ? '' : 'none';
+      });
+      // Optionally update the icon styling based on state:
+      toggleBtn.classList.toggle('text-gray-600', showDisabled);
+      toggleBtn.classList.toggle('text-gray-400', !showDisabled);
+    });
+  });
+</script>
 {% endblock %}

@@ -2,6 +2,7 @@ import logging
 
 from app.models import *
 from app.repositories.playlist_repository import PlaylistRepository
+from app.services.soundcloud_service import SoundcloudService
 from app.services.spotify_service import SpotifyService
 
 logger = logging.getLogger(__name__)
@@ -19,13 +20,17 @@ class TrackManagerService:
             logger.error("Playlist with id %s not found", playlist_id)
             return "Playlist not found"
 
-        if playlist.platform != 'spotify':
+        if playlist.platform not in ('spotify', 'soundcloud'):
             logger.error("Playlist platform %s not supported for track syncing", playlist.platform)
             return "Platform not supported for track syncing"
 
         try:
-            # Fetch the track data from Spotify using the playlist's external ID
-            tracks_data = SpotifyService.get_playlist_tracks(playlist.external_id)
+            if playlist.platform == 'spotify':
+                # Fetch the track data from Spotify using the playlist's external ID
+                tracks_data = SpotifyService.get_playlist_tracks(playlist.external_id)
+            elif playlist.platform == 'soundcloud':
+                tracks_data = SoundcloudService.get_playlist_tracks(playlist.url)
+
             logger.info("Fetched %d tracks for playlist %s", len(tracks_data), playlist.name)
 
             # Iterate over the fetched tracks; use the index to set the track order

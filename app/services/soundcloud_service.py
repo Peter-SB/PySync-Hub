@@ -13,8 +13,22 @@ class SoundcloudService:
         client_id = os.environ.get('SOUNDCLOUD_CLIENT_ID')
         if not client_id:
             raise ValueError("Missing SoundCloud client ID in environment variables.")
+
         resolve_url = f"https://api-v2.soundcloud.com/resolve?url={playlist_url}&client_id={client_id}"
-        response = requests.get(resolve_url)
+        # Mimic a browser's headers
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                          "AppleWebKit/537.36 (KHTML, like Gecko) "
+                          "Chrome/132.0.0.0 Safari/537.36",
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+            "Accept-Language": "en-US,en;q=0.9",
+            "Connection": "keep-alive"
+            # You might need to add additional headers if necessary
+        }
+
+        logger.info(f"https://api-v2.soundcloud.com/resolve?url={playlist_url}&client_id={client_id}")
+        response = requests.get(resolve_url, headers=headers)
+
         if response.status_code != 200:
             logger.error("SoundCloud API error for URL %s: %s", playlist_url, response.text)
             raise Exception(f"SoundCloud API error: {response.status_code}")
@@ -61,6 +75,9 @@ class SoundcloudService:
         try:
             data = SoundcloudService._resolve_playlist(playlist_url)
             tracks = data.get('tracks', [])
+            logger.info("%s", tracks)
+            return []
+
             tracks_data = []
             for track in tracks:
                 track_data = {
