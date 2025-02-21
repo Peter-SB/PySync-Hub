@@ -17,7 +17,10 @@ class Playlist(db.Model):
     download_status = db.Column(db.String(255))  # "ready", "queued", "downloading"
     disabled = db.Column(db.Boolean, default=False)
 
-    tracks = db.relationship('PlaylistTrack', back_populates='playlist', cascade="all, delete-orphan")
+    tracks = db.relationship('PlaylistTrack',
+                             back_populates='playlist',
+                             cascade="all, delete-orphan",
+                             order_by="PlaylistTrack.track_order")
 
     def to_dict(self):
         return {

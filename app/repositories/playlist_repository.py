@@ -13,6 +13,11 @@ class PlaylistRepository:
         return Playlist.query.order_by(Playlist.created_at.desc()).all()
 
     @staticmethod
+    def get_all_active_playlists() -> List[Playlist]:
+        logger.info("Fetching all playlists")
+        return Playlist.query.order_by(Playlist.created_at.desc()).filter_by(disabled=False).all()
+
+    @staticmethod
     def get_playlists_by_ids(playlist_ids: List[int]) -> List[Playlist]:
         logger.info(f"Fetching playlists with IDs: {playlist_ids}")
         return Playlist.query.filter(Playlist.id.in_(playlist_ids)).order_by(Playlist.created_at.desc()).all()

@@ -1,0 +1,195 @@
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<?xml version="1.0" encoding="UTF-8"?>
+<plist version="1.0">
+  <dict>
+    <key>Library Persistent ID</key>
+    <string> </string>
+    <key>Tracks</key>
+    <dict/>
+    <key>Playlists</key>
+    <array>
+      <dict>
+        <key>Name</key>
+        <string>PySync DJ</string>
+        <key>Description</key>
+        <string> </string>
+        <key>Playlist ID</key>
+        <integer>1</integer>
+        <key>Playlist Persistent ID</key>
+        <string>PySyncDJ</string>
+        <key>All Items</key>
+        <true/>
+        <key>Folder</key>
+        <true/>
+      </dict>
+      <dict>
+        <key>Name</key>
+        <string>CarFloChillEll</string>
+        <key>Description</key>
+        <string> </string>
+        <key>Playlist ID</key>
+        <integer>2</integer>
+        <key>Playlist Persistent ID</key>
+        <string>2</string>
+        <key>Parent Persistent ID</key>
+        <string>PySyncDJ</string>
+        <key>All Items</key>
+        <true/>
+        <key>Playlist Items</key>
+        <array>
+          <dict>
+            <key>Track ID</key>
+            <integer>0</integer>
+          </dict>
+          <dict>
+            <key>Track ID</key>
+            <integer>1</integer>
+          </dict>
+        </array>
+      </dict>
+      <dict>
+        <key>Name</key>
+        <string>Nov24</string>
+        <key>Description</key>
+        <string> </string>
+        <key>Playlist ID</key>
+        <integer>3</integer>
+        <key>Playlist Persistent ID</key>
+        <string>3</string>
+        <key>Parent Persistent ID</key>
+        <string>PySyncDJ</string>
+        <key>All Items</key>
+        <true/>
+        <key>Playlist Items</key>
+        <array>
+          <dict>
+            <key>Track ID</key>
+            <integer>2</integer>
+          </dict>
+          <dict>
+            <key>Track ID</key>
+            <integer>3</integer>
+          </dict>
+          <dict>
+            <key>Track ID</key>
+            <integer>4</integer>
+          </dict>
+          <dict>
+            <key>Track ID</key>
+            <integer>5</integer>
+          </dict>
+          <dict>
+            <key>Track ID</key>
+            <integer>6</integer>
+          </dict>
+          <dict>
+            <key>Track ID</key>
+            <integer>7</integer>
+          </dict>
+        </array>
+      </dict>
+      <dict>
+        <key>Name</key>
+        <string>Liquid DnB 25</string>
+        <key>Description</key>
+        <string> </string>
+        <key>Playlist ID</key>
+        <integer>4</integer>
+        <key>Playlist Persistent ID</key>
+        <string>4</string>
+        <key>Parent Persistent ID</key>
+        <string>PySyncDJ</string>
+        <key>All Items</key>
+        <true/>
+        <key>Playlist Items</key>
+        <array>
+          <dict>
+            <key>Track ID</key>
+            <integer>8</integer>
+          </dict>
+          <dict>
+            <key>Track ID</key>
+            <integer>9</integer>
+          </dict>
+          <dict>
+            <key>Track ID</key>
+            <integer>10</integer>
+          </dict>
+          <dict>
+            <key>Track ID</key>
+            <integer>11</integer>
+          </dict>
+          <dict>
+            <key>Track ID</key>
+            <integer>12</integer>
+          </dict>
+          <dict>
+            <key>Track ID</key>
+            <integer>13</integer>
+          </dict>
+        </array>
+      </dict>
+      <dict>
+        <key>Name</key>
+        <string>Jazz DnB/Jungle</string>
+        <key>Description</key>
+        <string> </string>
+        <key>Playlist ID</key>
+        <integer>5</integer>
+        <key>Playlist Persistent ID</key>
+        <string>5</string>
+        <key>Parent Persistent ID</key>
+        <string>PySyncDJ</string>
+        <key>All Items</key>
+        <true/>
+        <key>Playlist Items</key>
+        <array>
+          <dict>
+            <key>Track ID</key>
+            <integer>14</integer>
+          </dict>
+          <dict>
+            <key>Track ID</key>
+            <integer>15</integer>
+          </dict>
+          <dict>
+            <key>Track ID</key>
+            <integer>16</integer>
+          </dict>
+          <dict>
+            <key>Track ID</key>
+            <integer>17</integer>
+          </dict>
+          <dict>
+            <key>Track ID</key>
+            <integer>18</integer>
+          </dict>
+          <dict>
+            <key>Track ID</key>
+            <integer>19</integer>
+          </dict>
+          <dict>
+            <key>Track ID</key>
+            <integer>20</integer>
+          </dict>
+          <dict>
+            <key>Track ID</key>
+            <integer>21</integer>
+          </dict>
+          <dict>
+            <key>Track ID</key>
+            <integer>22</integer>
+          </dict>
+          <dict>
+            <key>Track ID</key>
+            <integer>23</integer>
+          </dict>
+          <dict>
+            <key>Track ID</key>
+            <integer>24</integer>
+          </dict>
+        </array>
+      </dict>
+    </array>
+  </dict>
+</plist>

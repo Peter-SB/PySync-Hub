@@ -1,9 +1,15 @@
 import logging
+import os
+
+from pyrekordbox.rbxml import RekordboxXml
 from flask import Blueprint, render_template, request, jsonify, current_app
 
 from app.extensions import db, socketio
+from app.models import Playlist, PlaylistTrack
 from app.repositories.playlist_repository import PlaylistRepository
+from app.services.export_itunesxml_service import ExportItunesXMLService
 from app.services.playlist_manager_service import PlaylistManagerService
+from app.services.export_rekorbox_service import RekordboxExportService
 
 logger = logging.getLogger(__name__)
 main = Blueprint('main', __name__)
@@ -110,3 +116,24 @@ def toggle_playlist():
 
     # Re-render only this playlist item so that the new styling reflects the change
     return render_template('partials/playlist_item.html', playlist=playlist, selected_ids=[])
+
+
+@main.route('/export', methods=['GET'])
+def export_rekordbox():
+    """
+    Exports the SQL database to a Rekordbox XML file.
+    If the file already exists in the export folder, it is served directly.
+    Otherwise, it is generated from the database.
+    """
+    logger.info("Exporting")
+
+    EXPORT_FOLDER = os.path.join(os.getcwd(), 'exports')
+    EXPORT_FILENAME = 'rekordbox.xml'
+    EXPORT_PATH = os.path.join(EXPORT_FOLDER, EXPORT_FILENAME)
+
+    # Check if the export file exists
+    # if not os.path.exists(EXPORT_PATH):
+    #     # File does not exist, so generate it
+    ExportItunesXMLService.generate_rekordbox_xml_from_db()
+
+    return ""
