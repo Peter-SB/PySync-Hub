@@ -34,9 +34,26 @@
     </div>
   </div>
 
-  <div class="text-sm {% if playlist.disabled %}text-gray-500{% else %}text-gray-600{% endif %} ml-auto p-4">
-    {{ playlist.track_count }} songs
-  </div>
+<!--  <div class="text-sm {% if playlist.disabled %}text-gray-500{% else %}text-gray-600{% endif %} ml-auto p-4">-->
+<!--    ( downloaded / total tracks ) {{ playlist.downloaded_track_count}} / {{ playlist.track_count }}-->
+<!--  </div>-->
+
+   <!-- Download Count with Hover Tooltip -->
+    <div class="relative ml-auto p-4 text-sm {% if playlist.disabled %}text-gray-500{% else %}text-gray-600{% endif %} group">
+      <!-- Always visible counts -->
+      {% if playlist.downloaded_track_count ==  playlist.track_count %}
+        <span> {{ playlist.track_count }} </span>
+        <span class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-1 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition duration-150 pointer-events-none whitespace-nowrap">
+         Total Tracks
+        </span>
+      {% else %}
+        <span> {{ playlist.downloaded_track_count }} / {{ playlist.track_count }} </span>
+        <!-- Tooltip label: hidden by default, appears on hover -->
+        <span class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-1 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition duration-150 pointer-events-none whitespace-nowrap">
+          Downloaded / Total Tracks
+        </span>
+      {% endif %}
+    </div>
 
   <!-- Existing download status buttons -->
   <div id="download-status-{{ playlist.id }}">

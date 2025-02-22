@@ -68,3 +68,5 @@ class PlaylistRepository:
         Playlist.query.filter(Playlist.id.in_(playlist_ids)).delete(synchronize_session=False)
         db.session.commit()
         logger.info("Deleted playlists with IDs: %s", playlist_ids)
+
+

@@ -13,7 +13,6 @@ class Playlist(db.Model):
     image_url = db.Column(db.String(500))  # Store album art URL
     url = db.Column(db.String)
     track_count = db.Column(db.Integer)  # Store the number of tracks on the platform
-    #downloaded_track_count = db.Column(db.Integer)  # Store the number of downloaded tracks
     download_status = db.Column(db.String(255))  # "ready", "queued", "downloading"
     disabled = db.Column(db.Boolean, default=False)
 
@@ -21,6 +20,11 @@ class Playlist(db.Model):
                              back_populates='playlist',
                              cascade="all, delete-orphan",
                              order_by="PlaylistTrack.track_order")
+
+    @property
+    def downloaded_track_count(self):
+        """Returns the number of tracks in the playlist that have a download location."""
+        return sum(1 for pt in self.tracks if pt.track and pt.track.download_location)
 
     def to_dict(self):
         return {
@@ -33,7 +37,7 @@ class Playlist(db.Model):
             'image_url': self.image_url,
             'track_count': self.track_count,
             'url': self.url,
-            #'downloaded_track_count': self.track_count,
+            'downloaded_track_count': self.downloaded_track_count,
             'download_status': self.download_status,
             'disabled': self.disabled
         }

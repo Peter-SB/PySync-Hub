@@ -1,8 +1,24 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="space-y-6">
-    <h1 class="text-3xl font-bold text-gray-900">PySync DJ Hub</h1>
+    <div class="space-y-6">
+        <div class="flex items-center justify-between">
+        <!-- Title -->
+        <h1 class="text-4xl font-bold text-gray-900">PySync DJ Hub</h1>
+
+        <!-- Export Button -->
+        <button
+    class="flex items-center px-4 py-2 bg-gray-700 hover:bg-black text-white rounded-lg shadow-md"
+            hx-get="{{ url_for('main.export_rekordbox') }}"
+            hx-trigger="click"
+            hx-swap="none">
+            <span class="font-medium">Export</span>
+            <div class="bg-white p-0.5 flex items-center justify-between rounded-lg ml-2">
+                <img src="{{ url_for('static', filename='icons/rekordbox.svg') }}" alt="Rekordbox" class="h-6 w-6   rounded-lg m-0.5">
+                <img src="{{ url_for('static', filename='icons/export.svg') }}" alt="Export" class="h-6 w-6 rounded-lg ">
+            </div>
+        </button>
+    </div>
 
     <!-- Playlist Search and Add Playlist -->
     <form hx-post="/playlists" hx-target="#playlist-list" class="space-y-4">
