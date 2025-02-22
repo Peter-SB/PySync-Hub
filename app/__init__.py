@@ -4,6 +4,7 @@ import sys
 
 from flask import Flask
 from app.extensions import db, socketio, migrate
+from app.repositories.playlist_repository import PlaylistRepository
 from app.services.spotify_service import SpotifyService
 from app.workers.download_worker import DownloadManager
 from config import Config
@@ -42,6 +43,9 @@ def create_app(app_config=Config):
         os.makedirs(app.config.get("DOWNLOAD_FOLDER"), exist_ok=True)
 
     app.download_manager = DownloadManager(app)
+
+    with app.app_context():
+        PlaylistRepository.reset_download_statuses_to_ready()
 
     return app
 

@@ -88,3 +88,10 @@ class PlaylistRepository:
             logger.error("No status %s", status)
 
         db.session.commit()
+
+    @staticmethod
+    def reset_download_statuses_to_ready():
+        for playlist in PlaylistRepository.get_all_playlists():
+            playlist.download_status = "ready"
+            playlist.download_progress = 0
+        db.session.commit()
