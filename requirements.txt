@@ -5,7 +5,11 @@ sqlalchemy
 flask-sqlalchemy
 python-dotenv
 gunicorn
+eventlet
 flask_socketio~=5.5.1
 pytubefix~=8.12.1
 pytest~=8.3.4
 pyrekordbox
+ffprobe
+ffmpeg
+yt_dlp

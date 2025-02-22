@@ -3,6 +3,7 @@ import threading
 import queue
 
 from app.models import Playlist
+from app.repositories.playlist_repository import PlaylistRepository
 from app.services.spotify_download_service import SpotifyDownloadService
 from flask import current_app, Flask
 
@@ -29,7 +30,7 @@ class DownloadManager:
         while True:
             playlist_id = self.download_queue.get()  # blocks until a task is available
             with self.app.app_context():
-                playlist = Playlist.query.get(playlist_id)
+                playlist = PlaylistRepository.get_playlist_by_id(playlist_id)
                 if not playlist:
                     self.download_queue.task_done()
                     continue

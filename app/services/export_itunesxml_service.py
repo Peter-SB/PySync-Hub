@@ -9,7 +9,6 @@ from app.extensions import db
 from app.models import Playlist, PlaylistTrack
 from app.repositories.playlist_repository import PlaylistRepository
 
-
 import os
 import urllib
 import xml.etree.ElementTree as ET
@@ -21,10 +20,12 @@ from mutagen.mp3 import MP3
 
 logger = logging.getLogger(__name__)
 
+type DownloadedTrackType = tuple[int, str]
+
 
 class ExportItunesXMLService:
     @staticmethod
-    def generate_rekordbox_xml_from_db():
+    def generate_rekordbox_xml_from_db(EXPORT_FOLDER, EXPORT_FILENAME):
 
         """
         Generates a Rekordbox XML file using data from the SQL database and the new RekordboxXMLLibrary.
@@ -50,11 +51,10 @@ class ExportItunesXMLService:
 
         # Save the XML file.
         # The new library writes the file to a location based on your settings.
-        xml_filename = "rekordbox2.xml"
-        xml_lib.save_xml(xml_filename)
+        xml_lib.save_xml(EXPORT_FOLDER, EXPORT_FILENAME)
 
         # Build the full file path from settings.
-        export_path = os.path.join("./export", xml_filename)
+        export_path = os.path.join(EXPORT_FOLDER, EXPORT_FILENAME)
         return export_path
 
 
@@ -109,7 +109,7 @@ class RekordboxXMLLibrary:
 
         self.add_root_playlist()
 
-    def save_xml(self, file_name: str = "PySyncLibrary.xml") -> None:
+    def save_xml(self, EXPORT_FOLDER, EXPORT_FILENAME: str = "PySyncLibrary.xml") -> None:
         # Convert to a pretty XML string
         rough_string = ET.tostring(self.plist, "utf-8")
         reparsed = minidom.parseString(rough_string)
@@ -120,10 +120,7 @@ class RekordboxXMLLibrary:
         final_xml_content = doctype + '\n' + pretty_xml_str.decode('utf-8')
 
         # Save to file based on settings
-        file_location = os.path.join(
-            "./export",
-            file_name
-        )
+        file_location = os.path.join(EXPORT_FOLDER,EXPORT_FILENAME)
         os.makedirs(os.path.dirname(file_location), exist_ok=True)
         with open(file_location, "w", encoding="UTF-8") as f:
             f.write(final_xml_content)
@@ -170,7 +167,7 @@ class RekordboxXMLLibrary:
                 child_type = 'string' if isinstance(value, str) else 'integer'
                 ET.SubElement(playlist_dict, child_type).text = str(value)
 
-    def add_to_all_track(self, tracks_dict: list[tuple[int, str]]) -> None:
+    def add_to_all_track(self, tracks_dict: list[DownloadedTrackType]) -> None:
         """
         Adds track information to the Tracks element.
 
@@ -190,9 +187,8 @@ class RekordboxXMLLibrary:
                 child = ET.SubElement(track_dict, 'string' if key != 'Track ID' else 'integer')
                 child.text = str(value)
 
-    def format_tracks_dic(
-            self, downloaded_tracks_dict: list[tuple[int, str]]
-    ) -> Optional[dict[int, dict[str, Union[str, int, Any]]]]:
+    def format_tracks_dic(self, downloaded_tracks_dict: list[DownloadedTrackType]) \
+            -> Optional[dict[int, dict[str, Union[str, int, Any]]]]:
         """
         Formats the track dictionary ready to be saved in the XML tree.
         """
@@ -229,9 +225,10 @@ class RekordboxXMLLibrary:
     def add_root_playlist(self) -> None:
         """
         Add the root "PySync DJ" folder.
+        This will group all PySync downloads together for better libray organisation.
         """
         root_folder_elements = [
-            ("Name", "string", "PySync DJ"),
+            ("Name", "string", "PySync Hub"),
             ("Description", "string", " "),
             ("Playlist ID", "integer", "1"),
             ("Playlist Persistent ID", "string", "PySyncDJ"),

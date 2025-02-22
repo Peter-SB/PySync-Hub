@@ -129,11 +129,10 @@ def export_rekordbox():
 
     EXPORT_FOLDER = os.path.join(os.getcwd(), 'exports')
     EXPORT_FILENAME = 'rekordbox.xml'
-    EXPORT_PATH = os.path.join(EXPORT_FOLDER, EXPORT_FILENAME)
 
     # Check if the export file exists
     # if not os.path.exists(EXPORT_PATH):
     #     # File does not exist, so generate it
-    ExportItunesXMLService.generate_rekordbox_xml_from_db()
+    ExportItunesXMLService.generate_rekordbox_xml_from_db(EXPORT_FOLDER, EXPORT_FILENAME)
 
     return ""
