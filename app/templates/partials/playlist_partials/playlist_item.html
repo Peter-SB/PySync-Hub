@@ -1,0 +1,19 @@
+<div id="playlist-{{ playlist.id }}" class="flex items-center p-4 rounded-lg shadow-sm transition-shadow {% if playlist.disabled %}bg-gray-200 hover:shadow-none disabled-playlist{% else %}bg-white hover:shadow-md{% endif %}">
+  <input type="checkbox"
+         name="playlist_ids"
+         value="{{ playlist.id }}"
+         class="mr-4 h-4 w-4"
+         {% if playlist.id|string in selected_ids %} checked {% endif %}
+         {% if playlist.disabled %} disabled {% endif %}
+  >
+
+  {% if playlist.image_url %}
+    <img src="{{ playlist.image_url }}" alt="Playlist cover" class="w-14 h-14 rounded-lg object-cover mr-4">
+  {% endif %}
+
+  {% include 'partials/playlist_partials/playlist_title_and_sync_status.html' %}
+  {% include 'partials/playlist_partials/download_counter.html' %}
+  {% include 'partials/playlist_partials/download_progress_and_sync_button.html' %}
+  {% include 'partials/playlist_partials/toggle_switch.html' %}
+
+</div>

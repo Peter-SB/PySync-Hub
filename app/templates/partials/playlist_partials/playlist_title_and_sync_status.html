@@ -1,0 +1,24 @@
+<div class="flex-1">
+<h3 class="font-medium text-gray-900 flex items-center">
+  <!-- Playlist Title as Link -->
+  <a href="{{ playlist.url }}" target="_blank" class="hover:underline">
+    {{ playlist.name }}
+  </a>
+  <!-- Platform Icon -->
+  {% if playlist.platform == "spotify" %}
+    <img src="/static/icons/spotify.svg" alt="Spotify" class="w-5 h-5 ml-2">
+  {% elif playlist.platform == "soundcloud" %}
+    <img src="/static/icons/soundcloud.svg" alt="SoundCloud" class="w-4 h-4 p-0.5 ml-2">
+  {% endif %}
+</h3>
+<div class="text-sm {% if playlist.disabled %}text-gray-500{% else %}text-gray-600{% endif %}">
+<!--      <span>{{ playlist.platform|title }} •</span>-->
+  {% if playlist.last_synced %}
+    <div class="flex">
+      <span>Last synced: {{ playlist.last_synced.strftime('%Y-%m-%d %H:%M') }}</span>
+    </div>
+  {% else %}
+    <span>Not synced</span>
+  {% endif %}
+</div>
+</div>

@@ -1,6 +1,6 @@
 <form id="playlist-form" class="space-y-2">
     {% for playlist in playlists %}
-        {% include 'partials/playlist_item.html' %}
+        {% include 'partials/playlist_partials/playlist_item.html' %}
     {% else %}
     <div class="p-4 text-center text-gray-500 bg-white rounded-lg">
         No playlists added yet

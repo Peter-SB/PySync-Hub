@@ -31,7 +31,7 @@ def get_playlists() -> str:
 
     #logger.info("Retrieving playlists. Selected IDs: %s", selected_ids)
     playlists = PlaylistRepository.get_all_playlists()
-    return render_template('partials/playlist_list.html', playlists=playlists, selected_ids=selected_ids)
+    return render_template('partials/playlist_partials/playlist_list.html', playlists=playlists, selected_ids=selected_ids)
 
 
 @main.route('/playlists', methods=['POST'])
@@ -115,7 +115,7 @@ def toggle_playlist():
     db.session.commit()
 
     # Re-render only this playlist item so that the new styling reflects the change
-    return render_template('partials/playlist_item.html', playlist=playlist, selected_ids=[])
+    return render_template('partials/playlist_partials/playlist_item.html', playlist=playlist, selected_ids=[])
 
 
 @main.route('/export', methods=['GET'])
