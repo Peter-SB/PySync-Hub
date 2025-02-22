@@ -120,19 +120,15 @@ def toggle_playlist():
 
 @main.route('/export', methods=['GET'])
 def export_rekordbox():
-    """
-    Exports the SQL database to a Rekordbox XML file.
-    If the file already exists in the export folder, it is served directly.
-    Otherwise, it is generated from the database.
-    """
     logger.info("Exporting")
-
     EXPORT_FOLDER = os.path.join(os.getcwd(), 'exports')
     EXPORT_FILENAME = 'rekordbox.xml'
 
-    # Check if the export file exists
-    # if not os.path.exists(EXPORT_PATH):
-    #     # File does not exist, so generate it
-    ExportItunesXMLService.generate_rekordbox_xml_from_db(EXPORT_FOLDER, EXPORT_FILENAME)
+    try:
+        export_path = ExportItunesXMLService.generate_rekordbox_xml_from_db(EXPORT_FOLDER, EXPORT_FILENAME)
+        logger.info("Exporting Sucessful, location: %s", export_path)
+    except Exception as e:
+        logger.error("Export failed: %s", e)
+        return "Export failed", 500
 
-    return ""
+    return render_template('partials/export_complete_banner.html')

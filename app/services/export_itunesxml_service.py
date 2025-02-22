@@ -25,7 +25,7 @@ type DownloadedTrackType = tuple[int, str]
 
 class ExportItunesXMLService:
     @staticmethod
-    def generate_rekordbox_xml_from_db(EXPORT_FOLDER, EXPORT_FILENAME):
+    def generate_rekordbox_xml_from_db(EXPORT_FOLDER, EXPORT_FILENAME) -> str:
 
         """
         Generates a Rekordbox XML file using data from the SQL database and the new RekordboxXMLLibrary.
