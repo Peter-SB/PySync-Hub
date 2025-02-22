@@ -6,6 +6,7 @@ from app.models import Playlist
 
 logger = logging.getLogger(__name__)
 
+
 class PlaylistRepository:
     @staticmethod
     def get_all_playlists() -> List[Playlist]:
@@ -69,4 +70,21 @@ class PlaylistRepository:
         db.session.commit()
         logger.info("Deleted playlists with IDs: %s", playlist_ids)
 
+    @staticmethod
+    def set_download_progress(playlist, progress):
+        playlist.download_progress = progress
+        db.session.commit()
 
+    @staticmethod
+    def set_download_status(playlist, status):
+        if status == "ready":
+            playlist.download_status = 'ready'
+        elif status == "queued":
+            playlist.download_status = 'queued'
+        elif status == "downloading":
+            playlist.download_status = 'downloading'
+            playlist.download_progress = 0
+        else:
+            logger.error("No status %s", status)
+
+        db.session.commit()

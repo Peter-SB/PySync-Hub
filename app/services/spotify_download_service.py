@@ -8,6 +8,7 @@ from mutagen.id3 import ID3, TIT2, TPE1, TALB, COMM, APIC
 from mutagen.mp3 import MP3
 from yt_dlp import YoutubeDL
 
+from app.repositories.playlist_repository import PlaylistRepository
 from config import Config
 from app.models import Playlist, Track
 from pytubefix import YouTube, Search
@@ -22,9 +23,8 @@ class SpotifyDownloadService:
         if playlist.id not in cancellation_flags:
             cancellation_flags[playlist.id] = threading.Event()
 
-        # Update the playlist status to 'downloading'
-        playlist.download_status = 'downloading'
-        db.session.commit()
+        PlaylistRepository.set_download_status(playlist, 'downloading')
+
         socketio.emit("download_status", {"id": playlist.id, "status": "downloading", "progress": 0})
 
         # Iterate over the tracks and download each one.
@@ -47,13 +47,13 @@ class SpotifyDownloadService:
                 "status": "downloading",
                 "progress": progress_percent
             })
+            PlaylistRepository.set_download_progress(playlist, progress_percent)
 
             time.sleep(0.005)  # To reduce bot detection
 
         # After finishing (or if cancelled) update status back to 'ready'
         logger.info("Download Finished for Playlist '%s'", playlist.name)
-        playlist.download_status = 'ready'
-        db.session.commit()
+        PlaylistRepository.set_download_status(playlist, 'ready')
         socketio.emit("download_status", {"id": playlist.id, "status": "ready"})
 
         # Clear the cancellation flag for future downloads.

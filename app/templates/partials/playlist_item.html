@@ -65,7 +65,7 @@
     {% elif playlist.download_status == 'downloading' %}
       <div class="flex items-center">
         <div class="w-32 bg-gray-300 rounded-full h-2 mr-2">
-          <div id="progress-bar-{{ playlist.id }}" class="bg-blue-500 h-2 rounded-full" style="width: 0%;"></div>
+          <div id="progress-bar-{{ playlist.id }}" class="bg-blue-500 h-2 rounded-full" style="width: {{playlist.download_progress}}%;"></div>
         </div>
         <button onclick="cancelDownload({{ playlist.id }})" class="px-2 py-1 bg-red-600 text-white rounded">
           Cancel

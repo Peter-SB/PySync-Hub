@@ -13,3 +13,4 @@ pyrekordbox
 ffprobe
 ffmpeg
 yt_dlp
+flask-migrate

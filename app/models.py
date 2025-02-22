@@ -15,6 +15,7 @@ class Playlist(db.Model):
     track_count = db.Column(db.Integer)  # Store the number of tracks on the platform
     download_status = db.Column(db.String(255))  # "ready", "queued", "downloading"
     disabled = db.Column(db.Boolean, default=False)
+    download_progress = db.Column(db.Integer, default=0)
 
     tracks = db.relationship('PlaylistTrack',
                              back_populates='playlist',
@@ -39,7 +40,8 @@ class Playlist(db.Model):
             'url': self.url,
             'downloaded_track_count': self.downloaded_track_count,
             'download_status': self.download_status,
-            'disabled': self.disabled
+            'disabled': self.disabled,
+            'download_progress': self.download_progress,
         }
 
 
