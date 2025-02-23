@@ -5,8 +5,6 @@ var socket = io();
 
 // Listen for download_status events from the server
 socket.on("download_status_deprecated", function(data) {
-    console.log("Received download status update:", data);
-
     var statusEl = document.getElementById("download-status-" + data.id);
     if (!statusEl) return;
 
@@ -45,11 +43,6 @@ socket.on("download_status_deprecated", function(data) {
 });
 
 socket.on("download_status", function(data) {
-    console.log("Received download status update:", data);
-    // Instead of injecting UI changes for queued/downloading/ready statuses,
-    // we simply refresh the playlist list by fetching the latest HTML.
-    //htmx.trigger(document.getElementById("playlist-list"), "load");
-
     var playlistList = document.getElementById("playlist-list");
     if (playlistList) {
         // Use htmx to refresh the playlist list
