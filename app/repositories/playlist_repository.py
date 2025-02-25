@@ -1,7 +1,8 @@
 import logging
 from datetime import datetime
 from typing import List
-from app.extensions import db
+
+from app.extensions import db, socketio
 from app.models import Playlist
 
 logger = logging.getLogger(__name__)
@@ -74,16 +75,24 @@ class PlaylistRepository:
     def set_download_progress(playlist, progress):
         playlist.download_progress = progress
         db.session.commit()
+        
+        socketio.emit("download_status", {
+            "id": playlist.id,
+            "status": "downloading",
+            "progress": progress
+        })
 
     @staticmethod
     def set_download_status(playlist, status):
         if status == "ready":
             playlist.download_status = 'ready'
+            socketio.emit("download_status", {"id": playlist.id, "status": "ready"})
         elif status == "queued":
             playlist.download_status = 'queued'
         elif status == "downloading":
             playlist.download_status = 'downloading'
             playlist.download_progress = 0
+            socketio.emit("download_status", {"id": playlist.id, "status": "downloading", "progress": 0})
         else:
             logger.error("No status %s", status)
 
