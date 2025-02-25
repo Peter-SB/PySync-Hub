@@ -36,8 +36,8 @@ def create_app(app_config=Config):
         from app.models import Playlist
         db.create_all()
 
-    from app.routes import main
-    app.register_blueprint(main)
+    from app.routes import api
+    app.register_blueprint(api)
 
     if not app.config.get("TESTING"):
         os.makedirs(app.config.get("DOWNLOAD_FOLDER"), exist_ok=True)

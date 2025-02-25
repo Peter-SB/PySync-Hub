@@ -1,92 +1,93 @@
 import logging
 import os
-
-from pyrekordbox.rbxml import RekordboxXml
-from flask import Blueprint, render_template, request, jsonify, current_app
-
+from flask import Blueprint, request, jsonify, current_app
 from app.extensions import db, socketio
-from app.models import Playlist, PlaylistTrack
 from app.repositories.playlist_repository import PlaylistRepository
 from app.services.export_itunesxml_service import ExportItunesXMLService
 from app.services.playlist_manager_service import PlaylistManagerService
-from app.services.export_rekorbox_service import RekordboxExportService
 
 logger = logging.getLogger(__name__)
-main = Blueprint('main', __name__)
+api = Blueprint('api', __name__)
 
 
-@main.route('/')
-def index():
-    logger.info("Index page requested")
-    return render_template('index.html')
+# GET /api/playlists – returns all playlists in JSON form
+@api.route('/api/playlists', methods=['GET'])
+def get_playlists():
+    try:
+        playlists = PlaylistRepository.get_all_playlists()
+        # Assuming each Playlist instance has a to_dict() method
+        playlists_data = [p.to_dict() for p in playlists]
+        return jsonify(playlists_data), 200
+    except Exception as e:
+        logger.error("Error fetching playlists: %s", e)
+        return jsonify({'error': str(e)}), 500
 
 
-@main.route('/playlists')
-def get_playlists() -> str:
-    selected_ids: list[int] = request.args.getlist('selected_ids', type=int)
+# POST /api/playlists – add a new playlist from a URL or ID
+@api.route('/api/playlists', methods=['POST'])
+def add_playlist():
+    data = request.get_json() or {}
+    url_or_id = data.get('url_or_id', '')
+    if not url_or_id:
+        return jsonify({'error': 'No URL or ID provided'}), 400
 
-    # Check if the request comes from HTMX polling (requests every second)
-    if 'HX-Request' in request.headers:
-        logging.getLogger('werkzeug').setLevel(logging.ERROR)  # Suppress access log
-
-    #logger.info("Retrieving playlists. Selected IDs: %s", selected_ids)
-    playlists = PlaylistRepository.get_all_playlists()
-    return render_template('partials/playlist_partials/playlist_list.html', playlists=playlists, selected_ids=selected_ids)
-
-
-@main.route('/playlists', methods=['POST'])
-def add_playlist() -> str:
-    url_or_id: str = request.form.get('url_or_id', '')
     logger.info(f"Adding playlist: {url_or_id}")
-
     error = PlaylistManagerService.add_playlists(url_or_id)
-
-    playlists_html = get_playlists()
     if error:
-        error_box = render_template('partials/error_box.html', error=error)
-        return error_box + playlists_html
+        return jsonify({'error': error}), 400
 
-    return playlists_html
+    # Return updated playlists
+    playlists = PlaylistRepository.get_all_playlists()
+    playlists_data = [p.to_dict() for p in playlists]
+    return jsonify(playlists_data), 201
 
 
-@main.route('/playlists/refresh', methods=['POST'])
-def refresh_playlists() -> str:
-    logger.info("Refreshing Playlists")
+# POST /api/playlists/refresh – refresh (sync) selected playlists
+@api.route('/api/playlists/refresh', methods=['POST'])
+def refresh_playlists():
+    data = request.get_json() or {}
+    selected_ids = data.get('playlist_ids', [])
 
-    selected_ids: list[int] = request.form.getlist('playlist_ids', int)
+    # Get playlists by IDs if provided, otherwise all playlists.
+    if selected_ids:
+        playlists = PlaylistRepository.get_playlists_by_ids(selected_ids)
+    else:
+        playlists = PlaylistRepository.get_all_playlists()
 
-    playlists = PlaylistRepository.get_playlists_by_ids(selected_ids) if selected_ids else PlaylistRepository.get_all_playlists()
+    # Only refresh active (not disabled) playlists
     playlists = [p for p in playlists if not p.disabled]
 
+    # Set download status and emit update via socketio
     for playlist in playlists:
         playlist.download_status = "queued"
         socketio.emit("download_status", {"id": playlist.id, "status": "queued"})
-
     db.session.commit()
 
-
+    # Refresh playlists and queue them for download
     for playlist in playlists:
         PlaylistManagerService.refresh_playlists([playlist])
         current_app.download_manager.add_to_queue(playlist.id)
 
-    return get_playlists()
+    updated_playlists = [p.to_dict() for p in playlists]
+    return jsonify(updated_playlists), 200
 
 
-@main.route('/playlists', methods=['DELETE'])
-def delete_playlists() -> str:
-    selected_ids: list[int] = request.form.getlist('playlist_ids', int)
+# DELETE /api/playlists – delete selected playlists
+@api.route('/api/playlists', methods=['DELETE'])
+def delete_playlists():
+    data = request.get_json() or {}
+    selected_ids = data.get('playlist_ids', [])
+    if not selected_ids:
+        return jsonify({'error': 'No playlist IDs provided'}), 400
+
     PlaylistManagerService.delete_playlists(selected_ids)
-    return get_playlists()
+    playlists = PlaylistRepository.get_all_playlists()
+    playlists_data = [p.to_dict() for p in playlists]
+    return jsonify(playlists_data), 200
 
 
-# @main.route("/download/<int:playlist_id>", methods=["POST"])
-# def download_playlist(playlist_id):
-#     """Endpoint to queue a playlist for download."""
-#     current_app.download_manager.add_to_queue(playlist_id)
-#     return jsonify({"message": "Download started", "playlist_id": playlist_id})
-
-
-@main.route("/download/<int:playlist_id>/cancel", methods=["DELETE"])
+# DELETE /api/download/<playlist_id>/cancel – cancel a download in progress
+@api.route("/api/download/<int:playlist_id>/cancel", methods=["DELETE"])
 def cancel_download(playlist_id):
     current_app.download_manager.cancel_download(playlist_id)
     playlist = PlaylistRepository.get_playlist(playlist_id)
@@ -94,41 +95,41 @@ def cancel_download(playlist_id):
         playlist.download_status = 'ready'
         db.session.commit()
         socketio.emit("download_status", {"id": playlist.id, "status": "ready"})
-    return get_playlists()
+        return jsonify(playlist.to_dict()), 200
+    else:
+        return jsonify({'error': 'Playlist not found'}), 404
 
 
-@main.route('/playlists/toggle', methods=['POST'])
+# POST /api/playlists/toggle – toggle the disabled state of a playlist
+@api.route('/api/playlists/toggle', methods=['POST'])
 def toggle_playlist():
-    # Get the playlist ID and the desired disabled value from the request
-    playlist_id = request.form.get('playlist_id', type=int)
-    disabled_value = request.form.get('disabled')
+    data = request.get_json() or {}
+    playlist_id = data.get('playlist_id')
+    disabled_value = data.get('disabled')
     if playlist_id is None or disabled_value is None:
-        return ("Missing parameters", 400)
+        return jsonify({'error': 'Missing parameters'}), 400
 
     playlist = PlaylistRepository.get_playlist(playlist_id)
     if not playlist:
-        return ("Playlist not found", 404)
+        return jsonify({'error': 'Playlist not found'}), 404
 
-    # Convert the string value ("true"/"false") to a boolean
-    playlist.disabled = True if disabled_value.lower() == 'true' else False
-    from app.extensions import db
+    # Convert the value to a boolean
+    playlist.disabled = True if str(disabled_value).lower() == 'true' else False
     db.session.commit()
-
-    # Re-render only this playlist item so that the new styling reflects the change
-    return render_template('partials/playlist_partials/playlist_item.html', playlist=playlist, selected_ids=[])
+    return jsonify(playlist.to_dict()), 200
 
 
-@main.route('/export', methods=['GET'])
+# GET /api/export – trigger export of data and return the export path
+@api.route('/api/export', methods=['GET'])
 def export_rekordbox():
-    logger.info("Exporting")
+    logger.info("Exporting Rekordbox XML")
     EXPORT_FOLDER = os.path.join(os.getcwd(), 'exports')
     EXPORT_FILENAME = 'rekordbox.xml'
 
     try:
         export_path = ExportItunesXMLService.generate_rekordbox_xml_from_db(EXPORT_FOLDER, EXPORT_FILENAME)
-        logger.info("Exporting Sucessful, location: %s", export_path)
+        logger.info("Export successful, location: %s", export_path)
+        return jsonify({'export_path': export_path}), 200
     except Exception as e:
         logger.error("Export failed: %s", e)
-        return "Export failed", 500
-
-    return render_template('partials/export_complete_banner.html')
+        return jsonify({'error': 'Export failed', 'message': str(e)}), 500
