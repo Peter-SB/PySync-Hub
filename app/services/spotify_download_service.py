@@ -1,131 +1,130 @@
-import os
 import logging
+import os
 import re
 import threading
 import time
+import unicodedata
 
 import requests
-import unicodedata
-from mutagen.id3 import ID3, TIT2, TPE1, TALB, COMM, APIC
+from mutagen.id3 import APIC, COMM, ID3, TALB, TIT2, TPE1
 from mutagen.mp3 import MP3
 from yt_dlp import YoutubeDL
 
+from app.extensions import db, socketio
+from app.models import Playlist, Track
 from app.repositories.playlist_repository import PlaylistRepository
 from config import Config
-from app.models import Playlist, Track
-from pytubefix import YouTube, Search
-from app.extensions import db, socketio
+
+DOWNLOAD_SLEEP_TIME = 0.05 # To reduce bot detection
 
 logger = logging.getLogger(__name__)
 
 class SpotifyDownloadService:
-
-    @staticmethod
-    def _sanitize_filename(s: str, max_length: int = 255) -> str:
-        """Sanitize a string making it safe to use as a filename."""
-        pattern = r'[^\w\-_\. ]'  # This keeps letters, digits, underscore, hyphen, dot, and space.
-        regex = re.compile(pattern, re.UNICODE)
-        filename = regex.sub("", s)
-
-        # Truncate to max_length and remove trailing spaces
-        return filename[:max_length].rstrip()
-
     @staticmethod
     def download_playlist(playlist: Playlist, cancellation_flags: dict[threading.Event]):
+        """ Download all tracks in a Spotify playlist. Uses cancellation flags to stop downloads. """
         # Ensure a cancellation flag exists for this playlist.
         if playlist.id not in cancellation_flags:
             cancellation_flags[playlist.id] = threading.Event()
 
-        PlaylistRepository.set_download_status(playlist, 'downloading')
+        if cancellation_flags[playlist.id].is_set():
+                logger.info(f"Download for playlist {playlist.name} cancelled. (id: {playlist.id})")
+                return
 
-        socketio.emit("download_status", {"id": playlist.id, "status": "downloading", "progress": 0})
+        PlaylistRepository.set_download_status(playlist, 'downloading')
 
         # Iterate over the tracks and download each one.
         tracks = [pt.track for pt in playlist.tracks]
         total_tracks = len(tracks)
         for i, track in enumerate(tracks, start=1):
-            # Check if cancellation has been requested.
             if cancellation_flags[playlist.id].is_set():
-                print(f"Download for playlist {playlist.name} cancelled. (id: {playlist.id})")
+                logger.info(f"Download for playlist {playlist.name} cancelled. (id: {playlist.id})")
                 break
-
             try:
                 SpotifyDownloadService.download_track(track)
             except Exception as e:
-                print(f"Error downloading track {track.name}: {e}")
+                logger.warning(f"Error downloading track {track.name}: {e}")
 
             progress_percent = int((i / total_tracks) * 100)
-            socketio.emit("download_status", {
-                "id": playlist.id,
-                "status": "downloading",
-                "progress": progress_percent
-            })
             PlaylistRepository.set_download_progress(playlist, progress_percent)
 
-            time.sleep(0.05)  # To reduce bot detection
+            time.sleep(DOWNLOAD_SLEEP_TIME)  # To reduce bot detection
 
-        # After finishing (or if cancelled) update status back to 'ready'
         logger.info("Download Finished for Playlist '%s'", playlist.name)
         PlaylistRepository.set_download_status(playlist, 'ready')
-        socketio.emit("download_status", {"id": playlist.id, "status": "ready"})
 
         # Clear the cancellation flag for future downloads.
         cancellation_flags[playlist.id].clear()
 
     @staticmethod
     def download_track(track: Track):
-        logger.info(f"Download Track location: {track.download_location}")
-        if track.download_location and os.path.isfile(track.download_location):
-            logger.info("Track '%s' already downloaded, skipping.", track.name)
-            track.notes_errors = "Already Downloaded, Skipped"
-            db.session.add(track)
-            db.session.commit()
+        """ Download a single track from Spotify. """
+        logger.info(f"Download Track location: %s", track.download_location)
+        
+        if SpotifyDownloadService._is_track_already_downloaded(track):
             return
 
         query = f"{track.name} {track.artist}"
         logger.info("Searching YouTube for track: '%s'", query)
 
         try:
-            with YoutubeDL(SpotifyDownloadService._generate_yt_dlp_options(query)) as ydl:
-                info = ydl.extract_info(f"ytsearch:{query}", download=False)
-
-                if 'entries' in info:
-                    video_info = info['entries'][0]
-                else:
-                    video_info = info
-
-                # Extract YouTube video title
-                youtube_title = video_info.get('title', f"{track.name} {track.artist}")
-                sanitized_title = SpotifyDownloadService._sanitize_filename(youtube_title)
-
-                # Set output filename for download
-                file_path = os.path.join(os.getcwd(), "downloads", f"{sanitized_title}.mp3")
-
-                if os.path.exists(file_path):
-                    logger.info("Track '%s' already exists at '%s'. Skipping download.", track.name, file_path)
-                    track.download_location = file_path
-                    track.notes_errors = "Already Downloaded"
-                else:
-                    # Download using the sanitized YouTube title
-                    ydl_opts = SpotifyDownloadService._generate_yt_dlp_options(query, sanitized_title)
-                    with YoutubeDL(ydl_opts) as ydl:
-                        ydl.extract_info(f"ytsearch:{query}", download=True)
-
-                    SpotifyDownloadService._embed_track_metadata(file_path, track)
-
-                    track.download_location = file_path
-                    track.notes_errors = "Successfully Downloaded"
-                    logger.info("Downloaded track '%s' to '%s'", track.name, file_path)
-
-                db.session.add(track)
-                db.session.commit()
-                logger.info("Downloaded track '%s' to '%s'", track.name, file_path)
+            SpotifyDownloadService._download_track_with_ytdlp(track, query)
 
         except Exception as e:
             logger.error("Error downloading track '%s': %s", query, e, exc_info=True)
             track.notes_errors = str(e)
             db.session.add(track)
             db.session.commit()
+
+    @staticmethod
+    def _download_track_with_ytdlp(track: Track, query: str) -> None:
+        """Download a track using yt-dlp and embed metadata."""
+        with YoutubeDL(SpotifyDownloadService._generate_yt_dlp_options(query)) as ydl:
+            info = ydl.extract_info(f"ytsearch:{query}", download=False)
+
+            if 'entries' in info:
+                video_info = info['entries'][0]
+            else:
+                video_info = info
+
+            # Extract YouTube video title
+            youtube_title = video_info.get('title', f"{track.name} {track.artist}")
+            sanitized_title = SpotifyDownloadService._sanitize_filename(youtube_title)
+
+            # Set output filename for download
+            file_path = os.path.join(os.getcwd(), "downloads", f"{sanitized_title}.mp3")
+
+            # Check if the track already exists
+            if os.path.exists(file_path):
+                logger.info("Track '%s' already exists at '%s'. Skipping download.", track.name, file_path)
+                track.download_location = file_path
+                track.notes_errors = "Already Downloaded"
+            else:
+                # Download using the sanitized YouTube title
+                ydl_opts = SpotifyDownloadService._generate_yt_dlp_options(query, sanitized_title)
+                with YoutubeDL(ydl_opts) as ydl:
+                    ydl.extract_info(f"ytsearch:{query}", download=True)
+
+                SpotifyDownloadService._embed_track_metadata(file_path, track)
+
+                track.download_location = file_path
+                track.notes_errors = "Successfully Downloaded"
+                logger.info("Downloaded track '%s' to '%s'", track.name, file_path)
+
+            db.session.add(track)
+            db.session.commit()
+            logger.info("Downloaded track '%s' to '%s'", track.name, file_path)
+
+    @staticmethod
+    def _is_track_already_downloaded(track: Track) -> bool:
+        """Check if the track is already downloaded and update the database accordingly."""
+        if track.download_location and os.path.isfile(track.download_location):
+            logger.info("Track '%s' already downloaded, skipping.", track.name)
+            track.notes_errors = "Already Downloaded, Skipped"
+            db.session.add(track)
+            db.session.commit()
+            return True
+        return False
 
     @staticmethod
     def _generate_yt_dlp_options(query: str, filename: str = None):
@@ -144,7 +143,7 @@ class SpotifyDownloadService:
             'noplaylist': True,
             'postprocessors': [{
                 'key': 'FFmpegExtractAudio',
-                'preferredcodec': 'mp3',  # Change to 'aac', 'flac', 'wav', 'alac' as needed
+                'preferredcodec': 'mp3',
                 'preferredquality': '192',  # Bitrate for MP3/AAC
             }],
             'quiet': False
@@ -154,7 +153,7 @@ class SpotifyDownloadService:
     @staticmethod
     def _embed_track_metadata(file_path, track: Track):
         """
-        Adds metadata from the Spotify track data to the MP3 audio file, including cover art if available.
+        Adds metadata from the track data to the MP3 audio file, including cover art if available.
 
         :param track: Track data from Spotify.
         :param track_file_path: Path to the MP3 audio file.
@@ -195,3 +194,12 @@ class SpotifyDownloadService:
 
         audio.save()
 
+    @staticmethod
+    def _sanitize_filename(s: str, max_length: int = 255) -> str:
+        """Sanitize a string making it safe to use as a filename."""
+        pattern = r'[^\w\-_\. ]'  # This keeps letters, digits, underscore, hyphen, dot, and space.
+        regex = re.compile(pattern, re.UNICODE)
+        filename = regex.sub("", s)
+
+        # Truncate to max_length and remove trailing spaces
+        return filename[:max_length].rstrip()

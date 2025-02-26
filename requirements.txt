@@ -14,3 +14,4 @@ ffprobe
 ffmpeg
 yt_dlp
 flask-migrate
+flask-cors~=5.0.1

@@ -1,18 +1,17 @@
 <div id="error-message" hx-swap-oob="true"
-     class="p-4 mb-4 text-sm text-red-700 bg-red-100 border border-red-400 rounded-lg"
-     role="alert">
-  {{ error }}
+    class="p-4 mb-4 text-sm text-red-700 bg-red-100 border border-red-400 rounded" role="alert">
+    {{ error }}
 </div>
 
 <!-- Script to make error box fade out after 5 second-->
 <script>
-    setTimeout(function() {
+    setTimeout(function () {
         let errorBox = document.getElementById("error-message");
         if (errorBox) {
             errorBox.style.transition = "opacity 1s ease-out"; // Smooth fade-out over 1 second
             errorBox.style.opacity = "0";
 
-            setTimeout(function() {
+            setTimeout(function () {
                 errorBox.style.display = "none"; // Fully hide after fade-out
             }, 1000); // Matches the transition duration
         }

@@ -49,6 +49,7 @@ class DownloadManager:
             self.add_to_queue(playlist_id)
 
     def cancel_download(self, playlist_id):
+        """ todo: Fix cancel button"""
         if playlist_id in self.cancellation_flags:
             self.cancellation_flags[playlist_id].set()
 

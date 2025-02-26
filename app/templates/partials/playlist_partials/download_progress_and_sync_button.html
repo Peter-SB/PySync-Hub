@@ -1,31 +1,30 @@
 <div id="download-status-{{ playlist.id }}">
   {% if playlist.download_status == 'queued' %}
-    <span class="text-yellow-500 font-bold">Queued</span>
+  <span class="text-yellow-500 font-bold">Queued</span>
+  <button onclick="cancelDownload({{ playlist.id }})" class="px-2 py-1 bg-red-600 text-white rounded">
+    Cancel
+  </button>
+  {% elif playlist.download_status == 'downloading' %}
+  <div class="flex items-center">
+    <div class="w-32 bg-gray-300 rounded-full h-2 mr-2">
+      <div id="progress-bar-{{ playlist.id }}" class="bg-blue-500 h-2 rounded-full"
+        style="width: {{playlist.download_progress}}%;">
+      </div>
+    </div>
     <button onclick="cancelDownload({{ playlist.id }})" class="px-2 py-1 bg-red-600 text-white rounded">
       Cancel
     </button>
-  {% elif playlist.download_status == 'downloading' %}
-    <div class="flex items-center">
-      <div class="w-32 bg-gray-300 rounded-full h-2 mr-2">
-        <div
-          id="progress-bar-{{ playlist.id }}"
-          class="bg-blue-500 h-2 rounded-full"
-          style="width: {{playlist.download_progress}}%;">
-        </div>
-      </div>
-      <button onclick="cancelDownload({{ playlist.id }})" class="px-2 py-1 bg-red-600 text-white rounded">
-        Cancel
-      </button>
-    </div>
+  </div>
   {% else %}
-    {% if not playlist.disabled %}
-      <button type="button" hx-post="/playlists/refresh" hx-vals='{"playlist_ids": [{{ playlist.id }}]}' hx-target="#playlist-list" class="px-3 py-1 text-sm bg-gray-100 rounded-lg hover:bg-gray-200">
-        Sync
-      </button>
-    {% else %}
-      <button type="button" class="px-3 py-1 text-sm bg-gray-100 rounded-lg opacity-50" disabled>
-        Sync
-      </button>
-    {% endif %}
+  {% if not playlist.disabled %}
+  <button type="button" hx-post="/playlists/refresh" hx-vals='{"playlist_ids": [{{ playlist.id }}]}'
+    hx-target="#playlist-list" class="px-3 py-1 text-sm bg-gray-100 rounded hover:bg-gray-200">
+    Sync
+  </button>
+  {% else %}
+  <button type="button" class="px-3 py-1 text-sm bg-gray-100 rounded opacity-50" disabled>
+    Sync
+  </button>
+  {% endif %}
   {% endif %}
 </div>
