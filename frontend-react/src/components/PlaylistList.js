@@ -81,18 +81,14 @@ function PlaylistList({ playlists, refreshPlaylists, onExport }) {
           )}
           <button
             onClick={handleSync}
-            className="flex items-center px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+            className="flex items-center px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 "
+            style={{ marginRight: '47px' }}
           >
             {selectedPlaylists.length > 0
               ? `Sync Selected (${selectedPlaylists.length})`
               : 'Sync All'}
           </button>
         </div>
-        {/* {selectedPlaylists.length > 0 && (
-          <div className="text-sm text-gray-700">
-            {selectedPlaylists.length} selected
-          </div>
-        )} */}
       </div>
       <div id="playlist-list">
         {playlists.length ? (

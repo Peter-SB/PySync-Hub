@@ -44,6 +44,7 @@ function AddPlaylistForm({ onPlaylistAdded, setError }) {
           type="submit"
           disabled={!playlistUrl.trim() || isSubmitting}
           className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:cursor-not-allowed"
+          style={{ marginRight: '47px' }}
         >
           {isSubmitting ? 'Adding...' : 'Add Playlist'}
         </button>
