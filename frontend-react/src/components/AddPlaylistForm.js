@@ -10,7 +10,7 @@ function AddPlaylistForm({ onPlaylistAdded, setError }) {
     setIsSubmitting(true);
     setError('');
     try {
-      const response = await fetch('/api/playlists', {
+      const response = await fetch('http://localhost:5000/api/playlists', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ url_or_id: playlistUrl }),
@@ -31,19 +31,19 @@ function AddPlaylistForm({ onPlaylistAdded, setError }) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-10">
+    <form onSubmit={handleSubmit} className="space-y-10 mb-5 ml-1">
       <div className="flex gap-4">
         <input 
           type="text"
           value={playlistUrl}
           onChange={(e) => setPlaylistUrl(e.target.value)}
           placeholder="Enter Spotify playlist URL or ID"
-          className="flex-1 p-2 border rounded-lg"
+          className="flex-1 p-2 border rounded"
         />
         <button 
           type="submit"
           disabled={!playlistUrl.trim() || isSubmitting}
-          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:cursor-not-allowed"
+          className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:cursor-not-allowed"
         >
           {isSubmitting ? 'Adding...' : 'Add Playlist'}
         </button>

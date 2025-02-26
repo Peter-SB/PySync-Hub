@@ -3,6 +3,8 @@ import os
 import sys
 
 from flask import Flask
+from flask_cors import CORS
+
 from app.extensions import db, socketio, migrate
 from app.repositories.playlist_repository import PlaylistRepository
 from app.services.spotify_service import SpotifyService
@@ -12,7 +14,7 @@ from config import Config
 def create_app(app_config=Config):
     app = Flask(__name__)
     app.config.from_object(app_config)
-
+    CORS(app)
 
     db.init_app(app)
     migrate.init_app(app, db)  # Initialize Flask-Migrate

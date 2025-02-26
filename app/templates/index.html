@@ -7,14 +7,14 @@
     <h1 class="text-4xl font-bold text-gray-900">PySync DJ Hub</h1>
 
     <!-- Export Button -->
-    <button class="flex items-center px-4 py-2 bg-gray-700 hover:bg-black text-white rounded-lg shadow-md"
+    <button class="flex items-center px-4 py-2 bg-gray-700 hover:bg-black text-white rounded shadow-md"
       hx-get="{{ url_for('main.export_rekordbox') }}" hx-trigger="click" hx-target="#export-status" hx-swap="innerHTML"
       hx-swap="none">
       <span class="font-medium text-l">Export</span>
-      <div class="bg-white p-0.25 flex items-center justify-between rounded-lg ml-2">
+      <div class="bg-white p-0.25 flex items-center justify-between rounded ml-2">
         <img src="{{ url_for('static', filename='icons/rekordbox.svg') }}" alt="Rekordbox"
-          class="h-6 w-6   rounded-lg m-0.5">
-        <img src="{{ url_for('static', filename='icons/export.svg') }}" alt="Export" class="h-6 w-6 rounded-lg ">
+          class="h-6 w-6   rounded m-0.5">
+        <img src="{{ url_for('static', filename='icons/export.svg') }}" alt="Export" class="h-6 w-6 rounded ">
       </div>
     </button>
   </div>
@@ -23,9 +23,9 @@
   <form hx-post="/playlists" hx-target="#playlist-list" class="space-y-10">
     <div class="flex gap-4">
       <input type="text" id="playlist-input" name="url_or_id" placeholder="Enter Spotify playlist URL or ID"
-        class="flex-1 p-2 border rounded-lg" id="playlist-input">
+        class="flex-1 p-2 border rounded" id="playlist-input">
       <button type="submit" id="add-playlist-btn"
-        class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:cursor-not-allowed" disabled>
+        class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:cursor-not-allowed" disabled>
         Add Playlist
       </button>
     </div>
@@ -39,12 +39,11 @@
       <div class="flex gap-4">
         <button id="sync-all-btn" hx-post="/playlists/refresh" hx-target="#playlist-list"
           hx-include="[name='playlist_ids']:checked"
-          class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
+          class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">
           Sync All
         </button>
         <button id="delete-selected-btn" hx-delete="/playlists" hx-target="#playlist-list"
-          hx-include="[name='playlist_ids']:checked"
-          class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">
+          hx-include="[name='playlist_ids']:checked" class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">
           Delete Selected
         </button>
       </div>
