@@ -12,11 +12,22 @@ function App() {
 
   // Initialize socket.io to listen for real-time updates
   useEffect(() => {
-    const socket = io(); // Connects to the same host
+    const socket = io('http://localhost:5000'); // Connects to the same host
     socket.on('download_status', (data) => {
-      // For simplicity, refresh the playlists on any download status update
-      fetchPlaylists();
-    });
+      // data is expected to be in the format: { id, status, progress }
+      setPlaylists(prevPlaylists =>
+        prevPlaylists.map(playlist =>
+          playlist.id === data.id
+            ? { 
+                ...playlist, 
+                download_status: data.status, 
+                // Only update progress if it's provided in the event
+                download_progress: data.progress !== undefined ? data.progress : playlist.download_progress 
+              }
+            : playlist
+        )
+      );
+    }); 
     return () => socket.disconnect();
   }, []);
 
@@ -40,7 +51,7 @@ function App() {
   // Handle export action
   const handleExport = async () => {
     try {
-      const response = await fetch('/api/export');
+      const response = await fetch('http://localhost:5000/api/export');
       const data = await response.json();
       if (response.ok) {
         setExportStatus("Export successful: " + data.export_path);
@@ -66,7 +77,7 @@ function App() {
               {errorMessage}
             </div>
           )}
-          <PlaylistList playlists={playlists} refreshPlaylists={fetchPlaylists} />
+          <PlaylistList playlists={playlists} refreshPlaylists={fetchPlaylists} onExport={handleExport} />
           {exportStatus && <ExportStatus message={exportStatus} />}
         </div>
       </main>

@@ -22,16 +22,6 @@ export default function Sidebar({ onExport }) {
           </ul>
         </nav>
         </div>
-      <button 
-        onClick={onExport}
-        className="flex items-center justify-center px-2 py-2 bg-gray-600 hover:bg-black text-white rounded shadow-md mt-4 mx-1"
-      >
-        <span className="font-medium text-l">Export</span>
-        <div className="bg-white p-0.25 flex items-center rounded ml-2 justify-between">
-          <img src="/icons/rekordbox.svg" alt="Rekordbox" className="h-6 w-6 rounded m-0.5" />
-          <img src="/icons/export.svg" alt="Export" className="h-6 w-6 rounded" />
-        </div>
-      </button>
     </aside>
   );
 }
