@@ -27,6 +27,10 @@ class SpotifyDownloadService:
         if playlist.id not in cancellation_flags:
             cancellation_flags[playlist.id] = threading.Event()
 
+        if cancellation_flags[playlist.id].is_set():
+                logger.info(f"Download for playlist {playlist.name} cancelled. (id: {playlist.id})")
+                return
+
         PlaylistRepository.set_download_status(playlist, 'downloading')
 
         # Iterate over the tracks and download each one.

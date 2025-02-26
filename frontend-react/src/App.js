@@ -81,8 +81,8 @@ function App() {
           {exportStatus && <ExportStatus message={exportStatus} />}
         </div>
       </main>
+      <div className="w-24"></div> {/* Blank space on the right */}
     </div>
-
   );
 }
 

@@ -67,6 +67,23 @@ function PlaylistItem({ playlist, refreshPlaylists, isSelected, onSelectChange }
             : 'Not synced'}
         </div>
       </div>
+      <div className={`relative ml-auto p-2 text-sm ${playlist.disabled ? 'text-gray-500' : 'text-gray-600'} group`}>
+        {playlist.downloaded_track_count === playlist.track_count ? (
+          <>
+            <span>{playlist.track_count}</span>
+            <span className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-1 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition duration-150 pointer-events-none whitespace-nowrap">
+              Total Tracks
+            </span>
+          </>
+        ) : (
+          <>
+            <span>{playlist.downloaded_track_count} / {playlist.track_count}</span>
+            <span className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-1 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition duration-150 pointer-events-none whitespace-nowrap">
+              Downloaded / Total Tracks
+            </span>
+          </>
+        )}
+      </div>
       <DownloadStatus playlist={playlist} handleSyncClick={handleSyncClick} handleCancelClick={handleCancelClick} />
     </div>
   );
