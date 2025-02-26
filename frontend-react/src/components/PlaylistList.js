@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import PlaylistItem from './PlaylistItem';
+import './PlaylistList.css'; 
 
 function PlaylistList({ playlists, refreshPlaylists, onExport }) {
   const [selectedPlaylists, setSelectedPlaylists] = useState([]);
@@ -90,7 +91,7 @@ function PlaylistList({ playlists, refreshPlaylists, onExport }) {
           </button>
         </div>
       </div>
-      <div id="playlist-list">
+      <div id="playlist-list"  className="overflow-y-auto max-h-[calc(100vh-150px)] custom-scrollbar">
         {playlists.length ? (
           playlists.map((playlist) => (
             <PlaylistItem

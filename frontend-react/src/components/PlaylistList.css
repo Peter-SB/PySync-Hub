@@ -1,0 +1,18 @@
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px; /* Adjust the width of the scrollbar */
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent; /* Track color */
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #c9c9c9; /* Scrollbar color */
+  border-radius: 10px; /* Roundness of the scrollbar */
+  border: 2px solid transparent; /* Space around the scrollbar */
+  background-clip: content-box; /* Clip the background */
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: #949494; /* Scrollbar color on hover */
+}
