@@ -116,7 +116,7 @@ function PlaylistItem({ playlist, refreshPlaylists, isSelected, onSelectChange }
         </div>
         <DownloadStatus playlist={playlist} handleSyncClick={handleSyncClick} handleCancelClick={handleCancelClick} />
       </div>
-      <label htmlFor={`toggle-${playlist.id}`} className="relative inline-flex items-center cursor-pointer ml-2">
+      <label htmlFor={`toggle-${playlist.id}`} className="relative inline-flex items-center cursor-pointer ml-2 mr-10">
         <input
           type="checkbox"
           id={`toggle-${playlist.id}`}

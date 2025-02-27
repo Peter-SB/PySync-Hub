@@ -3,13 +3,13 @@
 }
 
 .custom-scrollbar::-webkit-scrollbar-track {
-  background: transparent; /* Track color */
+  background: #eeeeee; /* Track color */
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background-color: #c9c9c9; /* Scrollbar color */
+  background-color: #dbdbdb; /* Scrollbar color */
   border-radius: 10px; /* Roundness of the scrollbar */
-  border: 2px solid transparent; /* Space around the scrollbar */
+  border: 1px solid transparent; /* Space around the scrollbar */
   background-clip: content-box; /* Clip the background */
 }
 

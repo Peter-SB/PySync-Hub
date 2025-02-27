@@ -71,7 +71,7 @@ function PlaylistList({ playlists, refreshPlaylists, onExport }) {
             </div>
           </button>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 mb-2">
           {selectedPlaylists.length > 0 && (
             <button
               onClick={handleDelete}
@@ -83,7 +83,7 @@ function PlaylistList({ playlists, refreshPlaylists, onExport }) {
           <button
             onClick={handleSync}
             className="flex items-center px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 "
-            style={{ marginRight: '47px' }}
+            style={{ marginRight: '93px' }}
           >
             {selectedPlaylists.length > 0
               ? `Sync Selected (${selectedPlaylists.length})`
@@ -91,22 +91,26 @@ function PlaylistList({ playlists, refreshPlaylists, onExport }) {
           </button>
         </div>
       </div>
-      <div id="playlist-list"  className="overflow-y-auto max-h-[calc(100vh-150px)] custom-scrollbar">
-        {playlists.length ? (
-          playlists.map((playlist) => (
-            <PlaylistItem
-              key={playlist.id}
-              playlist={playlist}
-              refreshPlaylists={refreshPlaylists}
-              isSelected={selectedPlaylists.includes(playlist.id)}
-              onSelectChange={handleCheckboxChange}
-            />
-          ))
-        ) : (
-          <div className="p-4 text-center text-gray-500 bg-white rounded">
-            No playlists added yet
-          </div>
-        )}
+      <div className="relative">
+        <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-b from-gray-100 to-transparent pointer-events-none"></div>
+        <div id="playlist-list" className="overflow-y-auto max-h-[calc(95vh-150px)] custom-scrollbar pb-5">
+          {playlists.length ? (
+            playlists.map((playlist) => (
+              <PlaylistItem
+                key={playlist.id}
+                playlist={playlist}
+                refreshPlaylists={refreshPlaylists}
+                isSelected={selectedPlaylists.includes(playlist.id)}
+                onSelectChange={handleCheckboxChange}
+              />
+            ))
+          ) : (
+            <div className="p-4 text-center text-gray-500 bg-white rounded">
+              No playlists added yet
+            </div>
+          )}
+        </div>
+        <div className="absolute bottom-0 left-0 right-0 h-2 bg-gradient-to-t from-gray-100 to-transparent pointer-events-none"></div>
       </div>
     </div>
   );

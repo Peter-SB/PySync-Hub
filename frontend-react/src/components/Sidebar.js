@@ -1,4 +1,4 @@
-import { FaMusic, FaCog } from "react-icons/fa";
+import { FaMusic, FaCog, FaList } from "react-icons/fa";
 
 export default function Sidebar({ onExport }) {
   return (
@@ -9,10 +9,22 @@ export default function Sidebar({ onExport }) {
           <ul>
             <li className="mb-4">
               <a href="/" className="flex items-center space-x-3 p-3 rounded hover:bg-gray-700">
-                <FaMusic className="text-xl" />
+                <FaList className="text-xl" />
                 <span>Playlists</span>
               </a>
             </li>
+            <li className="mb-4">
+              <a href="/tracks" className="flex items-center space-x-3 p-3 rounded hover:bg-gray-700">
+                <FaMusic className="text-xl" />
+                <span>Tracks</span>
+              </a>
+            </li>
+          </ul>
+        </nav>
+      </div>
+      <div>
+        <nav>
+          <ul>
             <li>
               <a href="/settings" className="flex items-center space-x-3 p-3 rounded hover:bg-gray-700">
                 <FaCog className="text-xl" />
@@ -21,7 +33,7 @@ export default function Sidebar({ onExport }) {
             </li>
           </ul>
         </nav>
-        </div>
+      </div>
     </aside>
   );
 }
