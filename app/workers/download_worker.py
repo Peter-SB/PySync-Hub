@@ -38,6 +38,8 @@ class DownloadManager:
                 logger.info(f"Downloading playlist {playlist}")
 
                 SpotifyDownloadService.download_playlist(playlist, self.cancellation_flags)
+                self.cancellation_flags[playlist.id].clear()
+                logger.info(f"cancellation_flags: {self.cancellation_flags}")
 
             self.download_queue.task_done()
 
@@ -50,6 +52,9 @@ class DownloadManager:
 
     def cancel_download(self, playlist_id):
         """ todo: Fix cancel button"""
+        logger.info(f"Playlist canceled: {playlist_id}")
         if playlist_id in self.cancellation_flags:
             self.cancellation_flags[playlist_id].set()
+            logger.info(f"cancellation_flags: {self.cancellation_flags[playlist_id]}")
+
 

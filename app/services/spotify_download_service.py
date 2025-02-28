@@ -25,10 +25,12 @@ class SpotifyDownloadService:
         """ Download all tracks in a Spotify playlist. Uses cancellation flags to stop downloads. """
         # Ensure a cancellation flag exists for this playlist.
         if playlist.id not in cancellation_flags:
+            logger.info(f"Making cancellation_flags for id: {playlist.id}")
             cancellation_flags[playlist.id] = threading.Event()
 
         if cancellation_flags[playlist.id].is_set():
-                logger.info(f"Download for playlist {playlist.name} cancelled. (id: {playlist.id})")
+                logger.info(f"Download for playlist {playlist.name} cancelled. Cancellation flags already set. (id: {playlist.id})")
+                PlaylistRepository.set_download_status(playlist, 'ready')
                 return
 
         PlaylistRepository.set_download_status(playlist, 'downloading')
@@ -38,7 +40,7 @@ class SpotifyDownloadService:
         total_tracks = len(tracks)
         for i, track in enumerate(tracks, start=1):
             if cancellation_flags[playlist.id].is_set():
-                logger.info(f"Download for playlist {playlist.name} cancelled. (id: {playlist.id})")
+                logger.info(f"Download for playlist {playlist.name} cancelled mid playlist download. (id: {playlist.id})")
                 break
             try:
                 SpotifyDownloadService.download_track(track)
@@ -53,13 +55,10 @@ class SpotifyDownloadService:
         logger.info("Download Finished for Playlist '%s'", playlist.name)
         PlaylistRepository.set_download_status(playlist, 'ready')
 
-        # Clear the cancellation flag for future downloads.
-        cancellation_flags[playlist.id].clear()
-
     @staticmethod
     def download_track(track: Track):
         """ Download a single track from Spotify. """
-        logger.info(f"Download Track location: %s", track.download_location)
+        logger.debug(f"Download Track location: %s", track.download_location)
         
         if SpotifyDownloadService._is_track_already_downloaded(track):
             return

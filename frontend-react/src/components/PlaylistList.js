@@ -93,7 +93,7 @@ function PlaylistList({ playlists, refreshPlaylists, onExport }) {
       </div>
       <div className="relative border bw-3 " style={{ backgroundColor: 'rgb(249, 249, 249)' }}>
         {/* <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-b from-gray-100 to-transparent pointer-events-none"></div> */}
-        <div id="playlist-list" className="overflow-y-auto max-h-[calc(99vh-150px)] custom-scrollbar pb-5 ">
+        <div id="playlist-list" className="overflow-y-auto max-h-[calc(98vh-150px)] custom-scrollbar pb-5 ">
           {playlists.length ? (
             playlists.map((playlist) => (
               <PlaylistItem
