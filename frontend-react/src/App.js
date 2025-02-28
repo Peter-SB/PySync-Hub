@@ -22,7 +22,9 @@ function App() {
                 ...playlist, 
                 download_status: data.status, 
                 // Only update progress if it's provided in the event
-                download_progress: data.progress !== undefined ? data.progress : playlist.download_progress 
+                download_progress: data.progress !== undefined ? data.progress : playlist.download_progress,
+                // Update downloaded_track_count based on progress
+                downloaded_track_count: data.progress !== undefined ? Math.round((data.progress / 100) * playlist.track_count) : playlist.downloaded_track_count
               }
             : playlist
         )
@@ -69,8 +71,8 @@ function App() {
   return (
     <div className="flex h-screen bg-gray-100">
       <Sidebar />
-      <main className="flex-1 p-6">
-        <div className="space-y-6 mb-5">
+      <main className="flex-1 p-0">
+        <div id="playlist_page" className="space-y-6 mb-5 bg-gray-100">
           <AddPlaylistForm onPlaylistAdded={fetchPlaylists} setError={setErrorMessage} />
           {errorMessage && (
             <div className="p-4 mb-4 text-sm text-red-700 bg-red-100 border border-red-400 rounded">
@@ -81,7 +83,7 @@ function App() {
           {exportStatus && <ExportStatus message={exportStatus} />}
         </div>
       </main>
-      <div className="w-5"></div> {/* Blank space on the right */}
+      <div className="w-2"></div> 
     </div>
   );
 }

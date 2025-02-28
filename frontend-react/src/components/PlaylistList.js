@@ -62,7 +62,7 @@ function PlaylistList({ playlists, refreshPlaylists, onExport }) {
         <div className="flex items-center gap-2">
           <button
             onClick={onExport}
-            className="flex items-center px-3 py-2 bg-gray-900 hover:bg-black text-white rounded-lg shadow-md"
+            className="flex items-center px-3 py-2 bg-gray-900 hover:bg-black text-white rounded-lg shadow-md ml-5"
           >
             <span className="font-medium text-l">Export</span>
             <div className="bg-white p-0.25 flex items-center justify-center rounded-lg ml-2">
@@ -91,9 +91,9 @@ function PlaylistList({ playlists, refreshPlaylists, onExport }) {
           </button>
         </div>
       </div>
-      <div className="relative">
-        <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-b from-gray-100 to-transparent pointer-events-none"></div>
-        <div id="playlist-list" className="overflow-y-auto max-h-[calc(95vh-150px)] custom-scrollbar pb-5">
+      <div className="relative border bw-3 " style={{ backgroundColor: 'rgb(249, 249, 249)' }}>
+        {/* <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-b from-gray-100 to-transparent pointer-events-none"></div> */}
+        <div id="playlist-list" className="overflow-y-auto max-h-[calc(99vh-150px)] custom-scrollbar pb-5 ">
           {playlists.length ? (
             playlists.map((playlist) => (
               <PlaylistItem
