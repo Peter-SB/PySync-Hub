@@ -2,7 +2,7 @@ import { FaMusic, FaCog, FaList } from "react-icons/fa";
 
 export default function Sidebar({ onExport }) {
   return (
-    <aside className="w-64 bg-gray-50 h-screen p-5 shadow-lg flex flex-col justify-between">
+    <aside className="w-64 bg-gray-50 h-screen p-5 shadow-lg flex flex-col justify-between relative border  bw-3 z-50 fixed">
       <div>
         <h1 className="text-2xl font-semibold text-gray-800 mb-7 text-3xl font-bold">PySync DJ Hub</h1>
         <nav>
