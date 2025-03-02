@@ -14,7 +14,7 @@ function PlaylistList({ playlists, refreshPlaylists, onExport }) {
     }
   };
 
-  // Handle sync action: if any playlist is selected, sync only those; otherwise sync all.
+  // Handle sync action: if any playlist is selected, sync only those, otherwise sync all.
   const handleSync = async () => {
     const payload =
       selectedPlaylists.length > 0
