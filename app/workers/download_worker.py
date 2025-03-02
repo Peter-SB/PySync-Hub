@@ -4,6 +4,7 @@ import queue
 
 from app.models import Playlist
 from app.repositories.playlist_repository import PlaylistRepository
+from app.services.soundcloud_download_service import SoundcloudDownloadService
 from app.services.spotify_download_service import SpotifyDownloadService
 from flask import current_app, Flask
 
@@ -37,7 +38,11 @@ class DownloadManager:
 
                 logger.info(f"Downloading playlist {playlist}")
 
-                SpotifyDownloadService.download_playlist(playlist, self.cancellation_flags)
+                if playlist.platform == "spotify":
+                    SpotifyDownloadService.download_playlist(playlist, self.cancellation_flags)
+                elif playlist.platform == "soundcloud":
+                    SoundcloudDownloadService.download_playlist(playlist, self.cancellation_flags)
+
                 self.cancellation_flags[playlist.id].clear()
                 logger.info(f"cancellation_flags: {self.cancellation_flags}")
 

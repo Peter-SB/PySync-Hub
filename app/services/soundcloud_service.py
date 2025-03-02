@@ -1,4 +1,6 @@
 import os
+import time
+
 import requests
 import logging
 
@@ -115,6 +117,7 @@ class SoundcloudService:
                               "Chrome/132.0.0.0 Safari/537.36",
                 "Accept": "application/json"
             }
+
             # Iterate over new_track_ids in batches of 20
             for i in range(0, len(new_track_ids), 20):
                 batch_ids = new_track_ids[i:i+20]
@@ -122,10 +125,9 @@ class SoundcloudService:
                 url = f"https://api-v2.soundcloud.com/tracks?ids={batch_ids_str}&client_id={client_id}"
                 logger.info("Fetching track metadata for batch: %s", batch_ids_str)
                 batch_data = SoundcloudService._make_http_get_request(url, headers)
-                # Append the list of tracks from this batch to our master list
                 tracks_metadata.extend(batch_data)
+                time.sleep(0.1)  # To not spam requests
 
-            # Process each track using the helper method
             tracks_data = [SoundcloudService._parse_track(track) for track in tracks_metadata]
             logger.info("Fetched %d tracks for SoundCloud playlist", len(tracks_data))
             return tracks_data
@@ -133,7 +135,3 @@ class SoundcloudService:
             logger.error("Error fetching SoundCloud playlist tracks: %s", e, exc_info=True)
             raise e
 
-# Example usage:
-# playlist_url = "https://soundcloud.com/your_playlist_url"
-# playlist_info = SoundcloudService.get_playlist_data(playlist_url)
-# tracks = SoundcloudService.get_playlist_tracks(playlist_url)
