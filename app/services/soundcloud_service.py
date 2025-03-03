@@ -19,6 +19,10 @@ class SoundcloudService:
         response = requests.get(url, headers=headers)
         if response.status_code != 200:
             logger.error("HTTP GET error for URL %s: %s", url, response.text)
+
+            if response.status_code == 404:
+                raise Exception("Playlist not found. Could it be private or deleted?")
+
             raise Exception(f"HTTP GET error: {response.status_code}")
         return response.json()
 
@@ -92,22 +96,25 @@ class SoundcloudService:
     def get_playlist_tracks(playlist_url: str) -> list:
         """
         Fetches the tracks for a given SoundCloud playlist.
-        Returns a list of dictionaries containing track information.
+        Returns a list of dictionaries containing track information
+        in the order they appear in the SoundCloud playlist.
         """
         try:
             data = SoundcloudService._resolve_playlist(playlist_url)
-            # Extract track IDs from the resolved playlist data
-            track_ids = [track.get('id') for track in data.get('tracks', [])]
-            
+            original_tracks = data.get('tracks', [])
+
+            # Get the track IDs in the order from the playlist
+            track_ids = [track.get('id') for track in original_tracks]
+
             # Check for existing tracks in the database
             existing_track_ids = db.session.query(Track.platform_id).filter(
                 Track.platform == 'soundcloud',
-                Track.platform_id.in_(track_ids)
+                Track.platform_id.in_([str(tid) for tid in track_ids])
             ).all()
             existing_track_ids = {track_id[0] for track_id in existing_track_ids}
 
-            # Filter out existing track IDs
-            new_track_ids = [track_id for track_id in track_ids if track_id not in existing_track_ids]
+            # Filter out track IDs that already exist
+            new_track_ids = [tid for tid in track_ids if str(tid) not in existing_track_ids]
 
             tracks_metadata = []
             client_id = os.environ.get('SOUNDCLOUD_CLIENT_ID')
@@ -118,20 +125,32 @@ class SoundcloudService:
                 "Accept": "application/json"
             }
 
-            # Iterate over new_track_ids in batches of 20
+            # Fetch metadata in batches to avoid spamming requests
             for i in range(0, len(new_track_ids), 20):
-                batch_ids = new_track_ids[i:i+20]
+                batch_ids = new_track_ids[i:i + 20]
                 batch_ids_str = ','.join(str(x) for x in batch_ids)
                 url = f"https://api-v2.soundcloud.com/tracks?ids={batch_ids_str}&client_id={client_id}"
                 logger.info("Fetching track metadata for batch: %s", batch_ids_str)
                 batch_data = SoundcloudService._make_http_get_request(url, headers)
                 tracks_metadata.extend(batch_data)
-                time.sleep(0.1)  # To not spam requests
+                time.sleep(0.1)  # Brief pause between requests
 
-            tracks_data = [SoundcloudService._parse_track(track) for track in tracks_metadata]
-            logger.info("Fetched %d tracks for SoundCloud playlist", len(tracks_data))
-            return tracks_data
+            # Parse each track's metadata into our db format
+            new_tracks_data = [SoundcloudService._parse_track(track) for track in tracks_metadata]
+
+            # Create a lookup dict for the new tracks using platform_id (as string) as key
+            new_tracks_dict = {track['platform_id']: track for track in new_tracks_data}
+
+            # Rebuild the track list in the order as in the original playlist
+            ordered_new_tracks = []
+            for track in original_tracks:
+                tid_str = str(track.get('id'))
+                if tid_str in new_tracks_dict:
+                    ordered_new_tracks.append(new_tracks_dict[tid_str])
+                # todo: fix track order
+
+            logger.info("Fetched %d new tracks for SoundCloud playlist", len(ordered_new_tracks))
+            return ordered_new_tracks
         except Exception as e:
             logger.error("Error fetching SoundCloud playlist tracks: %s", e, exc_info=True)
             raise e
-

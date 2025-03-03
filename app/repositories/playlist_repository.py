@@ -11,27 +11,27 @@ logger = logging.getLogger(__name__)
 class PlaylistRepository:
     @staticmethod
     def get_all_playlists() -> List[Playlist]:
-        logger.info("Fetching all playlists")
+        logger.debug("Fetching all playlists")
         return Playlist.query.order_by(Playlist.created_at.desc()).all()
 
     @staticmethod
     def get_all_active_playlists() -> List[Playlist]:
-        logger.info("Fetching all playlists")
+        logger.debug("Fetching all playlists")
         return Playlist.query.order_by(Playlist.created_at.desc()).filter_by(disabled=False).all()
 
     @staticmethod
     def get_playlists_by_ids(playlist_ids: List[int]) -> List[Playlist]:
-        logger.info(f"Fetching playlists with IDs: {playlist_ids}")
+        logger.debug(f"Fetching playlists with IDs: {playlist_ids}")
         return Playlist.query.filter(Playlist.id.in_(playlist_ids)).order_by(Playlist.created_at.desc()).all()
 
     @staticmethod
     def get_playlist_by_id(playlist_id: int) -> Playlist:
-        logger.info(f"Fetching playlists with IDs: {playlist_id}")
+        logger.debug(f"Fetching playlists with IDs: {playlist_id}")
         return Playlist.query.filter(Playlist.id == playlist_id).first()
 
     @staticmethod
     def get_playlist(playlist_id):
-        logger.info(f"Fetching playlist with ID: {playlist_id}")
+        logger.debug(f"Fetching playlist with ID: {playlist_id}")
         return db.session.get(Playlist, playlist_id)
 
     @staticmethod

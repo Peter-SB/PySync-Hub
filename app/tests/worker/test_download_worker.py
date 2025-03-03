@@ -2,7 +2,7 @@ import threading
 import pytest
 from flask import Flask
 from app.models import Playlist
-from app.services.spotify_download_service import SpotifyDownloadService
+from app.services.download_services.spotify_download_service import SpotifyDownloadService
 from app.workers.download_worker import DownloadManager
 
 

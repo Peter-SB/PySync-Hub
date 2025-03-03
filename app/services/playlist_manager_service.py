@@ -83,7 +83,7 @@ class PlaylistManagerService:
                 playlist_data = SoundcloudService.get_playlist_data(url_or_id)
             except Exception as e:
                 logger.error("Error fetching SoundCloud playlist data for URL %s: %s", url_or_id, e, exc_info=True)
-                return "Error fetching SoundCloud playlist data."
+                return f"Error fetching SoundCloud playlist data: {e}"
         else:
             platform = 'spotify'
             try:

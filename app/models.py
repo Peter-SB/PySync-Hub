@@ -59,7 +59,18 @@ class Track(db.Model):
     notes_errors = db.Column(db.Text)
 
     __table_args__ = (
-    db.UniqueConstraint('platform', 'platform_id', name='uq_platform_track'),)  # Prevent duplicate tracks
+        db.UniqueConstraint('platform', 'platform_id', name='uq_platform_track'),)  # Prevent duplicate tracks
+
+    def to_dict(self):
+        return {
+            'platform_id': self.platform_id,
+            'platform': self.platform,
+            'name': self.name,
+            'artist': self.artist,
+            'album': self.album,
+            'album_art_url': self.album_art_url,
+            'download_url': self.download_url,
+        }
 
 
 class PlaylistTrack(db.Model):
@@ -73,4 +84,5 @@ class PlaylistTrack(db.Model):
     track = db.relationship('Track')
 
     __table_args__ = (
-    db.UniqueConstraint('playlist_id', 'track_id', name='uq_playlist_track'),)  # Avoid duplicate track in a playlist
+        db.UniqueConstraint('playlist_id', 'track_id',
+                            name='uq_playlist_track'),)  # Avoid duplicate track in a playlist

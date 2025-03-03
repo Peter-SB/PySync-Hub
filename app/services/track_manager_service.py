@@ -70,6 +70,11 @@ class TrackManagerService:
                         track_order=index
                     )
                     db.session.add(playlist_track)
+                else:
+                    # Update the track order if it has changed
+                    if existing_entry.track_order != index:
+                        existing_entry.track_order = index
+                        db.session.add(existing_entry)
 
             db.session.commit()
             logger.info("Successfully synced tracks for playlist: %s", playlist.name)

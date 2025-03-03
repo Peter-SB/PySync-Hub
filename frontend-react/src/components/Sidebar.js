@@ -1,4 +1,7 @@
-import { FaMusic, FaCog, FaList } from "react-icons/fa";
+import { FaMusic, FaCog, FaList, FaQuestionCircle } from "react-icons/fa";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faQuestion } from "@fortawesome/free-solid-svg-icons";
+
 
 export default function Sidebar({ onExport }) {
   return (
@@ -17,6 +20,12 @@ export default function Sidebar({ onExport }) {
               <a href="/tracks" className="flex items-center space-x-3 p-3 rounded hover:bg-gray-700">
                 <FaMusic className="text-xl" />
                 <span>Tracks</span>
+              </a>
+            </li>
+            <li className="mb-4">
+              <a href="/help" className="flex items-center space-x-3 p-3 rounded hover:bg-gray-700">
+                <FontAwesomeIcon icon={faQuestion} className="text-2xl mx-1" />
+                <span>Help</span>
               </a>
             </li>
           </ul>

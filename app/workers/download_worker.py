@@ -2,11 +2,10 @@ import logging
 import threading
 import queue
 
-from app.models import Playlist
 from app.repositories.playlist_repository import PlaylistRepository
-from app.services.soundcloud_download_service import SoundcloudDownloadService
-from app.services.spotify_download_service import SpotifyDownloadService
-from flask import current_app, Flask
+from app.services.download_services.soundcloud_download_service import SoundcloudDownloadService
+from app.services.download_services.spotify_download_service import SpotifyDownloadService
+from flask import Flask
 
 logger = logging.getLogger(__name__)
 

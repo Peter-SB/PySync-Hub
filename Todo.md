@@ -14,3 +14,4 @@
 - Save a correct file type
 - Add metadata
 - - correct track artists
+- Soundcloud: Flag premium tracks (that will only be 29s long but could be misleading)
