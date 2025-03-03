@@ -7,7 +7,7 @@ from flask_cors import CORS
 
 from app.extensions import db, socketio, migrate
 from app.repositories.playlist_repository import PlaylistRepository
-from app.services.spotify_service import SpotifyService
+from app.services.platform_services.spotify_service import SpotifyService
 from app.workers.download_worker import DownloadManager
 from config import Config
 

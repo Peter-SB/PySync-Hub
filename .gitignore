@@ -13,3 +13,4 @@ __pycache__/
 /exports
 /exports/
 /migrations/
+/.vscode

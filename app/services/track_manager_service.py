@@ -1,9 +1,7 @@
-import logging
-
 from app.models import *
 from app.repositories.playlist_repository import PlaylistRepository
-from app.services.soundcloud_service import SoundcloudService
-from app.services.spotify_service import SpotifyService
+from app.services.platform_services.soundcloud_service import SoundcloudService
+from app.services.platform_services.spotify_service import SpotifyService
 
 logger = logging.getLogger(__name__)
 

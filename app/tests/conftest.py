@@ -1,8 +1,6 @@
 import pytest
-from unittest.mock import MagicMock
-from app import create_app, extensions
+from app import create_app
 from config import TestConfig
-from app.services.spotify_service import SpotifyService
 
 
 @pytest.fixture(scope="session")

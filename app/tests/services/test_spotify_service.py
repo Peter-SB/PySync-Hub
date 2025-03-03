@@ -1,6 +1,6 @@
 import pytest
 from unittest.mock import MagicMock
-from app.services.spotify_service import SpotifyService
+from app.services.platform_services.spotify_service import SpotifyService
 
 
 @pytest.fixture
