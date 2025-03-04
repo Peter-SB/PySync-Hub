@@ -128,8 +128,10 @@ class BaseDownloadService(ABC):
         # Check if any of the paths exist
         for path in possible_paths:
             if os.path.isfile(path):
+                logger.info("Found FFmpeg at: %s", path)
                 return path
 
         # Fallback: Check system PATH
+        logger.info("FFmepg Path Not Found. Check ffmpeg folder. Falling back to search for global FFmpeg")
         return ffmpeg_name  # Allows the system to find FFmpeg if installed globally
 

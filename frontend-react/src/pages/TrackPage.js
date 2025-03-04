@@ -25,7 +25,7 @@ function TrackPage() {
   };
 
 return (
-    <div className="pb-0">
+    <div className="p-5">
         <h1 className="text-3xl font-bold mb-4">All Tracks</h1>
         {error && (
             <div className="p-4 mb-3 text-sm text-red-700 bg-red-100 border border-red-400 rounded">
@@ -33,7 +33,7 @@ return (
             </div>
         )}
         {tracks.length > 0 ? (
-            <ul className="space-y-2 overflow-y-auto max-h-[calc(100vh-150px)] p-3" style={{ backgroundColor: 'rgb(249, 249, 249)' }}>
+            <ul className="space-y-2 overflow-y-auto max-h-[calc(100vh-100px)] p-3 bg-white" style={{ backgroundColor: 'rgb(249, 249, 249)' }}>
                 {tracks.map((track, index) => (
                     <li key={track.platform_id} className="p-1 bg-white rounded shadow hover:shadow-md flex items-center">
                         <span className="mx-4 text-sm">{index + 1}</span>

@@ -8,6 +8,8 @@ import Sidebar from "./components/Sidebar";
 import DownloadPage from './pages/DownloadPage';
 import TrackPage from './pages/TrackPage';
 import PlaylistPage from './pages/PlaylistPage';
+import SettingsPage from './pages/SettingsPage';
+
 
 function App() {
   const [playlists, setPlaylists] = useState([]);
@@ -64,6 +66,7 @@ function App() {
             <Route path="/" element={<DownloadPage playlists={playlists} setPlaylists={setPlaylists}/>} />
             <Route path="/playlist/:playlistId" element={<PlaylistPage />} />
             <Route path="/tracks" element={<TrackPage />} />
+            <Route path="/settings" element={<SettingsPage />} />
           </Routes>
         </main>
       </div>

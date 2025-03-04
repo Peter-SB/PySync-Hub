@@ -60,7 +60,7 @@ function PlaylistPage() {
                                         {track.album && <p className="text-gray-500">{track.album}</p>}
                                     </div>
                                     <div className="flex flex-row items-end justify-end">
-                                        {track.notes_errors && track.notes_errors !== "Already Downloaded, Skipped" && (
+                                        {track.notes_errors && track.notes_errors !== "Already Downloaded, Skipped" && track.notes_errors !== "Successfully Downloaded" && (
                                             <div className="flex items-center ml-4">
                                                 <div className="flex items-center justify-center bg-red-500 text-white rounded-full w-8 h-8 mr-2">
                                                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
