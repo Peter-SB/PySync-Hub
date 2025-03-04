@@ -28,11 +28,11 @@ class SpotifyDownloadService(BaseDownloadService):
             else:
                 video_info = info
 
-            # Extract YouTube video title
             youtube_title = video_info.get('title', f"{track.name} {track.artist}")
             sanitized_title = FileDownloadUtils.sanitize_filename(youtube_title)
 
-            # Set output filename for download
+            track.download_url = video_info.get('webpage_url')
+
             file_path = os.path.join(os.getcwd(), "downloads", f"{sanitized_title}.mp3")
 
             # Check if the track already exists

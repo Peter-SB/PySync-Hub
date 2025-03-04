@@ -1,9 +1,13 @@
 import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import io from 'socket.io-client';
 import AddPlaylistForm from './components/AddPlaylistForm';
 import PlaylistList from './components/PlaylistList';
 import ExportStatus from './components/ExportStatus';
 import Sidebar from "./components/Sidebar";
+import DownloadPage from './pages/DownloadPage';
+import TrackPage from './pages/TrackPage';
+import PlaylistPage from './pages/PlaylistPage';
 
 function App() {
   const [playlists, setPlaylists] = useState([]);
@@ -14,6 +18,7 @@ function App() {
   useEffect(() => {
     const socket = io('http://localhost:5000'); // Connects to the same host
     socket.on('download_status', (data) => {
+      console.log('Download status update:', data);
       // data is expected to be in the format: { id, status, progress }
       setPlaylists(prevPlaylists =>
         prevPlaylists.map(playlist =>
@@ -50,41 +55,19 @@ function App() {
     fetchPlaylists();
   }, []);
 
-  // Handle export action
-  const handleExport = async () => {
-    try {
-      const response = await fetch('http://localhost:5000/api/export');
-      const data = await response.json();
-      if (response.ok) {
-        setExportStatus("Export successful: " + data.export_path);
-        // Clear export status after a few seconds
-        setTimeout(() => setExportStatus(''), 3000);
-      } else {
-        setErrorMessage(data.error);
-      }
-    } catch (error) {
-      console.error("Export error", error);
-      setErrorMessage("Export failed");
-    }
-  };
-
   return (
-    <div className="flex h-screen bg-gray-100">
-      <Sidebar />
-      <main className="flex-1 p-0">
-        <div id="playlist_page" className="space-y-6 mb-5 bg-gray-100">
-          <AddPlaylistForm onPlaylistAdded={fetchPlaylists} setError={setErrorMessage} />
-          {errorMessage && (
-            <div className="p-4 mb-4 text-sm text-red-700 bg-red-100 border border-red-400 rounded">
-              {errorMessage}
-            </div>
-          )}
-          <PlaylistList playlists={playlists} refreshPlaylists={fetchPlaylists} onExport={handleExport} />
-          {exportStatus && <ExportStatus message={exportStatus} />}
-        </div>
-      </main>
-      <div className="w-2"></div> 
-    </div>
+    <Router>
+      <div className="flex h-screen bg-gray-100">
+        <Sidebar />
+        <main className="flex-1">
+          <Routes>
+            <Route path="/" element={<DownloadPage playlists={playlists} setPlaylists={setPlaylists}/>} />
+            <Route path="/playlist/:playlistId" element={<PlaylistPage />} />
+            <Route path="/tracks" element={<TrackPage />} />
+          </Routes>
+        </main>
+      </div>
+    </Router>
   );
 }
 

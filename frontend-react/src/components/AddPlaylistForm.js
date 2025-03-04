@@ -31,7 +31,7 @@ function AddPlaylistForm({ onPlaylistAdded, setError }) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-10 mb-10 ml-5 mr-11 mt-6">
+    <form onSubmit={handleSubmit} className="space-y-10 mb-5 ml-5 mr-11 mt-6">
       <div className="flex gap-4 ">
         <input 
           type="text"

@@ -93,28 +93,45 @@ class SoundcloudService:
             raise e
 
     @staticmethod
-    def get_playlist_tracks(playlist_url: str) -> list:
+    def get_playlist_tracks(playlist_url: str) -> list[dict]:
         """
         Fetches the tracks for a given SoundCloud playlist.
         Returns a list of dictionaries containing track information
         in the order they appear in the SoundCloud playlist.
+
+        :return: List of track dictionaries
+
+        todo: fix track order by rewriting the exclude existing track logic because thats excluding tacks on other
+        playlists. Need to pass all tracks back, just query the db for existing tracks and exclude them from the
+        call to the soundcloud api
         """
         try:
             data = SoundcloudService._resolve_playlist(playlist_url)
-            original_tracks = data.get('tracks', [])
+            resolved_tracks = data.get('tracks', [])
 
-            # Get the track IDs in the order from the playlist
-            track_ids = [track.get('id') for track in original_tracks]
+            logger.info("Fetched %d tracks for SoundCloud playlist", len(resolved_tracks))
 
-            # Check for existing tracks in the database
-            existing_track_ids = db.session.query(Track.platform_id).filter(
-                Track.platform == 'soundcloud',
-                Track.platform_id.in_([str(tid) for tid in track_ids])
-            ).all()
-            existing_track_ids = {track_id[0] for track_id in existing_track_ids}
+            new_track_ids = [track.get('id') for track in resolved_tracks]
 
-            # Filter out track IDs that already exist
-            new_track_ids = [tid for tid in track_ids if str(tid) not in existing_track_ids]
+
+
+            # todo: add back to reduce redundant calls to the soundcloud api
+            # # Get the track IDs in the order from the playlist
+            # track_ids = [track.get('id') for track in resolved_tracks]
+            #
+            # logger.info("Fetched %d track ids for SoundCloud playlist", len(track_ids))
+            #
+            # # Check for existing tracks in the database
+            # existing_track_ids = db.session.query(Track.platform_id).filter(
+            #     Track.platform == 'soundcloud',
+            #     Track.platform_id.in_([str(tid) for tid in track_ids])
+            # ).all()
+            # existing_track_ids = {track_id[0] for track_id in existing_track_ids}
+            # logger.info("Fetched %d existing track ids for SoundCloud playlist", len(existing_track_ids))
+            #
+            #
+            # # Filter out track IDs that already exist
+            # new_track_ids = [tid for tid in track_ids if str(tid) not in existing_track_ids]
 
             tracks_metadata = []
             client_id = os.environ.get('SOUNDCLOUD_CLIENT_ID')
@@ -143,11 +160,10 @@ class SoundcloudService:
 
             # Rebuild the track list in the order as in the original playlist
             ordered_new_tracks = []
-            for track in original_tracks:
+            for track in resolved_tracks:
                 tid_str = str(track.get('id'))
                 if tid_str in new_tracks_dict:
                     ordered_new_tracks.append(new_tracks_dict[tid_str])
-                # todo: fix track order
 
             logger.info("Fetched %d new tracks for SoundCloud playlist", len(ordered_new_tracks))
             return ordered_new_tracks

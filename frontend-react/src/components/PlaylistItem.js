@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import DownloadStatus from './DownloadStatus.js';
 
 function PlaylistItem({ playlist, refreshPlaylists, isSelected, onSelectChange }) {
   const [isDisabled, setIsDisabled] = useState(playlist.disabled);
+  const navigate = useNavigate();
 
   // Trigger a refresh (sync) for this playlist only
   const handleSyncClick = async () => {
@@ -57,11 +59,17 @@ function PlaylistItem({ playlist, refreshPlaylists, isSelected, onSelectChange }
     }
   };
 
+    // Navigate to the playlist tracks page
+    const handlePlaylistClick = () => {
+      navigate(`/playlist/${playlist.id}`);
+    };
+
   return (
-    <div className="flex flex-row items-center ml-5 pt-1 pb-0">
+    <div className="flex flex-row items-center ml-1 pt-1 pb-0">
       <div
-        className={`flex items-center p-2 rounded shadow-sm transition-shadow my-1 mx-1 px-4 flex-1 ${isDisabled ? 'bg-gray-200 hover:shadow-none' : 'bg-white hover:shadow-md'
+        className={`flex items-center p-2 rounded border shadow transition-shadow my-1 mx-1 px-4 flex-1 cursor-pointer ${isDisabled ? 'bg-gray-200 hover:shadow-none' : 'bg-white hover:shadow-md'
           }`}
+          onClick={handlePlaylistClick}
       >
         <input
           type="checkbox"
@@ -70,18 +78,25 @@ function PlaylistItem({ playlist, refreshPlaylists, isSelected, onSelectChange }
           className="mr-4 h-4 w-4"
           disabled={playlist.disabled}
           checked={isSelected}
+          onClick={(e) => e.stopPropagation()}
           onChange={(e) => onSelectChange(playlist.id, e.target.checked)}
         />
         {playlist.image_url && (
           <img
             src={playlist.image_url}
             alt="Playlist cover"
-            className="w-14 h-14 rounded-md object-cover mr-4"
+            className="w-12 h-12 rounded-md object-cover mr-4 border border-gray-400"
           />
         )}
         <div className="flex-1">
           <h3 className="font-medium text-gray-900 flex items-center">
-            <a href={playlist.url} target="_blank" rel="noreferrer" className="hover:underline">
+            <a 
+              href={playlist.url} 
+              target="_blank" 
+              rel="noreferrer" 
+              className="hover:underline"
+              onClick={(e) => e.stopPropagation()}
+            >
               {playlist.name}
             </a>
             {playlist.platform === "spotify" && (

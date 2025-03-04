@@ -57,14 +57,14 @@ function PlaylistList({ playlists, refreshPlaylists, onExport }) {
   };
 
   return (
-    <div className="space-y-4">
+    <div className="">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <button
             onClick={onExport}
-            className="flex items-center px-3 py-2 bg-gray-900 hover:bg-black text-white rounded-lg shadow-md ml-5"
+            className="flex items-center px-3 py-2 bg-gray-900 hover:bg-black text-white rounded-lg shadow-md"
           >
-            <span className="font-medium text-l">Export</span>
+            <span className="font-medium text-l">Export All</span>
             <div className="bg-white p-0.25 flex items-center justify-center rounded-lg ml-2">
               <img src="/icons/rekordbox.svg" alt="Rekordbox" className="h-6 w-6 rounded-lg m-0.5" />
               <img src="/icons/export.svg" alt="Export" className="h-6 w-6 rounded-lg" />
@@ -91,9 +91,9 @@ function PlaylistList({ playlists, refreshPlaylists, onExport }) {
           </button>
         </div>
       </div>
-      <div className="relative border bw-3 " style={{ backgroundColor: 'rgb(249, 249, 249)' }}>
+      <div className="flex-1 bg-white shadow rounded-lg mt-4 p-1 flex-1 min-h-0 overflow-y-auto custom-scrollbar">
         {/* <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-b from-gray-100 to-transparent pointer-events-none"></div> */}
-        <div id="playlist-list" className="overflow-y-auto max-h-[calc(98vh-150px)] custom-scrollbar pb-5 ">
+        <div id="playlist-list" className="overflow-y-auto max-h-[calc(91vh-150px)] custom-scrollbar ">
           {playlists.length ? (
             playlists.map((playlist) => (
               <PlaylistItem

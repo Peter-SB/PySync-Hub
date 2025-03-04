@@ -1,12 +1,23 @@
 import React from "react";
 
 function DownloadStatus({ playlist, handleSyncClick, handleCancelClick }) {
+    // Wrap the click handler with event.stopPropagation()
+    const onSyncClick = (e) => {
+        e.stopPropagation();
+        handleSyncClick();
+    };
+
+    const onCancelClick = (e) => {
+        e.stopPropagation();
+        handleCancelClick();
+    };
+
     return (
         <div id={`download-status-${playlist.id}`} className="ml-4">
             {playlist.download_status === 'queued' && (
                 <div className="flex items-center space-x-2">
                     <span className="text-yellow-500 font-bold">Queued</span>
-                    <button onClick={handleCancelClick} className="px-2 py-1 bg-red-600 text-white rounded">
+                    <button onClick={onCancelClick} className="px-2 py-1 bg-red-600 text-white rounded">
                         Cancel
                     </button>
                 </div>
@@ -20,14 +31,21 @@ function DownloadStatus({ playlist, handleSyncClick, handleCancelClick }) {
                             style={{ width: `${playlist.download_progress}%` }}>
                         </div>
                     </div>
-                    <button onClick={handleCancelClick} className="px-2 py-1 bg-red-600 text-white rounded">
+                    <button onClick={onCancelClick} className="px-2 py-1 bg-red-600 text-white rounded">
                         Cancel
                     </button>
                 </div>
             )}
             {playlist.download_status === 'ready' && (
                 !playlist.disabled ? (
-                    <button onClick={handleSyncClick} className="px-3 py-1 text-sm bg-gray-100 rounded-lg hover:bg-gray-200">
+                    <button
+                        onMouseDown={(e) => e.stopPropagation()}
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            handleSyncClick();
+                        }}
+                        className="px-3 py-1 text-sm bg-gray-100 rounded-lg hover:bg-gray-200"
+                    >
                         Sync
                     </button>
                 ) : (
