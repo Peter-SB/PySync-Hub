@@ -1,18 +1,11 @@
 import logging
-import os
 
-import xml.etree.ElementTree as ET
-
-import app
-from config import Config
-from app.extensions import db
-from app.models import Playlist, PlaylistTrack
 from app.repositories.playlist_repository import PlaylistRepository
 
 import os
 import urllib
 import xml.etree.ElementTree as ET
-from typing import Optional, Dict, Union, Any
+from typing import Optional, Union, Any
 from xml.dom import minidom
 
 from mutagen.easyid3 import EasyID3

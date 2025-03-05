@@ -7,3 +7,16 @@ __pycache__/
 *.pyd
 .DS_Store
 .idea/
+
+# Ignore all songs and media files
+*.mp3
+*.wav
+*.flac
+
+# Ignore other unnecessary files and directories
+node_modules
+*.log
+*.tmp
+__pycache__
+*.pyc
+.DS_Store

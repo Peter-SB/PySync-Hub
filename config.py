@@ -21,6 +21,7 @@ class Config:
 
     # Downloads Folder
     DOWNLOAD_FOLDER = './downloads'
+    EXPORT_FOLDER = './rekordbox_library_exports'
 
 class TestConfig(Config):
     TESTING = True

@@ -119,6 +119,7 @@ class BaseDownloadService(ABC):
 
         # Possible locations
         possible_paths = [
+            "/ffmpeg/ffmpeg",
             os.path.join(base_path, "ffmpeg", ffmpeg_name),  # App bundle path
             os.path.join(base_path, ffmpeg_name),  # Directly in app folder
             os.path.join(os.getcwd(), ffmpeg_name),  # In current working directory

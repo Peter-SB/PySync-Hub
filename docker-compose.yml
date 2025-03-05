@@ -1,19 +1,25 @@
-#services:
-#  pysync-hub:
-#    build: .
-#    ports:
-#      - "5000:5000"
-#    env_file:
-#      - .env
-#    volumes:
-#      - ./instance:/app/instance
 services:
-  pysync-hub:
-    build: .
+  backend-flask:
+    build:
+      context: .  # Set context to project root (PySync-Hub)
+      dockerfile: app/Dockerfile  # Specify the correct Dockerfile location
     ports:
       - "5000:5000"
     volumes:
-      - .:/app
+      - .:/PySync-Hub  # Mount the entire project for live code updates
+      - ./downloads:/PySync-Hub/downloads  # Mount the downloads directory
     env_file:
-          - .env
+      - .env
     restart: always
+
+  frontend-react:
+    build:
+      context: ./frontend-react
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend-react:/app
+    restart: always
+    depends_on:
+      - backend-flask

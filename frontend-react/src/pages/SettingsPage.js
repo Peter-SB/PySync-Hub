@@ -21,6 +21,11 @@ function SettingsPage() {
 
   // Save the updated settings.
   const handleSave = () => {
+    if (!spotifyClientId || !spotifyClientSecret || !soundcloudClientId) {
+      setError('Spotify Client ID, Spotify Client Secret, and SoundCloud Client ID are required.');
+      return;
+    }
+
     fetch('http://localhost:5000/api/settings', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },

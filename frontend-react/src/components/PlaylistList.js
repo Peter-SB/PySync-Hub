@@ -106,7 +106,7 @@ function PlaylistList({ playlists, refreshPlaylists, onExport }) {
             ))
           ) : (
             <div className="p-4 text-center text-gray-500 bg-white rounded">
-              No playlists added yet
+              No playlists added yet. If this is your first time using the app, make sure to read the Help page and set your <a href="/settings" className="text-blue-500 hover:underline">Settings</a>.
             </div>
           )}
         </div>

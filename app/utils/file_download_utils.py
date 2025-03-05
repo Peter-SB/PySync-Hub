@@ -1,19 +1,13 @@
 import logging
 import os
 import re
-import threading
-import time
-import unicodedata
 
 import requests
-from mutagen.id3 import APIC, COMM, ID3, TALB, TIT2, TPE1
+from mutagen.id3 import APIC, ID3, TALB, TIT2, TPE1
 from mutagen.mp3 import MP3
-from yt_dlp import YoutubeDL
 
-from app.extensions import db, socketio
-from app.models import Playlist, Track
-from app.repositories.playlist_repository import PlaylistRepository
-from config import Config
+from app.extensions import db
+from app.models import Track
 
 logger = logging.getLogger(__name__)
 

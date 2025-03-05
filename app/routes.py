@@ -6,6 +6,7 @@ from app.models import Track
 from app.repositories.playlist_repository import PlaylistRepository
 from app.services.export_services.export_itunesxml_service import ExportItunesXMLService
 from app.services.playlist_manager_service import PlaylistManagerService
+from config import Config
 
 logger = logging.getLogger(__name__)
 api = Blueprint('api', __name__)
@@ -124,7 +125,7 @@ def toggle_playlist():
 @api.route('/api/export', methods=['GET'])
 def export_rekordbox():
     logger.info("Exporting Rekordbox XML")
-    EXPORT_FOLDER = os.path.join(os.getcwd(), 'exports')
+    EXPORT_FOLDER = os.path.join(os.getcwd(), Config.EXPORT_FOLDER)
     EXPORT_FILENAME = 'rekordbox.xml'
 
     try:

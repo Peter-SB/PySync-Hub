@@ -1,19 +1,15 @@
-import os
-
-import xml.etree.ElementTree as ET
-from app.extensions import db
-from app.models import Playlist, PlaylistTrack
-from app.repositories.playlist_repository import PlaylistRepository
-
+from app.models import Playlist
 
 import os
 import urllib
 import xml.etree.ElementTree as ET
-from typing import Optional, Dict, Union, Any
+from typing import Optional, Union, Any
 from xml.dom import minidom
 
 from mutagen.easyid3 import EasyID3
 from mutagen.mp3 import MP3
+
+from config import Config
 
 
 class RekordboxExportService:
@@ -81,7 +77,7 @@ class RekordboxExportService:
         collection.set("Entries", str(total_tracks))
         root_playlist_node.set("Count", str(playlist_count))
 
-        EXPORT_FOLDER = os.path.join(os.getcwd(), 'exports')
+        EXPORT_FOLDER = os.path.join(os.getcwd(), Config.EXPORT_FOLDER)
         EXPORT_FILENAME = 'rekordbox.xml'
         EXPORT_PATH = os.path.join(EXPORT_FOLDER, EXPORT_FILENAME)
 
