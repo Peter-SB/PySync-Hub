@@ -1,16 +1,8 @@
 # How to Start Program (with Docker)
 
-## Installing Docker
-
-### For Mac
-1. Download Docker Desktop for Mac from the [Docker website](https://www.docker.com/products/docker-desktop).
-2. Open the downloaded `.dmg` file and drag the Docker icon to the Applications folder.
-3. Launch Docker from the Applications folder.
-
-### For Windows
-1. Download Docker Desktop for Windows from the [Docker website](https://www.docker.com/products/docker-desktop).
-2. Run the installer and follow the on-screen instructions.
-3. **After installation, launch Docker Desktop from the Start menu.
+1. Download Docker Desktop  from the [Docker website](https://www.docker.com/products/docker-desktop).
+2. Install.
+3. After installation, launch Docker Desktop.
 
 ## Building and Running Containers
 

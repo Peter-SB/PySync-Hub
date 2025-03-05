@@ -131,10 +131,10 @@ function SettingsPage() {
           </div>
         </div>
       </div>
-
+      <p className='py-2 mt-5'>Note, you may need to restart after making changes to settings.</p>
       <button
         onClick={handleSave}
-        className={`mt-10 px-4 py-2 rounded ${isSaveDisabled ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 text-white'}`}
+        className={`mt-2 px-4 py-2 rounded ${isSaveDisabled ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 text-white'}`}
         disabled={isSaveDisabled}
       >
         Save Settings
