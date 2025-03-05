@@ -20,6 +20,7 @@ services:
       - "3000:3000"
     volumes:
       - ./frontend-react:/app
+      - /app/node_modules
     restart: always
     depends_on:
       - backend-flask
