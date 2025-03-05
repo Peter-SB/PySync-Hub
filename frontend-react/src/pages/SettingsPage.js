@@ -37,12 +37,12 @@ function SettingsPage() {
     })
       .then(response => response.json())
       .then(data => {
-         if(data.message) {
-             setMessage(data.message);
-             setError('');
-         } else {
-             setError(data.error || 'Error updating settings');
-         }
+        if (data.message) {
+          setMessage(data.message);
+          setError('');
+        } else {
+          setError(data.error || 'Error updating settings');
+        }
       })
       .catch(() => setError('Error updating settings'));
   };
@@ -52,84 +52,91 @@ function SettingsPage() {
     let helpText = '';
     if (platform === 'spotify') {
       if (field === 'client_id') {
-         helpText = 'Your Spotify Client ID can be found in your Spotify Developer Dashboard under your app settings.';
+        helpText = 'Your Spotify Client ID can be found in your Spotify Developer Dashboard under your app settings. See Help for more info.';
       } else if (field === 'client_secret') {
-         helpText = 'Your Spotify Client Secret is available in your Spotify Developer Dashboard. Keep it confidential!';
+        helpText = 'Your Spotify Client Secret is available in your Spotify Developer Dashboard. See Help for more info.';
       }
     } else if (platform === 'soundcloud') {
-      helpText = 'Your SoundCloud Client ID is provided when you register your application with SoundCloud.';
+      helpText = 'SoundCloud Client ID required to sync with SoundCloud. See Help for more info.';
     }
     alert(helpText);
   };
+
+  // Check if the save button should be disabled
+  const isSaveDisabled = !((spotifyClientId && spotifyClientSecret) || soundcloudClientId);
 
   return (
     <div className="p-6 max-w-3xl mx-auto">
       <h1 className="text-3xl font-bold mb-6">Settings</h1>
       {message && <div className="mb-4 p-3 bg-green-200 text-green-800 rounded">{message}</div>}
       {error && <div className="mb-4 p-3 bg-red-200 text-red-800 rounded">{error}</div>}
-
-      {/* Spotify Settings */}
-      <div className="mb-10">
-        <h2 className="text-xl font-semibold mb-2">Spotify Settings</h2>
-        <div className="mb-4">
-          <label className="block font-medium">Spotify Client ID</label>
-          <div className="flex items-center">
-            <input 
-              type="text" 
-              value={spotifyClientId}
-              onChange={(e) => setSpotifyClientId(e.target.value)}
-              className="flex-1 p-2 border rounded"
-            />
-            <button 
-              onClick={() => showHelp('spotify', 'client_id')}
-              className="ml-2 px-3 py-1 bg-gray-300 rounded"
-            >
-              ?
-            </button>
+      <div className="py-5 border-y-2 ">
+        {/* Spotify Settings */}
+        <div className="mb-10">
+          <h2 className="text-xl font-semibold mb-2">API Settings</h2>
+          <p className='py-2'>These API keys are required to sync with Spotify or SoundCloud.</p>
+          <div className="mb-4">
+            <label className="block font-medium">Spotify Client ID <span className="text-red-500">*</span></label>
+            <div className="flex items-center">
+              <input
+                type="text"
+                value={spotifyClientId}
+                onChange={(e) => setSpotifyClientId(e.target.value)}
+                className="flex-1 p-2 border rounded"
+              />
+              <button
+                onClick={() => showHelp('spotify', 'client_id')}
+                className="ml-2 px-3 py-1 bg-gray-300 rounded"
+              >
+                ?
+              </button>
+            </div>
+          </div>
+          <div className="mb-4">
+            <label className="block font-medium">Spotify Client Secret <span className="text-red-500">*</span></label>
+            <div className="flex items-center">
+              <input
+                type="text"
+                value={spotifyClientSecret}
+                onChange={(e) => setSpotifyClientSecret(e.target.value)}
+                className="flex-1 p-2 border rounded"
+              />
+              <button
+                onClick={() => showHelp('spotify', 'client_secret')}
+                className="ml-2 px-3 py-1 bg-gray-300 rounded"
+              >
+                ?
+              </button>
+            </div>
           </div>
         </div>
-        <div className="mb-4">
-          <label className="block font-medium">Spotify Client Secret</label>
-          <div className="flex items-center">
-            <input 
-              type="text" 
-              value={spotifyClientSecret}
-              onChange={(e) => setSpotifyClientSecret(e.target.value)}
-              className="flex-1 p-2 border rounded"
-            />
-            <button 
-              onClick={() => showHelp('spotify', 'client_secret')}
-              className="ml-2 px-3 py-1 bg-gray-300 rounded"
-            >
-              ?
-            </button>
+        {/* SoundCloud Settings */}
+        <div className="mb-6">
+          <div className="mb-4">
+            <label className="block font-medium">SoundCloud Client ID <span className="text-red-500">*</span></label>
+            <div className="flex items-center">
+              <input
+                type="text"
+                value={soundcloudClientId}
+                onChange={(e) => setSoundcloudClientId(e.target.value)}
+                className="flex-1 p-2 border rounded"
+              />
+              <button
+                onClick={() => showHelp('soundcloud')}
+                className="ml-2 px-3 py-1 bg-gray-300 rounded"
+              >
+                ?
+              </button>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* SoundCloud Settings */}
-      <div className="mb-6">
-        <h2 className="text-xl font-semibold mb-2">SoundCloud Settings</h2>
-        <div className="mb-4">
-          <label className="block font-medium">SoundCloud Client ID</label>
-          <div className="flex items-center">
-            <input 
-              type="text" 
-              value={soundcloudClientId}
-              onChange={(e) => setSoundcloudClientId(e.target.value)}
-              className="flex-1 p-2 border rounded"
-            />
-            <button 
-              onClick={() => showHelp('soundcloud')}
-              className="ml-2 px-3 py-1 bg-gray-300 rounded"
-            >
-              ?
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <button onClick={handleSave} className="mt-4 px-4 py-2 bg-blue-600 text-white rounded">
+      <button
+        onClick={handleSave}
+        className={`mt-10 px-4 py-2 rounded ${isSaveDisabled ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 text-white'}`}
+        disabled={isSaveDisabled}
+      >
         Save Settings
       </button>
     </div>
