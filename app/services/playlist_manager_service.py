@@ -70,7 +70,6 @@ class PlaylistManagerService:
     @staticmethod
     def add_playlists(url_or_id) -> Optional[str]:
         logger.info("Attempting to add playlist with url_or_id: %s", url_or_id)
-        platform = 'spotify'  # Will be extended for SoundCloud
 
         if not url_or_id:
             logger.info("No url_or_id found: %s", url_or_id)
@@ -80,6 +79,7 @@ class PlaylistManagerService:
             platform = 'soundcloud'
             try:
                 playlist_data = SoundcloudService.get_playlist_data(url_or_id)
+                track_data = SoundcloudService.get_playlist_tracks(url_or_id)
             except Exception as e:
                 logger.error("Error fetching SoundCloud playlist data for URL %s: %s", url_or_id, e, exc_info=True)
                 return f"Error fetching SoundCloud playlist data: {e}"
@@ -126,6 +126,12 @@ class PlaylistManagerService:
                 logger.error("Database commit failed when adding playlist: %s", e, exc_info=True)
                 db.session.rollback()
                 return "Database Error"
+
+            try:
+                TrackManagerService.fetch_playlist_tracks(playlist.id)
+            except Exception as e:
+                logger.error("Error fetching tracks for new playlist: %s", e, exc_info=True)
+                return "Error fetching tracks for new playlist"
         return None
 
     @staticmethod
