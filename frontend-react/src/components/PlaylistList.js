@@ -62,7 +62,7 @@ function PlaylistList({ playlists, refreshPlaylists, onExport }) {
         <div className="flex items-center gap-2">
           <button
             onClick={onExport}
-            className="flex items-center px-3 py-2 bg-gray-900 hover:bg-black text-white rounded-lg shadow-md"
+            className="flex items-center px-3 py-2 ml-5 bg-gray-900 hover:bg-black text-white rounded-lg shadow-md"
           >
             <span className="font-medium text-l">Export All</span>
             <div className="bg-white p-0.25 flex items-center justify-center rounded-lg ml-2">
