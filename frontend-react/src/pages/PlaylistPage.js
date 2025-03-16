@@ -71,14 +71,14 @@ function PlaylistPage({ playlists }) {
                                         <img
                                             src="/icons/spotify.svg"
                                             alt="Spotify"
-                                            className="w-6 h-6 ml-3 inline"
+                                            className="w-8 h-8 ml-3 mb-1 inline"
                                         />
                                     )}
                                     {playlistInfo.platform === "soundcloud" && (
                                         <img
                                             src="/icons/soundcloud.svg"
                                             alt="SoundCloud"
-                                            className="w-5 h-5 p-0.5 ml-3 inline"
+                                            className="w-7 h-7 p-0.5 ml-3 mb-1 inline"
                                         />
                                     )}
                                 </h1>
