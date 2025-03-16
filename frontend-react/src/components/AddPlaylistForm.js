@@ -33,20 +33,19 @@ function AddPlaylistForm({ onPlaylistAdded, setError }) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-10 mb-5 ml-5 mr-11 mt-6">
-      <div className="flex gap-4 ">
+    <form onSubmit={handleSubmit} className="space-y-10 mb-5 mt-6">
+      <div className="flex w-full">
         <input 
           type="text"
           value={playlistUrl}
           onChange={(e) => setPlaylistUrl(e.target.value)}
           placeholder="Enter Spotify playlist URL or ID"
-          className="flex-1 p-2 border rounded"
+          className="flex-1 p-2 border rounded w-full"
         />
         <button 
           type="submit"
           disabled={!playlistUrl.trim() || isSubmitting}
           className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:cursor-not-allowed"
-          style={{ marginRight: '47px' }}
         >
           {isSubmitting ? 'Adding...' : 'Add Playlist'}
         </button>

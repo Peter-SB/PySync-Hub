@@ -8,4 +8,4 @@ As well as Spotify integration, PySync now had soundcloud and youtube support.
 
 Preview Image:
 
-![PySync Hub](docs/images/pysync-02-03-25-home.png)
+![PySync Hub](docs/images/pysync-16-03-25-home.png)

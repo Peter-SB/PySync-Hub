@@ -1,13 +1,13 @@
-import { FaMusic, FaCog, FaList, FaQuestionCircle } from "react-icons/fa";
+import { FaMusic, FaCog, FaList } from "react-icons/fa";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faQuestion } from "@fortawesome/free-solid-svg-icons";
 
 
 export default function Sidebar({ onExport }) {
   return (
-    <aside className="w-64 bg-gray-50 h-screen p-5 shadow-lg flex flex-col justify-between relative border  bw-3 z-50 fixed">
+    <aside className="w-64 bg-white h-screen p-5 shadow-lg flex flex-col justify-between relative border bw-3 z-50 fixed">
       <div>
-        <h1 className="text-2xl font-semibold text-gray-800 mb-7 text-3xl font-bold">PySync DJ Hub</h1>
+        <h1 className="text-2xl font-semibold text-gray-900 mb-7 text-3xl font-bold">PySync DJ Hub</h1>
         <nav>
           <ul>
             <li className="mb-4">

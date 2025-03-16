@@ -9,23 +9,23 @@ function PlaylistPage() {
     const [error, setError] = useState('');
 
     useEffect(() => {
+        const fetchPlaylistTracks = async () => {
+            try {
+                const response = await fetch(`${backendUrl}/api/playlist/${playlistId}/tracks`);
+                const data = await response.json();
+                if (response.ok) {
+                    setTracks(data);
+                } else {
+                    setError(data.error || 'Failed to fetch playlist tracks');
+                }
+            } catch (err) {
+                console.error(err);
+                setError('Error fetching playlist tracks');
+            }
+        };
+
         fetchPlaylistTracks();
     }, [playlistId]);
-
-    const fetchPlaylistTracks = async () => {
-        try {
-            const response = await fetch(`${backendUrl}/api/playlist/${playlistId}/tracks`);
-            const data = await response.json();
-            if (response.ok) {
-                setTracks(data);
-            } else {
-                setError(data.error || 'Failed to fetch playlist tracks');
-            }
-        } catch (err) {
-            console.error(err);
-            setError('Error fetching playlist tracks');
-        }
-    };
 
     return (
         <div className="flex flex-col h-screen p-5">

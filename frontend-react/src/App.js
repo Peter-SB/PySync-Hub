@@ -11,7 +11,6 @@ import { backendUrl } from './config';
 
 function App() {
   const [playlists, setPlaylists] = useState([]);
-  const [exportStatus, setExportStatus] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
 
   // Initialize socket.io to listen for real-time updates
