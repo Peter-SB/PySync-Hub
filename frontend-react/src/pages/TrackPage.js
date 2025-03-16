@@ -35,7 +35,7 @@ function TrackPage() {
   return (
     <div id="track-page" className="flex flex-col h-screen p-4 pt-2">
       {/* Search Bar Header */}
-      <div id="header-box" className="bg-white p-5 pb-4 rounded-lg mb-2 shadow flex flex-col">
+      <div id="header-box" className="bg-white p-5 pb-4 pt-7 rounded-lg mb-2 shadow flex flex-col">
         <div className="flex items-center flex-grow mb-2">
           <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-500 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 19a8 8 0 100-16 8 8 0 000 16zM21 21l-4.35-4.35" />
@@ -80,14 +80,28 @@ function TrackPage() {
                       />
                     )}
                   </div>
-                  <div className="flex flex-row text-sm flex-grow">
-                    <h2 className="font-semibold mr-2 hover:underline">
+                  <div className="flex flex-row text-sm flex-grow items-center">
+                    <h2 className="font-semibold mr-2 hover:underline flex items-center">
                       <a href={track.download_url} target="_blank" rel="noopener noreferrer">
                         {track.name}
                       </a>
                     </h2>
                     <p className="text-gray-600 mr-2">{track.artist}</p>
                     {track.album && <p className="text-gray-500">{track.album}</p>}
+                    {track.platform === "spotify" && (
+                        <img
+                          src="/icons/spotify.svg"
+                          alt="Spotify"
+                          className="w-5 h-5 ml-2 inline"
+                        />
+                      )}
+                      {track.platform === "soundcloud" && (
+                        <img
+                          src="/icons/soundcloud.svg"
+                          alt="SoundCloud"
+                          className="w-3 h-3 ml-2 inline"
+                        />
+                      )}
                   </div>
                   <div className="flex flex-row items-end justify-end">
                     {track.notes_errors && track.notes_errors !== "Already Downloaded, Skipped" && track.notes_errors !== "Successfully Downloaded" && (

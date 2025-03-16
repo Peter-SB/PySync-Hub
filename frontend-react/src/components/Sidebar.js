@@ -11,19 +11,19 @@ export default function Sidebar({ onExport }) {
         <nav>
           <ul>
             <li className="mb-4">
-              <a href="/" className="flex items-center space-x-3 p-3 rounded hover:bg-gray-700">
+              <a href="/" className="flex items-center space-x-3 p-3 rounded hover:bg-gray-700 hover:text-white">
                 <FaList className="text-xl" />
                 <span>Playlists</span>
               </a>
             </li>
             <li className="mb-4">
-              <a href="/tracks" className="flex items-center space-x-3 p-3 rounded hover:bg-gray-700">
+              <a href="/tracks" className="flex items-center space-x-3 p-3 rounded hover:bg-gray-700 hover:text-white">
                 <FaMusic className="text-xl" />
                 <span>Tracks</span>
               </a>
             </li>
             <li className="mb-4">
-              <a href="/help" className="flex items-center space-x-3 p-3 rounded hover:bg-gray-700">
+              <a href="/help" className="flex items-center space-x-3 p-3 rounded hover:bg-gray-700 hover:text-white">
                 <FontAwesomeIcon icon={faQuestion} className="text-2xl mx-1" />
                 <span>Help</span>
               </a>
@@ -35,7 +35,7 @@ export default function Sidebar({ onExport }) {
         <nav>
           <ul>
             <li>
-              <a href="/settings" className="flex items-center space-x-3 p-3 rounded hover:bg-gray-700">
+              <a href="/settings" className="flex items-center space-x-3 p-3 rounded hover:bg-gray-700 hover:text-white">
                 <FaCog className="text-xl" />
                 <span>Settings</span>
               </a>
