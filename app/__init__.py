@@ -14,7 +14,10 @@ from config import Config
 def create_app(app_config=Config):
     app = Flask(__name__)
     app.config.from_object(app_config)
-    CORS(app)
+    CORS(app, 
+        resources={r"/*": {"origins": "*", 
+                            "allow_headers": ["Content-Type", "Authorization"],
+                            "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"]}})
 
     db.init_app(app)
     migrate.init_app(app, db)  # Initialize Flask-Migrate
