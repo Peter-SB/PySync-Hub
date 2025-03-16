@@ -68,7 +68,7 @@ function PlaylistItem({ playlist, refreshPlaylists, isSelected, onSelectChange }
   return (
     <div className="flex flex-row items-center pt-1 pb-0">
       <div
-        className={`flex items-center p-2 rounded border shadow transition-shadow my-1 px-4 flex-1 cursor-pointer ${isDisabled ? 'bg-gray-200 hover:shadow-none' : 'bg-white hover:shadow-md'
+        className={`flex items-center p-2 rounded border shadow transition-shadow my-0.5 px-4 flex-1 cursor-pointer ${isDisabled ? 'bg-gray-200 hover:shadow-none' : 'bg-white hover:shadow-md'
           }`}
           onClick={handlePlaylistClick}
       >

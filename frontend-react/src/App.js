@@ -61,7 +61,7 @@ function App() {
         <main className="flex-1">
           <Routes>
             <Route path="/" element={<DownloadPage playlists={playlists} setPlaylists={setPlaylists}/>} />
-            <Route path="/playlist/:playlistId" element={<PlaylistPage />} />
+            <Route path="/playlist/:playlistId" element={<PlaylistPage playlists={playlists} />} />
             <Route path="/tracks" element={<TrackPage />} />
             <Route path="/settings" element={<SettingsPage />} />
           </Routes>

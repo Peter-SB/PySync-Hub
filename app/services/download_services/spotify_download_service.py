@@ -39,7 +39,7 @@ class SpotifyDownloadService(BaseDownloadService):
             if os.path.exists(file_path):
                 logger.info("Track '%s' already exists at '%s'. Skipping download.", track.name, file_path)
                 track.download_location = file_path
-                track.notes_errors = "Already Downloaded"
+                track.notes_errors = "Already Downloaded, Skipped"
             else:
                 # Download using the sanitized YouTube title
                 ydl_opts = SpotifyDownloadService._generate_yt_dlp_options(query, sanitized_title)

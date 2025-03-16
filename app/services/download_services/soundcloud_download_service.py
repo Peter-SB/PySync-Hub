@@ -37,7 +37,7 @@ class SoundcloudDownloadService(BaseDownloadService):
         if os.path.exists(file_path):
             logger.info("Track '%s' already exists at '%s'. Skipping download.", track.name, file_path)
             track.download_location = file_path
-            track.notes_errors = "Already Downloaded"
+            track.notes_errors = "Already Downloaded, Skipped"
         else:
             ydl_opts = SoundcloudDownloadService._generate_yt_dlp_options(sanitized_title)
             with YoutubeDL(ydl_opts) as ydl:

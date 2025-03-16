@@ -93,7 +93,7 @@ function DownloadPage({ playlists, setPlaylists }) {
     <div id="download-page" className="flex flex-col h-screen p-4 pt-2">      
       {/*Header box */}
       <div id="header-box" className="bg-white p-4 rounded-lg mb-1 shadow">
-        <h1 className="text-3xl font-semibold text-gray-700 mb-7">Playlist Downloads</h1>
+        <h1 className="text-3xl font-semibold text-gray-800 mb-7">Playlist Downloads</h1>
         <AddPlaylistForm onPlaylistAdded={fetchPlaylists} setError={setErrorMessage} />
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div className="flex items-center gap-2">

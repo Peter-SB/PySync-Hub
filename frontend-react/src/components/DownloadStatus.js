@@ -1,12 +1,6 @@
 import React from "react";
 
 function DownloadStatus({ playlist, handleSyncClick, handleCancelClick }) {
-    // Wrap the click handler with event.stopPropagation()
-    const onSyncClick = (e) => {
-        e.stopPropagation();
-        handleSyncClick();
-    };
-
     const onCancelClick = (e) => {
         e.stopPropagation();
         handleCancelClick();
