@@ -15,3 +15,14 @@
 - Add metadata
 - - correct track artists
 - Soundcloud: Flag premium tracks (that will only be 29s long but could be misleading)
+
+
+## Electron
+- todo
+
+## Docker
+- env file
+
+
+## Other
+- cors

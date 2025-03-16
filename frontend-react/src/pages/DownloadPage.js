@@ -2,6 +2,8 @@
 import React, { useState, useEffect } from 'react';
 import AddPlaylistForm from '../components/AddPlaylistForm';
 import PlaylistList from '../components/PlaylistList';
+import { backendUrl } from '../config';
+
 
 function DownloadPage({playlists, setPlaylists}) {
   const [errorMessage, setErrorMessage] = useState('');
@@ -10,7 +12,7 @@ function DownloadPage({playlists, setPlaylists}) {
   // Fetch playlists from the API
   const fetchPlaylists = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/playlists');
+      const response = await fetch(`${backendUrl}/api/playlists`);
       const data = await response.json();
       setPlaylists(data);
     } catch (error) {
@@ -26,7 +28,7 @@ function DownloadPage({playlists, setPlaylists}) {
   // Handle export action
   const handleExport = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/export');
+      const response = await fetch(`${backendUrl}/api/export`);
       const data = await response.json();
       if (response.ok) {
         setExportStatus("Export successful: " + data.export_path);

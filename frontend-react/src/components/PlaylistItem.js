@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import DownloadStatus from './DownloadStatus.js';
+import { backendUrl } from '../config';
 
 function PlaylistItem({ playlist, refreshPlaylists, isSelected, onSelectChange }) {
   const [isDisabled, setIsDisabled] = useState(playlist.disabled);
@@ -9,7 +10,7 @@ function PlaylistItem({ playlist, refreshPlaylists, isSelected, onSelectChange }
   // Trigger a refresh (sync) for this playlist only
   const handleSyncClick = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/playlists/refresh', {
+      const response = await fetch(`${backendUrl}/api/playlists/refresh`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ playlist_ids: [playlist.id] }),
@@ -25,7 +26,7 @@ function PlaylistItem({ playlist, refreshPlaylists, isSelected, onSelectChange }
   // Cancel an ongoing download for this playlist
   const handleCancelClick = async () => {
     try {
-      const response = await fetch(`http://localhost:5000/api/download/${playlist.id}/cancel`, {
+      const response = await fetch(`${backendUrl}/api/download/${playlist.id}/cancel`, {
         method: 'DELETE',
       });
       if (!response.ok) {
@@ -43,7 +44,7 @@ function PlaylistItem({ playlist, refreshPlaylists, isSelected, onSelectChange }
     setIsDisabled(newState);
 
     try {
-      const response = await fetch('http://localhost:5000/api/playlists/toggle', {
+      const response = await fetch(`${backendUrl}/api/playlists/toggle`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ playlist_id: playlistId, disabled: newState }),

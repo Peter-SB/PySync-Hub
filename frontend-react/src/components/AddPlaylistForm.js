@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { backendUrl } from '../config';
+
 
 function AddPlaylistForm({ onPlaylistAdded, setError }) {
   const [playlistUrl, setPlaylistUrl] = useState('');
@@ -10,7 +12,7 @@ function AddPlaylistForm({ onPlaylistAdded, setError }) {
     setIsSubmitting(true);
     setError('');
     try {
-      const response = await fetch('http://localhost:5000/api/playlists', {
+      const response = await fetch(`${backendUrl}/api/playlists`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ url_or_id: playlistUrl }),

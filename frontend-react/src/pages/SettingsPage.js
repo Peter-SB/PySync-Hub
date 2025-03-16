@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { backendUrl } from '../config';
 
 function SettingsPage() {
   const [spotifyClientId, setSpotifyClientId] = useState('');
@@ -9,7 +10,7 @@ function SettingsPage() {
 
   // Fetch settings when the component mounts.
   useEffect(() => {
-    fetch('http://localhost:5000/api/settings')
+    fetch(`${backendUrl}/api/settings`)
       .then(response => response.json())
       .then(data => {
         setSpotifyClientId(data.spotify_client_id);
@@ -26,7 +27,7 @@ function SettingsPage() {
       return;
     }
 
-    fetch('http://localhost:5000/api/settings', {
+    fetch(`${backendUrl}/api/settings`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({

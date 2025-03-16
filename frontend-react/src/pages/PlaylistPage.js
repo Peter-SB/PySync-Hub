@@ -1,6 +1,7 @@
 // src/pages/PlaylistTracksPage.js
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
+import { backendUrl } from '../config';
 
 function PlaylistPage() {
     const { playlistId } = useParams();
@@ -13,7 +14,7 @@ function PlaylistPage() {
 
     const fetchPlaylistTracks = async () => {
         try {
-            const response = await fetch(`http://localhost:5000/api/playlist/${playlistId}/tracks`);
+            const response = await fetch(`${backendUrl}/api/playlist/${playlistId}/tracks`);
             const data = await response.json();
             if (response.ok) {
                 setTracks(data);

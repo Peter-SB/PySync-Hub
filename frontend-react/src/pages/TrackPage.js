@@ -1,5 +1,5 @@
-// src/pages/TrackPage.js
 import React, { useState, useEffect } from 'react';
+import { backendUrl } from '../config';
 
 function TrackPage() {
   const [tracks, setTracks] = useState([]);
@@ -11,7 +11,7 @@ function TrackPage() {
 
   const fetchTracks = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/tracks');
+      const response = await fetch(`${backendUrl}/api/tracks`);
       const data = await response.json();
       if (response.ok) {
         setTracks(data);

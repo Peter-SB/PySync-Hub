@@ -1,14 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import io from 'socket.io-client';
-import AddPlaylistForm from './components/AddPlaylistForm';
-import PlaylistList from './components/PlaylistList';
-import ExportStatus from './components/ExportStatus';
 import Sidebar from "./components/Sidebar";
 import DownloadPage from './pages/DownloadPage';
 import TrackPage from './pages/TrackPage';
 import PlaylistPage from './pages/PlaylistPage';
 import SettingsPage from './pages/SettingsPage';
+import { backendUrl } from './config';
 
 
 function App() {
@@ -18,7 +16,7 @@ function App() {
 
   // Initialize socket.io to listen for real-time updates
   useEffect(() => {
-    const socket = io('http://localhost:5000'); // Connects to the same host
+    const socket = io(backendUrl); // Connects to the same host
     socket.on('download_status', (data) => {
       console.log('Download status update:', data);
       // data is expected to be in the format: { id, status, progress }
@@ -43,7 +41,7 @@ function App() {
   // Fetch playlists from the API
   const fetchPlaylists = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/playlists');
+      const response = await fetch(`${backendUrl}/api/playlists`);
       console.log(response);
       const data = await response.json();
       setPlaylists(data);

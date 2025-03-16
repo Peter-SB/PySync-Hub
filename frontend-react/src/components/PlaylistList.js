@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import PlaylistItem from './PlaylistItem';
 import './PlaylistList.css'; 
+import { backendUrl } from '../config';
+
 
 function PlaylistList({ playlists, refreshPlaylists, onExport }) {
   const [selectedPlaylists, setSelectedPlaylists] = useState([]);
@@ -21,7 +23,7 @@ function PlaylistList({ playlists, refreshPlaylists, onExport }) {
         ? { playlist_ids: selectedPlaylists }
         : {};
     try {
-      const response = await fetch('http://localhost:5000/api/playlists/refresh', {
+      const response = await fetch(`${backendUrl}/api/playlists/refresh`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
@@ -41,7 +43,7 @@ function PlaylistList({ playlists, refreshPlaylists, onExport }) {
   const handleDelete = async () => {
     if (selectedPlaylists.length === 0) return;
     try {
-      const response = await fetch('http://localhost:5000/api/playlists', {
+      const response = await fetch(`${backendUrl}/api/playlists`, {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ playlist_ids: selectedPlaylists }),
