@@ -20,7 +20,7 @@ class Config:
     SPOTIFY_CLIENT_SECRET = os.environ.get('SPOTIFY_CLIENT_SECRET')
 
     # Downloads Folder
-    DOWNLOAD_FOLDER = './downloads'
+    DOWNLOAD_FOLDER = 'downloads'
     EXPORT_FOLDER = './rekordbox_library_exports'
 
 class TestConfig(Config):

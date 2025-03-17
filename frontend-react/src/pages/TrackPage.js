@@ -1,10 +1,13 @@
+// src/pages/TrackPage.js
 import React, { useState, useEffect } from 'react';
 import { backendUrl } from '../config';
+import TrackModal from '../components/TrackModal';
 
 function TrackPage() {
   const [tracks, setTracks] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [error, setError] = useState('');
+  const [selectedTrack, setSelectedTrack] = useState(null);
 
   useEffect(() => {
     fetchTracks();
@@ -31,6 +34,11 @@ function TrackPage() {
     track.artist.toLowerCase().includes(searchQuery.toLowerCase()) ||
     (track.album && track.album.toLowerCase().includes(searchQuery.toLowerCase()))
   );
+
+  // Update track in state after edit
+  const handleUpdateTrack = (updatedTrack) => {
+    setTracks(tracks.map(t => (t.id === updatedTrack.id ? updatedTrack : t)));
+  };
 
   return (
     <div id="track-page" className="flex flex-col h-screen p-4 pt-2">
@@ -64,11 +72,12 @@ function TrackPage() {
       <div className="flex-1 min-h-0 overflow-y-auto custom-scrollbar">
         <div id="track-table">
           {filteredTracks.length > 0 ? (
-            <ul className="">
+            <ul>
               {filteredTracks.map((track, index) => (
                 <li
                   key={track.platform_id}
-                  className="flex px-4 py-1 bg-grey-100 border-y flex items-center"
+                  className="flex px-4 py-1 bg-grey-100 border-y flex items-center cursor-pointer hover:bg-gray-50"
+                  onClick={() => setSelectedTrack(track)}
                 >
                   <div className="text-l mr-3 w-7">{index + 1}.</div>
                   <div className="w-9 h-9 mr-4">
@@ -82,7 +91,12 @@ function TrackPage() {
                   </div>
                   <div className="flex flex-row text-sm flex-grow items-center">
                     <h2 className="font-semibold mr-2 hover:underline flex items-center">
-                      <a href={track.download_url} target="_blank" rel="noopener noreferrer">
+                      <a 
+                        href={track.download_url} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        onClick={(e) => e.stopPropagation()} // prevent modal when clicking the link
+                      >
                         {track.name}
                       </a>
                     </h2>
@@ -128,6 +142,15 @@ function TrackPage() {
           )}
         </div>
       </div>
+
+      {/* Render Modal if a track is selected */}
+      {selectedTrack && (
+        <TrackModal
+          track={selectedTrack}
+          onClose={() => setSelectedTrack(null)}
+          onUpdate={handleUpdateTrack}
+        />
+      )}
     </div>
   );
 }

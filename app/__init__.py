@@ -17,7 +17,7 @@ def create_app(app_config=Config):
     CORS(app, 
         resources={r"/*": {"origins": "*", 
                             "allow_headers": ["Content-Type", "Authorization"],
-                            "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"]}})
+                            "methods": ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]}})
 
     db.init_app(app)
     migrate.init_app(app, db)  # Initialize Flask-Migrate
@@ -45,7 +45,7 @@ def create_app(app_config=Config):
     app.register_blueprint(api)
 
     if not app.config.get("TESTING"):
-        os.makedirs(app.config.get("DOWNLOAD_FOLDER"), exist_ok=True)
+        os.makedirs(os.path.join(os.getcwd(), app.config.get("DOWNLOAD_FOLDER")), exist_ok=True)
 
     app.download_manager = DownloadManager(app)
 

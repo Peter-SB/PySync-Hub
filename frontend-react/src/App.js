@@ -15,19 +15,17 @@ function App() {
 
   // Initialize socket.io to listen for real-time updates
   useEffect(() => {
-    const socket = io(backendUrl); // Connects to the same host
+    const socket = io(backendUrl);
     socket.on('download_status', (data) => {
       console.log('Download status update:', data);
-      // data is expected to be in the format: { id, status, progress }
+
       setPlaylists(prevPlaylists =>
         prevPlaylists.map(playlist =>
           playlist.id === data.id
             ? { 
                 ...playlist, 
                 download_status: data.status, 
-                // Only update progress if it's provided in the event
                 download_progress: data.progress !== undefined ? data.progress : playlist.download_progress,
-                // Update downloaded_track_count based on progress
                 downloaded_track_count: data.progress !== undefined ? Math.round((data.progress / 100) * playlist.track_count) : playlist.downloaded_track_count
               }
             : playlist
@@ -37,7 +35,6 @@ function App() {
     return () => socket.disconnect();
   }, []);
 
-  // Fetch playlists from the API
   const fetchPlaylists = async () => {
     try {
       const response = await fetch(`${backendUrl}/api/playlists`);

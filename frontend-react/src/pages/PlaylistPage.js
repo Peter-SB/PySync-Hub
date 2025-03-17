@@ -2,11 +2,13 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { backendUrl } from '../config';
+import TrackModal from '../components/TrackModal';
 
 function PlaylistPage({ playlists }) {
     const { playlistId } = useParams();
     const [tracks, setTracks] = useState([]);
     const [error, setError] = useState('');
+    const [selectedTrack, setSelectedTrack] = useState(null);
     const navigate = useNavigate();
 
     const playlistInfo = playlists.find(pl => String(pl.id) === playlistId);
@@ -47,9 +49,14 @@ function PlaylistPage({ playlists }) {
         }
     };
 
+    // Update track in state after a successful edit
+    const handleUpdateTrack = (updatedTrack) => {
+        setTracks(tracks.map(t => (t.id === updatedTrack.id ? updatedTrack : t)));
+    };
+
     return (
         <div id="playlist-page" className="flex flex-col h-screen p-4 pt-2">
-            {/* Playlist Info Header box*/}
+            {/* Playlist Info Header box */}
             <div id="header-box" className="bg-white p-5 rounded-lg mb-1 shadow flex items-center">
                 {playlistInfo ? (
                     <div className="flex flex-col sm:flex-row justify-between items-center justify-end w-full">
@@ -92,7 +99,7 @@ function PlaylistPage({ playlists }) {
                                 </div>
                             </div>
                         </div>
-                        {/* Right section: delete buttons */}
+                        {/* Right section: delete button */}
                         <div className="flex items-center space-x-4 mt-4 sm:mt-0">
                             <button onClick={handleDeleteClick} className="p-2 rounded bg-red-500 hover:bg-red-600 text-white">
                                 <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -114,11 +121,12 @@ function PlaylistPage({ playlists }) {
                 <div className="flex-1 min-h-0 overflow-y-auto custom-scrollbar">
                     <div id="track-table">
                         {tracks.length > 0 ? (
-                            <ul className="">
+                            <ul>
                                 {tracks.map((track, index) => (
                                     <li
                                         key={track.platform_id}
-                                        className="flex px-4 py-1 bg-grey-100 border-y flex items-center"
+                                        className="flex px-4 py-1 bg-grey-100 border-y flex items-center cursor-pointer hover:bg-gray-50"
+                                        onClick={() => setSelectedTrack(track)}
                                     >
                                         <div className="text-l mr-3 w-7">{index + 1}.</div>
                                         <div className="w-9 h-9 mr-4">
@@ -132,7 +140,12 @@ function PlaylistPage({ playlists }) {
                                         </div>
                                         <div className="flex flex-row text-sm flex-grow">
                                             <h2 className="font-semibold mr-2 hover:underline">
-                                                <a href={track.download_url} target="_blank" rel="noopener noreferrer">
+                                                <a
+                                                    href={track.download_url}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    onClick={(e) => e.stopPropagation()}
+                                                >
                                                     {track.name}
                                                 </a>
                                             </h2>
@@ -140,7 +153,7 @@ function PlaylistPage({ playlists }) {
                                             {track.album && <p className="text-gray-500">{track.album}</p>}
                                         </div>
                                         <div className="flex flex-row items-end justify-end">
-                                            {track.notes_errors && track.notes_errors !== "Already Downloaded, Skipped" && track.notes_errors !== "Successfully Downloaded" && (
+                                            {track.notes_errors && (
                                                 <div className="flex items-center ml-4">
                                                     <div className="flex items-center justify-center bg-red-500 text-white rounded-full w-8 h-8 mr-2">
                                                         <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -164,6 +177,15 @@ function PlaylistPage({ playlists }) {
                         )}
                     </div>
                 </div>
+            )}
+
+            {/* Render the modal if a track is selected */}
+            {selectedTrack && (
+                <TrackModal
+                    track={selectedTrack}
+                    onClose={() => setSelectedTrack(null)}
+                    onUpdate={handleUpdateTrack}
+                />
             )}
         </div>
     );

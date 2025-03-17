@@ -12,6 +12,7 @@ from app.extensions import db
 from app.models import Playlist, Track
 from app.repositories.playlist_repository import PlaylistRepository
 from app.utils.file_download_utils import FileDownloadUtils
+from config import Config
 
 DOWNLOAD_SLEEP_TIME = 0.05  # To reduce bot detection
 logger = logging.getLogger(__name__)
@@ -25,7 +26,7 @@ class BaseDownloadService(ABC):
         """
         Common implementation for downloading a playlist.
         It handles cancellation flags, status updates, progress tracking,
-        and then calls the subclass-specific `download_track` for each track.
+        and then calls the subclass-specific download_track for each track.
         """
         if playlist.id not in cancellation_flags:
             logger.info("Creating cancellation flag for playlist id: %s", playlist.id)
@@ -63,6 +64,11 @@ class BaseDownloadService(ABC):
         """ Download a single track. """
         logger.debug(f"Download Track location: %s", track.download_location)
 
+        track.notes_errors = ""
+        db.session.add(track)
+        db.session.commit()
+
+
         if FileDownloadUtils.is_track_already_downloaded(track):
             return
 
@@ -73,6 +79,8 @@ class BaseDownloadService(ABC):
             track.notes_errors = str(e)
             db.session.add(track)
             db.session.commit()
+            raise e
+
 
     @classmethod
     def _generate_yt_dlp_options(cls, query: str, filename: str = None):
@@ -81,7 +89,7 @@ class BaseDownloadService(ABC):
             filename = FileDownloadUtils.sanitize_filename(query)
 
         output_template = os.path.join(os.getcwd(),
-                                       "downloads",
+                                       Config.DOWNLOAD_FOLDER,
                                        f"{filename}.%(ext)s")  # Ensure correct filename format
 
         return {
