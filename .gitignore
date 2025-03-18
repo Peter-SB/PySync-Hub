@@ -17,3 +17,4 @@ __pycache__/
 ffmpeg/ffprobe.exe
 ffmpeg/ffmpeg.exe
 /rekordbox_library_exports/
+/settings.yml

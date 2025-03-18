@@ -6,6 +6,7 @@ import logging
 
 from app import db
 from app.models import Track
+from config import Config
 
 logger = logging.getLogger(__name__)
 
@@ -52,7 +53,7 @@ class SoundcloudService:
         """
         Resolves a SoundCloud playlist URL using the SoundCloud API.
         """
-        client_id = os.environ.get('SOUNDCLOUD_CLIENT_ID')
+        client_id = Config.SOUNDCLOUD_CLIENT_ID
         if not client_id:
             raise ValueError("Missing SoundCloud client ID in environment variables.")
 
@@ -134,7 +135,7 @@ class SoundcloudService:
             # new_track_ids = [tid for tid in track_ids if str(tid) not in existing_track_ids]
 
             tracks_metadata = []
-            client_id = os.environ.get('SOUNDCLOUD_CLIENT_ID')
+            client_id = Config.SOUNDCLOUD_CLIENT_ID
             headers = {
                 "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
                               "AppleWebKit/537.36 (KHTML, like Gecko) "

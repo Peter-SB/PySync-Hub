@@ -7,10 +7,8 @@ services:
       - "5000:5000"
       #- "192.168.1.100:5000:5000" Something like this for specific backend custom ip
     volumes:
-      - .:/PySync-Hub  # Mount the entire project for live code updates
-      - ./downloads:/PySync-Hub/downloads  # Mount the downloads directory
-    env_file:
-      - .env
+      - .:/PySync-Hub
+      - ./downloads:/PySync-Hub/downloads
     restart: always
 
   frontend-react:
@@ -26,4 +24,4 @@ services:
     depends_on:
       - backend-flask
     # environment:
-    #    - REACT_APP_BACKEND_URL=http://your-custom-ip:5000  # Set the backend URL if needed
+    #    - REACT_APP_BACKEND_URL=http://your-custom-ip:5000  # Set the flask backend URL if needed

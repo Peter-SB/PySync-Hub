@@ -154,19 +154,20 @@ function PlaylistPage({ playlists }) {
                                         </div>
                                         <div className="flex flex-row items-end justify-end">
                                             {track.notes_errors && (
-                                                <div className="flex items-center ml-4">
-                                                    <div className="flex items-center justify-center bg-red-500 text-white rounded-full w-8 h-8 mr-2">
-                                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01M12 2a10 10 0 110 20 10 10 0 010-20z" />
-                                                        </svg>
-                                                    </div>
-                                                    <div className="text-red-700 text-sm">{track.notes_errors}</div>
-                                                </div>
-                                            )}
-                                            {track.download_location && (
-                                                <p className="text-green-700 text-xs mt-1">
-                                                    Location: {track.download_location}
-                                                </p>
+                                                    <img
+                                                        src="/icons/warning.png"
+                                                        alt="Warning"
+                                                        className="w-4 h-4 mx-1 inline"
+                                                    />
+                                                )}
+                                            {track.download_location ? (
+                                                <img
+                                                    src="/icons/accept.png"
+                                                    alt="Warning"
+                                                    className="w-4 h-4 ml-2 inline"
+                                                />
+                                            ) : (
+                                                <p className="text-gray-700 text-xs mt-1">Not Yet Downloaded</p>
                                             )}
                                         </div>
                                     </li>

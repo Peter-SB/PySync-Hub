@@ -4,6 +4,8 @@ from spotipy import Spotify
 from spotipy.oauth2 import SpotifyClientCredentials
 import os
 
+from config import Config
+
 logger = logging.getLogger(__name__)
 
 
@@ -11,8 +13,8 @@ class SpotifyService:
     @staticmethod
     def get_client():
         return Spotify(auth_manager=SpotifyClientCredentials(
-            client_id=os.environ.get('SPOTIFY_CLIENT_ID'),
-            client_secret=os.environ.get('SPOTIFY_CLIENT_SECRET')
+            client_id=Config.SPOTIFY_CLIENT_ID,
+            client_secret=Config.SPOTIFY_CLIENT_SECRET
         ))
 
     @staticmethod
