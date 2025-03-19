@@ -18,3 +18,4 @@ ffmpeg/ffprobe.exe
 ffmpeg/ffmpeg.exe
 /rekordbox_library_exports/
 /settings.yml
+/node_modules/

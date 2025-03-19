@@ -1,0 +1,23 @@
+{
+  "name": "pysync-hub-electron",
+  "version": "1.0.0",
+  "main": "electron.js",
+  "dist": "electron-builder",
+  "scripts": {
+    "electron": "electron .",
+    "start": "electron-forge start",
+    "package": "electron-forge package",
+    "make": "electron-forge make"
+  },
+  "devDependencies": {
+    "electron-prebuilt-compile": "25.9.8"
+  },
+  "build": {
+    "appId": "com.pysync.hub",
+    "productName": "PySync DJ Hub",
+    "directories": {
+      "output": "dist"
+    }
+  },
+  "dependencies": {}
+}
