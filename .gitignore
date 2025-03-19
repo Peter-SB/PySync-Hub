@@ -21,3 +21,5 @@ ffmpeg/ffmpeg.exe
 /node_modules/
 
 out/
+ffmpeg/ffmpeg
+ffmpeg/ffprobe
