@@ -3,7 +3,7 @@
 ## Export
 - export page
 - error display
-- playlists with same names
+- Potential Bug: playlists with same names
 
 ## Playlist/Track Managment
  - Better Errors
@@ -11,6 +11,8 @@
 
 
 ## Downloading
+- Add Quick Sync (That will not check file locations, only download new tracks without a location)
+- FIX: Cancle Button
 - Save a correct file type
 - Add metadata
 - - correct track artists
@@ -19,11 +21,15 @@
 
 
 ## Electron
-- todo
+- Optimise
+- Tool Bar
+- Try Icons
+- Investigate: Can you use the bundled FFMPEG that comes with electron/chromium?
+
 
 ## Docker
-- env file
+- ✅ Remove env file
 
 
 ## Other
-- cors
+- Further, investigate and fix any potential cors

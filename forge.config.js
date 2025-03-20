@@ -2,10 +2,11 @@ const { FusesPlugin } = require('@electron-forge/plugin-fuses');
 const { FuseV1Options, FuseVersion } = require('@electron/fuses');
 
 module.exports = {
-  packagerConfig: {
-    asar: true,
-  },
   rebuildConfig: {},
+  packagerConfig: {
+    asar: true, 
+    icon: './frontend-react/public/images/icon'
+  },
   makers: [
     {
       name: '@electron-forge/maker-squirrel',
