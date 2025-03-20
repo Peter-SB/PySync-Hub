@@ -4,9 +4,8 @@ import time
 import requests
 import logging
 
-from app import db
 from app.models import Track
-from app.config import Config
+from config import Config
 
 logger = logging.getLogger(__name__)
 

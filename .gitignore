@@ -9,22 +9,25 @@ __pycache__/
 .idea/
 *.db
 
-/downloads/
+downloads/
+music_downloads/
+
 /exports
 /exports/
 /migrations/
 /.vscode
-ffmpeg/ffprobe.exe
-ffmpeg/ffmpeg.exe
+
 /rekordbox_library_exports/
 /settings.yml
+
 /node_modules/
 node_modules/
 
+build/
 out/
-ffmpeg/ffmpeg
-ffmpeg/ffprobe
 dist/
 
-app/dist/
-app/build/
+ffmpeg/ffmpeg
+ffmpeg/ffprobe
+ffmpeg/ffprobe.exe
+ffmpeg/ffmpeg.exe

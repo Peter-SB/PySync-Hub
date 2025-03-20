@@ -4,7 +4,7 @@ from spotipy import Spotify
 from spotipy.oauth2 import SpotifyClientCredentials
 import os
 
-from app.config import Config
+from config import Config
 
 logger = logging.getLogger(__name__)
 

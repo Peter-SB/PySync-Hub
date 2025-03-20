@@ -6,7 +6,6 @@ import requests
 from mutagen.id3 import APIC, ID3, TALB, TIT2, TPE1
 from mutagen.mp3 import MP3
 
-from app.extensions import db
 from app.models import Track
 
 logger = logging.getLogger(__name__)

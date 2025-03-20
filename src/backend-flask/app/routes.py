@@ -1,13 +1,14 @@
 import logging
 import os
+import yaml
 from flask import Blueprint, request, jsonify, current_app
+
 from app.extensions import db, socketio
 from app.models import Track
 from app.repositories.playlist_repository import PlaylistRepository
 from app.services.export_services.export_itunesxml_service import ExportItunesXMLService
 from app.services.playlist_manager_service import PlaylistManagerService
-from app.config import Config
-import yaml
+from config import Config
 
 logger = logging.getLogger(__name__)
 api = Blueprint('api', __name__)

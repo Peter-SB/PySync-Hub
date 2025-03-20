@@ -5,7 +5,8 @@ module.exports = {
   rebuildConfig: {},
   packagerConfig: {
     asar: true, 
-    icon: './frontend-react/public/images/icon'
+    icon: './frontend-react/public/images/icon',
+    out: './dist'
   },
   makers: [
     {

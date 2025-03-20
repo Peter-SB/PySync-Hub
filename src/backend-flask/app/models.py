@@ -1,5 +1,6 @@
 import logging
 from datetime import datetime
+
 from app.extensions import db
 
 logger = logging.getLogger(__name__)

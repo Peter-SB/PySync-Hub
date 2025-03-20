@@ -9,7 +9,7 @@ from app.extensions import db, socketio, migrate
 from app.repositories.playlist_repository import PlaylistRepository
 from app.services.platform_services.spotify_service import SpotifyService
 from app.workers.download_worker import DownloadManager
-from app.config import Config
+from config import Config
 
 def create_app(app_config=Config):
     app = Flask(__name__)
@@ -33,7 +33,7 @@ def create_app(app_config=Config):
     )
 
     logger = logging.getLogger(__name__)
-    logger.info(f"Base Path={Config.base_path}")
+    logger.info(f"Base Path={Config.BASE_PATH}")
     logger.info(f"DB Path={Config.SQLALCHEMY_DATABASE_URI}")
     logger.info("Flask application initialized")
 
@@ -47,6 +47,7 @@ def create_app(app_config=Config):
 
     if not app.config.get("TESTING"):
         os.makedirs(os.path.join(os.getcwd(), app.config.get("DOWNLOAD_FOLDER")), exist_ok=True)
+
 
     app.download_manager = DownloadManager(app)
 
