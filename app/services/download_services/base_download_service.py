@@ -12,7 +12,7 @@ from app.extensions import db
 from app.models import Playlist, Track
 from app.repositories.playlist_repository import PlaylistRepository
 from app.utils.file_download_utils import FileDownloadUtils
-from config import Config
+from app.config import Config
 
 DOWNLOAD_SLEEP_TIME = 0.05  # To reduce bot detection
 logger = logging.getLogger(__name__)

@@ -6,7 +6,7 @@ import logging
 
 from app import db
 from app.models import Track
-from config import Config
+from app.config import Config
 
 logger = logging.getLogger(__name__)
 

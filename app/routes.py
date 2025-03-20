@@ -6,7 +6,7 @@ from app.models import Track
 from app.repositories.playlist_repository import PlaylistRepository
 from app.services.export_services.export_itunesxml_service import ExportItunesXMLService
 from app.services.playlist_manager_service import PlaylistManagerService
-from config import Config
+from app.config import Config
 import yaml
 
 logger = logging.getLogger(__name__)

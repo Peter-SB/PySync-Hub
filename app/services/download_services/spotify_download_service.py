@@ -7,7 +7,7 @@ from app.extensions import db
 from app.models import Track
 from app.services.download_services.base_download_service import BaseDownloadService
 from app.utils.file_download_utils import FileDownloadUtils
-from config import Config
+from app.config import Config
 
 logger = logging.getLogger(__name__)
 

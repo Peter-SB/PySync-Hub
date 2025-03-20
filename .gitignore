@@ -25,3 +25,6 @@ out/
 ffmpeg/ffmpeg
 ffmpeg/ffprobe
 dist/
+
+app/dist/
+app/build/

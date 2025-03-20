@@ -1,14 +1,32 @@
+import logging
 import os
+import sys
 
 import yaml
 
+logger = logging.getLogger(__name__)
+
+def get_settings_path():
+    if getattr(sys, 'frozen', False):  # Running as PyInstaller executable
+        base_path = sys._MEIPASS
+    else:
+        base_path = os.path.dirname(os.path.abspath(__file__))
+
+    print(f"Base path: {base_path}")
+    return os.path.join(base_path, "../settings.yml")
 
 class Config:
     BASE_DIR = os.path.abspath(os.path.dirname(__file__))
-    SETTINGS_PATH = os.path.join(BASE_DIR, 'settings.yml')
+    SETTINGS_PATH = get_settings_path()
+
+    if getattr(sys, 'frozen', False):
+        base_path = sys._MEIPASS  # When running as an executable
+    else:
+        base_path = os.path.abspath(".")
+
 
     # Database
-    SQLALCHEMY_DATABASE_URI = f"sqlite:///{os.path.join(BASE_DIR, 'database.db')}"
+    SQLALCHEMY_DATABASE_URI = f"sqlite:///{os.path.join(base_path, 'database.db')}"
     # SQLALCHEMY_DATABASE_URI = 'sqlite:///instance/pysync.db'  # os.environ.get('DATABASE_URL') or 'sqlite:///' + os.path.join(os.path.abspath(os.path.dirname(__file__)), 'pysync.db')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
@@ -18,16 +36,16 @@ class Config:
     FLASK_ENV = "development"
     DEBUG = True  # Enables auto-reload
 
-    with open(SETTINGS_PATH, 'r') as f:
-        settings = yaml.safe_load(f)
+    # with open(SETTINGS_PATH, 'r') as f:
+    #     settings = yaml.safe_load(f)
 
     SPOTIFY_CLIENT_ID = None
     SPOTIFY_CLIENT_SECRET = None
     SOUNDCLOUD_CLIENT_ID = None
 
     # Downloads Folder
-    DOWNLOAD_FOLDER = 'downloads'
-    EXPORT_FOLDER = './rekordbox_library_exports'
+    DOWNLOAD_FOLDER = '../downloads'
+    EXPORT_FOLDER = '../rekordbox_library_exports'
 
     @classmethod
     def load_settings(cls):
@@ -36,6 +54,7 @@ class Config:
         cls.SPOTIFY_CLIENT_ID = settings.get('SPOTIFY_CLIENT_ID')
         cls.SPOTIFY_CLIENT_SECRET = settings.get('SPOTIFY_CLIENT_SECRET')
         cls.SOUNDCLOUD_CLIENT_ID = settings.get('SOUNDCLOUD_CLIENT_ID')
+
 
 
 Config.load_settings()

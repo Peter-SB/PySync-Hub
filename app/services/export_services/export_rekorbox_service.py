@@ -9,7 +9,7 @@ from xml.dom import minidom
 from mutagen.easyid3 import EasyID3
 from mutagen.mp3 import MP3
 
-from config import Config
+from app.config import Config
 
 
 class RekordboxExportService:
