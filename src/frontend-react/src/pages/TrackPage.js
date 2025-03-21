@@ -104,14 +104,14 @@ function TrackPage() {
                     {track.album && <p className="text-gray-500">{track.album}</p>}
                     {track.platform === "spotify" && (
                       <img
-                        src="/icons/spotify.svg"
+                        src="./icons/spotify.svg"
                         alt="Spotify"
                         className="w-5 h-5 ml-2 inline"
                       />
                     )}
                     {track.platform === "soundcloud" && (
                       <img
-                        src="/icons/soundcloud.svg"
+                        src="./icons/soundcloud.svg"
                         alt="SoundCloud"
                         className="w-3 h-3 ml-2 inline"
                       />
@@ -120,14 +120,14 @@ function TrackPage() {
                   <div className="flex flex-row items-end justify-end">
                     {track.notes_errors && (
                       <img
-                        src="/icons/warning.png"
+                        src="./icons/warning.png"
                         alt="Warning"
                         className="w-4 h-4 mx-1 inline"
                       />
                     )}
                     {track.download_location ? (
                       <img
-                        src="/icons/accept.png"
+                        src="./icons/accept.png"
                         alt="Warning"
                         className="w-4 h-4 ml-2 inline"
                       />

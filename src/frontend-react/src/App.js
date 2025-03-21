@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+// import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'; // Use this for development and when running in web app
+import { HashRouter as Router, Routes, Route } from 'react-router-dom';  // Use this for production and when running in Electron. Because Electron uses file:// protocol and BrowserRouter doesn't work with file:// protocol
+
 import io from 'socket.io-client';
 import Sidebar from "./components/Sidebar";
 import DownloadPage from './pages/DownloadPage';
@@ -57,7 +59,7 @@ function App() {
         <Sidebar />
         <main className="flex-1">
           <Routes>
-            <Route path="/" element={<DownloadPage playlists={playlists} setPlaylists={setPlaylists}/>} />
+            <Route path="/" element={<DownloadPage playlists={playlists} setPlaylists={setPlaylists} />} />
             <Route path="/playlist/:playlistId" element={<PlaylistPage playlists={playlists} />} />
             <Route path="/tracks" element={<TrackPage />} />
             <Route path="/settings" element={<SettingsPage />} />

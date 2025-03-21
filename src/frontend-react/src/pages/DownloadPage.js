@@ -103,8 +103,8 @@ function DownloadPage({ playlists, setPlaylists }) {
             >
               <span className="font-medium text-l">Export All</span>
               <div className="bg-white p-0.25 flex items-center justify-center rounded-lg ml-2">
-                <img src="/icons/rekordbox.svg" alt="Rekordbox" className="h-6 w-6 rounded-lg m-0.5" />
-                <img src="/icons/export.svg" alt="Export" className="h-6 w-6 rounded-lg" />
+                <img src="./icons/rekordbox.svg" alt="Rekordbox" className="h-6 w-6 rounded-lg m-0.5" />
+                <img src="./icons/export.svg" alt="Export" className="h-6 w-6 rounded-lg" />
               </div>
             </button>
           </div>

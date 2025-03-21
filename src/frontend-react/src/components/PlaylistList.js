@@ -2,6 +2,7 @@
 import React from 'react';
 import PlaylistItem from './PlaylistItem';
 import './PlaylistList.css'; 
+import { Link } from 'react-router-dom';
 
 function PlaylistList({ playlists, refreshPlaylists, selectedPlaylists, onSelectChange }) {
   return (
@@ -19,7 +20,7 @@ function PlaylistList({ playlists, refreshPlaylists, selectedPlaylists, onSelect
           ))
         ) : (
           <div className="p-4 text-center text-gray-500 bg-white rounded">
-            No playlists added yet. If this is your first time using the app, make sure to read the Help page and set your <a href="/settings" className="text-blue-500 hover:underline">Settings</a>.
+            No playlists added yet. If this is your first time using the app, make sure to read the Help page and set your <Link to="/settings" className="text-blue-500 hover:underline">Settings</Link>.
           </div>
         )}
       </div>

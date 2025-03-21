@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain } = require("electron");
+const { app, BrowserWindow, ipcMain, shell } = require("electron");
 const path = require("path");
 const fs = require("fs");
 const yaml = require("js-yaml");
@@ -8,7 +8,7 @@ let mainWindow;
 // Load settings from settings.yml
 function loadSettings() {
   try {
-    const settings = yaml.load(fs.readFileSync(path.join(__dirname, "settings.yml"), "utf8"));
+    const settings = yaml.load(fs.readFileSync(path.join(__dirname, "../settings.yml"), "utf8"));
     return {
       width: settings.WINDOW_WIDTH || 1920*0.75,
       height: settings.WINDOW_HEIGHT || 1080*0.75,
@@ -31,7 +31,7 @@ function createWindow() {
     height: settings.height,
     resizable: true, 
     webPreferences: {
-      nodeIntegration: false,
+      nodeIntegration: true,
       contextIsolation: true,
       enableRemoteModule: false,
       //preload: path.join(__dirname, "preload.js"),
@@ -50,6 +50,15 @@ function createWindow() {
 
   mainWindow.on("closed", () => {
     mainWindow = null;
+  });
+
+  // Open external links in default browser
+  mainWindow.webContents.setWindowOpenHandler(({ url }) => {
+    if (url.startsWith('http')) {
+      shell.openExternal(url);
+      return { action: 'deny' };
+    }
+    return { action: 'allow' };
   });
 }
 

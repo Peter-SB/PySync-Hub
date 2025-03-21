@@ -1,6 +1,7 @@
 import { FaMusic, FaCog, FaList } from "react-icons/fa";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faQuestion } from "@fortawesome/free-solid-svg-icons";
+import { Link } from 'react-router-dom';
 
 
 export default function Sidebar({ onExport }) {
@@ -11,22 +12,22 @@ export default function Sidebar({ onExport }) {
         <nav>
           <ul>
             <li className="mb-4">
-              <a href="/" className="flex items-center space-x-3 p-3 rounded hover:bg-gray-700 hover:text-white">
+              <Link to="/" className="flex items-center space-x-3 p-3 rounded hover:bg-gray-700 hover:text-white">
                 <FaList className="text-xl" />
                 <span>Playlists</span>
-              </a>
+              </Link>
             </li>
             <li className="mb-4">
-              <a href="/tracks" className="flex items-center space-x-3 p-3 rounded hover:bg-gray-700 hover:text-white">
+              <Link to="/tracks" className="flex items-center space-x-3 p-3 rounded hover:bg-gray-700 hover:text-white">
                 <FaMusic className="text-xl" />
                 <span>Tracks</span>
-              </a>
+              </Link>
             </li>
             <li className="mb-4">
-              <a href="/help" className="flex items-center space-x-3 p-3 rounded hover:bg-gray-700 hover:text-white">
+              <Link to="/help" className="flex items-center space-x-3 p-3 rounded hover:bg-gray-700 hover:text-white">
                 <FontAwesomeIcon icon={faQuestion} className="text-2xl mx-1" />
                 <span>Help</span>
-              </a>
+              </Link>
             </li>
           </ul>
         </nav>
@@ -35,10 +36,10 @@ export default function Sidebar({ onExport }) {
         <nav>
           <ul>
             <li>
-              <a href="/settings" className="flex items-center space-x-3 p-3 rounded hover:bg-gray-700 hover:text-white">
+              <Link to="/settings" className="flex items-center space-x-3 p-3 rounded hover:bg-gray-700 hover:text-white">
                 <FaCog className="text-xl" />
                 <span>Settings</span>
-              </a>
+              </Link>
             </li>
           </ul>
         </nav>

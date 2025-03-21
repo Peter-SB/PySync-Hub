@@ -101,10 +101,10 @@ function PlaylistItem({ playlist, refreshPlaylists, isSelected, onSelectChange }
               {playlist.name}
             </a>
             {playlist.platform === "spotify" && (
-            <img src="/icons/spotify.svg" alt="Spotify" className="w-5 h-5 ml-2" />
+            <img src="./icons/spotify.svg" alt="Spotify" className="w-5 h-5 ml-2" />
           )}
           {playlist.platform === "soundcloud" && (
-            <img src="/icons/soundcloud.svg" alt="SoundCloud" className="w-4 h-4 p-0.5 ml-2" />
+            <img src="./icons/soundcloud.svg" alt="SoundCloud" className="w-4 h-4 p-0.5 ml-2" />
           )}
           </h3>
           <div className="text-sm text-gray-600">
