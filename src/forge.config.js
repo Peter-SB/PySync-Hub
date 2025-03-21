@@ -5,9 +5,9 @@ module.exports = {
   rebuildConfig: {},
   packagerConfig: {
     asar: true, 
-    icon: './frontend-react/public/images/icon',
-    out: './dist'
+    icon: './frontend-react/public/images/icon'
   },
+  outDir: './dist',
   makers: [
     {
       name: '@electron-forge/maker-squirrel',
