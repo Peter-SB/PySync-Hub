@@ -85,7 +85,7 @@ jobs:
       - name: Prepare Artifact Directory
         run: |
           mkdir -p artifact/dir
-          mv dist/* artifact/dist/
+          mv dist artifact
 
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v4
