@@ -1,0 +1,56 @@
+name: Build Windows App
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "16"
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.9"
+
+      - name: Install Dependencies
+        run: |
+          cd src
+          npm install
+          cd frontend-react && npm install && cd ..
+          pip install pyinstaller
+
+      - name: Build React Frontend
+        run: |
+          cd frontend-react
+          npm run build
+          cd ..
+
+      - name: Package Electron App
+        run: npm run make
+
+      - name: Build Python Backend with PyInstaller
+        run: pyinstaller src/backend-flask/pysync-hub-backend.spec
+
+      - name: Download FFMPEG/FFPROBE for Windows
+        run: |
+          mkdir dist\ffmpeg
+          curl -L "https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-essentials.zip" -o ffmpeg.zip
+          tar -xf ffmpeg.zip -C dist\ffmpeg
+          del ffmpeg.zip
+
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: windows-build
+          path: dist/
