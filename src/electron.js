@@ -10,6 +10,7 @@ const { dialog } = require("electron");
 let mainWindow;
 let flaskProcess = null;
 const basePath =   path.join(__dirname, "../../../../");
+const flaskExePath = path.join(basePath, "dist/pysync-hub-backend", "pysync-hub-backend.exe");
 
 function loadSettings() {
   try {
@@ -32,8 +33,6 @@ const settings = loadSettings();
 let zoomFactor = settings.zoomFactor;
 
 function startFlask() {
-  const flaskExePath = path.join(basePath, "dist/pysync-hub-backend", "pysync-hub-backend.exe");
-
   console.log("Starting Flask backend. Location:", flaskExePath);
   flaskProcess = spawn(flaskExePath, [], {
     detached: false, // false: Keep process tied to Electron
@@ -152,6 +151,7 @@ ipcMain.on("reset-zoom", () => {
 app.on("ready", () => {
   startFlask();
   createWindow();
+  displayDevDialog();
 });
 
 function displayDevDialog() {
@@ -161,7 +161,7 @@ function displayDevDialog() {
   dialog.showMessageBox({
     type: "info",
     title: "Base Path",
-    message: `__dirname: ${__dirname}, base_path: ${path.join(__dirname, "../../../../")}, isPackaged: ${app.isPackaged}, rpath: ${process.resourcesPath}`,
+    message: `__dirname: ${__dirname}, base_path: ${path.join(__dirname, "../../../../")}, isPackaged: ${app.isPackaged}, rpath: ${process.resourcesPath}, flaskExePath: ${flaskExePath}`,
   });
 }
 
