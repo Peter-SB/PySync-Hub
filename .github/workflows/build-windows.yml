@@ -28,7 +28,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
-          python-version: "3.9"
+          python-version: "3.13"
 
       - name: Install Python Dependencies
         run: |
@@ -70,8 +70,13 @@ jobs:
           del ffmpeg.zip
         working-directory: ${{ github.workspace }}
 
+      - name: Prepare Artifact Directory
+        run: |
+          mkdir -p artifact/dir
+          mv dist/* artifact/dir/
+
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v4
         with:
           name: PySync-Hub-windows
-          path: dist/
+          path: artifact/

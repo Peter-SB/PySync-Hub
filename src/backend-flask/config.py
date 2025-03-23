@@ -32,7 +32,17 @@ class Config:
     SPOTIFY_CLIENT_SECRET = None
     SOUNDCLOUD_CLIENT_ID = None
 
-    with open(SETTINGS_PATH, 'r') as f:
+    if not os.path.exists(SETTINGS_PATH):
+        default_settings = {
+            "SPOTIFY_CLIENT_ID": "",
+            "SPOTIFY_CLIENT_SECRET": "",
+            "SOUNDCLOUD_CLIENT_ID": ""
+        }
+        with open(SETTINGS_PATH, 'w') as f:
+            yaml.safe_dump(default_settings, f, default_flow_style=False)
+        print(f"Created new settings file at: {SETTINGS_PATH}")
+
+    with open(SETTINGS_PATH, 'r') as f: # todo: handle creating new file
         settings = yaml.safe_load(f)
     SPOTIFY_CLIENT_ID = settings.get('SPOTIFY_CLIENT_ID')
     SPOTIFY_CLIENT_SECRET = settings.get('SPOTIFY_CLIENT_SECRET')
