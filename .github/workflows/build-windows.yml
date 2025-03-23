@@ -44,7 +44,9 @@ jobs:
           cd ..
 
       - name: Build Python Backend with PyInstaller
-        run: pyinstaller src/backend-flask/pysync-hub-backend.spec
+        run: |
+          cd src/backend-flask/
+          pyinstaller pysync-hub-backend.spec
 
       - name: Download FFMPEG/FFPROBE for Windows
         run: |
@@ -56,5 +58,5 @@ jobs:
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: windows-build
+          name: PySync-Hub-windows
           path: dist/
