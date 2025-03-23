@@ -65,7 +65,7 @@ jobs:
       - name: Download and Unzip FFMPEG/FFPROBE
         run: |
           Invoke-WebRequest -Uri "https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-essentials.zip" -OutFile "ffmpeg.zip"
-          Expand-Archive -Path "ffmpeg.zip" -DestinationPath "ffmpeg"
+          Expand-Archive -Path ffmpeg.zip -DestinationPath ffmpeg_temp
         working-directory: ${{ github.workspace }}
 
       - name: Copy FFMPEG/FFPROBE to dist and Cleanup
