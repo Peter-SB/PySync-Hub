@@ -33,13 +33,14 @@ jobs:
       - name: Build React Frontend
         run: |
           cd src/frontend-react
-          npm run build
-          cd ..
+          CI=false npm run build
+          cd ../..
 
       - name: Package Electron App
         run: |
           cd src
           npm run make
+          cd ..
 
       - name: Build Python Backend with PyInstaller
         run: pyinstaller src/backend-flask/pysync-hub-backend.spec
