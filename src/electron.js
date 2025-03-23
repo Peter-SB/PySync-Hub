@@ -10,6 +10,20 @@ const { dialog } = require("electron");
 let mainWindow;
 let flaskProcess = null;
 const basePath =   path.join(__dirname, "../../../../");
+const flaskExePath = getFlaskExePath();
+
+function getFlaskExePath() {
+  const isWindows = process.platform === "win32";
+  const isMac = process.platform === "darwin";
+
+  if (isWindows) {
+    return path.join(basePath, "dist/pysync-hub-backend", "pysync-hub-backend.exe");
+  } else if (isMac) {
+    return path.join(basePath, "dist/pysync-hub-backend", "pysync-hub-backend");
+  } else {
+    return null;
+  }
+}
 
 function loadSettings() {
   try {
@@ -32,9 +46,21 @@ const settings = loadSettings();
 let zoomFactor = settings.zoomFactor;
 
 function startFlask() {
-  const flaskExePath = path.join(basePath, "dist/pysync-hub-backend", "pysync-hub-backend.exe");
-
   console.log("Starting Flask backend. Location:", flaskExePath);
+  if (!flaskExePath) {
+    dialog.showErrorBox(
+      "Platform Not Supported",
+      `It was detected you platform is ${process.platform}.`
+    );
+    return;
+  }
+  if (!fs.existsSync(flaskExePath)) {
+    dialog.showErrorBox(
+      "Flask Backend Executable Not Found",
+      `The Flask backend executable was not found at the expected location:\n\n${flaskExePath}\n\nPlease ensure it exists and try again.`
+    );
+    return;
+  }
   flaskProcess = spawn(flaskExePath, [], {
     detached: false, // false: Keep process tied to Electron
     stdio: "ignore",
@@ -57,37 +83,6 @@ function stopFlask() {
     flaskProcess = null;
   }
 }
-
-function startFlask_multiplatform() {
-  const isWindows = process.platform === "win32";
-  const isMac = process.platform === "darwin";
-
-  let flaskCommand;
-  let flaskArgs = [];
-  let flaskOptions = { detached: false, stdio: "ignore" };
-
-  if (isWindows) {
-    flaskCommand = path.join(__dirname, "backend", "flask_app.exe"); // Windows .exe
-  } else if (isMac || isLinux) {
-    flaskCommand = path.join(__dirname, "backend", "flask_app"); // macOS executable
-    flaskOptions.shell = true;
-  } else {
-    console.error("Unsupported OS detected.");
-    return;
-  }
-
-  console.log(`Starting Flask backend: ${flaskCommand}`);
-  flaskProcess = spawn(flaskCommand, flaskArgs, flaskOptions);
-
-  flaskProcess.on("error", (err) => {
-    console.error("Failed to start Flask:", err);
-  });
-
-  flaskProcess.on("exit", (code) => {
-    console.log(`Flask exited with code ${code}`);
-  });
-}
-
 
 function createWindow() {
   
@@ -152,6 +147,7 @@ ipcMain.on("reset-zoom", () => {
 app.on("ready", () => {
   startFlask();
   createWindow();
+  //displayDevDialog();
 });
 
 function displayDevDialog() {
@@ -161,7 +157,7 @@ function displayDevDialog() {
   dialog.showMessageBox({
     type: "info",
     title: "Base Path",
-    message: `__dirname: ${__dirname}, base_path: ${path.join(__dirname, "../../../../")}, isPackaged: ${app.isPackaged}, rpath: ${process.resourcesPath}`,
+    message: `__dirname: ${__dirname}, base_path: ${path.join(__dirname, "../../../../")}, isPackaged: ${app.isPackaged}, rpath: ${process.resourcesPath}, flaskExePath: ${flaskExePath}`,
   });
 }
 

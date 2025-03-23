@@ -18,39 +18,77 @@ jobs:
         with:
           node-version: "16"
 
-      - name: Setup Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: "3.9"
-
-      - name: Install Dependencies
+      - name: Install Node Dependencies
         run: |
           cd src
           npm install
-          cd frontend-react && npm install && cd ..
+          cd frontend-react && npm install
+          cd ../..
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+
+      - name: Install Python Dependencies
+        run: |
+          cd src/backend-flask
           pip install pyinstaller
+          pip install -r requirements.txt
 
       - name: Build React Frontend
         run: |
-          cd frontend-react
+          cd src/frontend-react
+          $env:CI = "false"
           npm run build
-          cd ..
+          cd ../..
 
       - name: Package Electron App
-        run: npm run make
+        run: |
+          cd src
+          npm run make
+          cd ..
 
       - name: Build Python Backend with PyInstaller
-        run: pyinstaller src/backend-flask/pysync-hub-backend.spec
-
-      - name: Download FFMPEG/FFPROBE for Windows
         run: |
-          mkdir dist\ffmpeg
-          curl -L "https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-essentials.zip" -o ffmpeg.zip
-          tar -xf ffmpeg.zip -C dist\ffmpeg
-          del ffmpeg.zip
+          cd src/backend-flask/
+          pyinstaller pysync-hub-backend.spec
+          cd ../..
+
+      - name: Remove dist/make Directory
+        run: |
+          if (Test-Path -Path dist/make) {
+            Remove-Item -Path dist/make -Recurse -Force
+          }
+        working-directory: ${{ github.workspace }}
+
+      - name: Download and Unzip FFMPEG/FFPROBE
+        run: |
+          Invoke-WebRequest -Uri "https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-essentials.zip" -OutFile "ffmpeg.zip"
+          Expand-Archive -Path "ffmpeg.zip" -DestinationPath "ffmpeg"
+        working-directory: ${{ github.workspace }}
+
+      - name: Copy FFMPEG/FFPROBE to dist and Cleanup
+        run: |
+          New-Item -ItemType Directory -Path dist/ffmpeg -Force
+
+          Copy-Item -Path ffmpeg\ffmpeg-*\bin\ffmpeg.exe -Destination dist/ffmpeg
+          Copy-Item -Path ffmpeg\ffmpeg-*\bin\ffprobe.exe -Destination dist/ffmpeg
+
+          Remove-Item -Path ffmpeg.zip -Force
+          Remove-Item -Path ffmpeg -Recurse -Force
+
+          Get-ChildItem -Path dist/ffmpeg
+          Get-ChildItem -Path dist
+        working-directory: ${{ github.workspace }}
+
+      - name: Prepare Artifact Directory
+        run: |
+          mkdir -p artifact/dir
+          mv dist artifact
 
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: windows-build
-          path: dist/
+          name: PySync-Hub-windows
+          path: artifact/
