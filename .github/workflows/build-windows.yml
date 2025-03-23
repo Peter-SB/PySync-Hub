@@ -18,17 +18,22 @@ jobs:
         with:
           node-version: "16"
 
+      - name: Install Node Dependencies
+        run: |
+          cd src
+          npm install
+          cd frontend-react && npm install
+
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
           python-version: "3.9"
 
-      - name: Install Dependencies
+      - name: Install Python Dependencies
         run: |
-          cd src
-          npm install
-          cd frontend-react && npm install && cd ..
+          cd src/backend-flask
           pip install pyinstaller
+          pip install -r requirements.txt
 
       - name: Build React Frontend
         run: |
