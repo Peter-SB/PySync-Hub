@@ -127,7 +127,7 @@ def toggle_playlist():
 @api.route('/api/export', methods=['GET'])
 def export_rekordbox():
     logger.info("Exporting Rekordbox XML")
-    EXPORT_FOLDER = os.path.join(os.getcwd(), Config.EXPORT_FOLDER)
+    EXPORT_FOLDER = Config.EXPORT_FOLDER
     EXPORT_FILENAME = 'rekordbox.xml'
 
     try:
@@ -172,7 +172,7 @@ def settings():
         'SOUNDCLOUD_CLIENT_ID': ''
     }
 
-    settings_path = os.path.join(current_app.root_path, '../settings.yml')
+    settings_path = Config.SETTINGS_PATH
 
     if not os.path.exists(settings_path):
         logger.info("Creating default settings file at location:%s", settings_path)

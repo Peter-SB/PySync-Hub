@@ -22,7 +22,7 @@
     "yaml": "^2.7.0"
   },
   "scripts": {
-    "start": "electron-forge start",
+    "start": "cd frontend-react && npm run build && cd .. && electron-forge start",
     "package": "electron-forge package",
     "make": "electron-forge make",
     "build": "cd frontend-react && npm run build && cd .. && npx electron-forge make"

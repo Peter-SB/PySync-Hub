@@ -9,7 +9,6 @@ colorama==0.4.6
 construct==2.10.70
 ffmpeg==1.4
 ffprobe==0.5
-Flask==3.1.0
 flask-cors==5.0.1
 Flask-Migrate==4.1.0
 Flask-SocketIO==5.5.1
@@ -56,3 +55,9 @@ wsproto==1.2.0
 yt-dlp==2025.2.19
 eventlet>=0.24.1
 pyyaml>=5.4.1
+Flask==3.1.0
+Flask_Migrate==4.1.0
+Flask_SocketIO==5.5.1
+flask_sqlalchemy==3.1.1
+PyYAML==6.0.2
+yt_dlp==2025.3.21

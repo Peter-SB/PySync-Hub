@@ -25,7 +25,7 @@ class SpotifyDownloadService(BaseDownloadService):
 
         sanitized_title, url_to_use = cls.method_name(query, track)
 
-        file_path = os.path.join(os.getcwd(), Config.DOWNLOAD_FOLDER, f"{sanitized_title}.mp3")
+        file_path = os.path.join(Config.DOWNLOAD_FOLDER, f"{sanitized_title}.mp3")
 
         # Check if the file already exists to avoid duplicate downloads
         if os.path.exists(file_path):

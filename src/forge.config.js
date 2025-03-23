@@ -7,7 +7,7 @@ module.exports = {
     asar: true, 
     icon: './frontend-react/public/images/icon'
   },
-  outDir: './dist',
+  outDir: '../dist',
   makers: [
     {
       name: '@electron-forge/maker-squirrel',

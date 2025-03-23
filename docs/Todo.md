@@ -33,3 +33,6 @@
 
 ## Other
 - Further, investigate and fix any potential cors
+
+## Settings
+- Dont override other settings when saving

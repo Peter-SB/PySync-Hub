@@ -155,14 +155,14 @@ function PlaylistPage({ playlists }) {
                                         <div className="flex flex-row items-end justify-end">
                                             {track.notes_errors && (
                                                     <img
-                                                        src="/icons/warning.png"
+                                                        src="./icons/warning.png"
                                                         alt="Warning"
                                                         className="w-4 h-4 mx-1 inline"
                                                     />
                                                 )}
                                             {track.download_location ? (
                                                 <img
-                                                    src="/icons/accept.png"
+                                                    src="./icons/accept.png"
                                                     alt="Warning"
                                                     className="w-4 h-4 ml-2 inline"
                                                 />

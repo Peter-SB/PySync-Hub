@@ -88,7 +88,7 @@ class BaseDownloadService(ABC):
         if not filename:
             filename = FileDownloadUtils.sanitize_filename(query)
 
-        output_template = os.path.join(os.getcwd(),
+        output_template = os.path.join(
                                        Config.DOWNLOAD_FOLDER,
                                        f"{filename}.%(ext)s")  # Ensure correct filename format
 
