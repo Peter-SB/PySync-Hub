@@ -16,6 +16,7 @@ class Config:
     SETTINGS_PATH = os.path.join(BASE_PATH, "settings.yml")
     DOWNLOAD_FOLDER = os.path.join(BASE_PATH, 'music_downloads')
     EXPORT_FOLDER = os.path.join(BASE_PATH, 'rekordbox_library_exports')
+    FFMPEG_FOLDER = os.path.join(get_base_path(), '../ffmpeg')
 
     # Database
     SQLALCHEMY_DATABASE_URI = f"sqlite:///{os.path.join(BASE_PATH, 'database.db')}"

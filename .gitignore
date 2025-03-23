@@ -31,3 +31,7 @@ ffmpeg/ffmpeg
 ffmpeg/ffprobe
 ffmpeg/ffprobe.exe
 ffmpeg/ffmpeg.exe
+/src/ffmpeg/ffmpeg
+/src/ffmpeg/ffmpeg.exe
+/src/ffmpeg/ffprobe
+/src/ffmpeg/ffprobe.exe
