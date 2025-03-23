@@ -151,7 +151,7 @@ ipcMain.on("reset-zoom", () => {
 app.on("ready", () => {
   startFlask();
   createWindow();
-  displayDevDialog();
+  //displayDevDialog();
 });
 
 function displayDevDialog() {
