@@ -33,7 +33,8 @@ jobs:
       - name: Build React Frontend
         run: |
           cd src/frontend-react
-          CI=false npm run build
+          $env:CI = "false"
+          npm run build
           cd ../..
 
       - name: Package Electron App
