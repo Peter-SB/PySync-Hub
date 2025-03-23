@@ -48,6 +48,13 @@ jobs:
           cd src/backend-flask/
           pyinstaller pysync-hub-backend.spec
 
+      - name: Remove dist/make Directory
+        run: |
+          if (Test-Path -Path dist/make) {
+            Remove-Item -Path dist/make -Recurse -Force
+          }
+        working-directory: src
+
       - name: Download FFMPEG/FFPROBE for Windows
         run: |
           mkdir dist\ffmpeg
