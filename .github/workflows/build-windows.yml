@@ -62,12 +62,21 @@ jobs:
           }
         working-directory: ${{ github.workspace }}
 
-      - name: Download FFMPEG/FFPROBE for Windows
+      - name: Download and Unzip FFMPEG/FFPROBE
         run: |
-          mkdir dist\ffmpeg
-          curl -L "https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-essentials.zip" -o ffmpeg.zip
-          tar -xf ffmpeg.zip -C dist\ffmpeg
-          del ffmpeg.zip
+          Invoke-WebRequest -Uri "https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-essentials.zip" -OutFile "ffmpeg.zip"
+          Expand-Archive -Path "ffmpeg.zip" -DestinationPath "ffmpeg"
+        working-directory: ${{ github.workspace }}
+
+      - name: Copy FFMPEG/FFPROBE to dist and Cleanup
+        run: |
+          mkdir -Force dist/ffmpeg
+          Get-ChildItem -Path ffmpeg -Recurse | ForEach-Object {
+            if ($_.Name -match "ffmpeg\.exe$|ffprobe\.exe$") {
+              Copy-Item -Path $_.FullName -Destination dist/ffmpeg/ -Force
+            }
+          }
+          Remove-Item -Path ffmpeg.zip, ffmpeg_temp -Recurse -Force
         working-directory: ${{ github.workspace }}
 
       - name: Prepare Artifact Directory
