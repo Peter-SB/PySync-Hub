@@ -23,12 +23,12 @@
 ## Electron
 - Optimise
 - Tool Bar
-- Try Icons
+- Tray Icons
 - Investigate: Can you use the bundled FFMPEG that comes with electron/chromium?
-
+- Proper backend shutdown. I think downloader thread is still running.
 
 ## Docker
-- ✅ Remove env file
+- Fix. Broken during electron refactor.
 
 
 ## Other

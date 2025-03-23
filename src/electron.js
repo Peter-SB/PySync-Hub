@@ -8,7 +8,7 @@ const { dialog } = require("electron");
 
 
 let mainWindow;
-let backendFlaskProcess = null;
+let flaskProcess = null;
 const basePath =   path.join(__dirname, "../../../../");
 
 function loadSettings() {

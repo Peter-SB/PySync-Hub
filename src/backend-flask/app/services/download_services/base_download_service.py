@@ -127,6 +127,7 @@ class BaseDownloadService(ABC):
 
         # Possible locations
         possible_paths = [
+            os.path.join(Config.FFMPEG_FOLDER, ffmpeg_name),
             "/ffmpeg/ffmpeg",
             os.path.join(base_path, "ffmpeg", ffmpeg_name),  # App bundle path
             os.path.join(base_path, ffmpeg_name),  # Directly in app folder
@@ -141,6 +142,8 @@ class BaseDownloadService(ABC):
                 return path
 
         # Fallback: Check system PATH
+
+        print(possible_paths)
         logger.info("FFmepg Path Not Found. Check ffmpeg folder. Falling back to search for global FFmpeg")
         return ffmpeg_name  # Allows the system to find FFmpeg if installed globally
 
