@@ -13,7 +13,7 @@ from mutagen.mp3 import MP3
 
 logger = logging.getLogger(__name__)
 
-type DownloadedTrackType = tuple[int, str]
+DownloadedTrackType = tuple[int, str]
 
 
 class ExportItunesXMLService:
