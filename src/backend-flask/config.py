@@ -27,12 +27,13 @@ class Config:
     FLASK_APP = "app.py"
     FLASK_ENV = "development"
     DEBUG = True  # Enables auto-reload
+    TESTING = False
 
     SPOTIFY_CLIENT_ID = None
     SPOTIFY_CLIENT_SECRET = None
     SOUNDCLOUD_CLIENT_ID = None
 
-    if not os.path.exists(SETTINGS_PATH):
+    if not os.path.exists(SETTINGS_PATH) and not TESTING:
         default_settings = {
             "SPOTIFY_CLIENT_ID": "",
             "SPOTIFY_CLIENT_SECRET": "",

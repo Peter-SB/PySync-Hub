@@ -39,7 +39,7 @@ function AddPlaylistForm({ onPlaylistAdded, setError }) {
           type="text"
           value={playlistUrl}
           onChange={(e) => setPlaylistUrl(e.target.value)}
-          placeholder="Enter Spotify playlist URL or ID"
+          placeholder="Enter Playlist URL"
           className="flex-1 p-2 border rounded w-full"
         />
         <button 
