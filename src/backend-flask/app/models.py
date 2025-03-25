@@ -28,12 +28,6 @@ class Playlist(db.Model):
     @property
     def downloaded_track_count(self):
         """Returns the number of tracks in the playlist that have a download location."""
-        tracks_with_download_location = [pt.track for pt in self.tracks if pt.track and pt.track.download_location]
-        tracks_without_download_location = [pt.track for pt in self.tracks if pt.track and not pt.track.download_location]
-        # logger.info(f"Downloaded Tracks playlist {self.name}: {(tracks_without_download_location)}")
-        # logger.info(f"non tracks: {[pt.track.name for pt in self.tracks if not pt.track]}")
-        # logger.info(f"number of tracks: {len([pt.track for pt in self.tracks if pt.track])}")
-        # logger.info(f"number of tracks in the playlist that have a download location: {len(tracks_with_download_location)}")
         return sum(1 for pt in self.tracks if pt.track and pt.track.download_location)
 
     def to_dict(self):

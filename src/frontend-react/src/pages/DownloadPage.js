@@ -46,7 +46,7 @@ function DownloadPage({ playlists, setPlaylists }) {
   const handleSync = async () => {
     const payload = selectedPlaylists.length > 0 ? { playlist_ids: selectedPlaylists } : {};
     try {
-      const response = await fetch(`${backendUrl}/api/playlists/refresh`, {
+      const response = await fetch(`${backendUrl}/api/playlists/sync`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
@@ -137,7 +137,7 @@ function DownloadPage({ playlists, setPlaylists }) {
 
       <PlaylistList
         playlists={playlists}
-        refreshPlaylists={fetchPlaylists}
+        fetchPlaylists={fetchPlaylists}
         selectedPlaylists={selectedPlaylists}
         onSelectChange={handleCheckboxChange}
       />

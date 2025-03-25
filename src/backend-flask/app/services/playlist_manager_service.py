@@ -18,45 +18,35 @@ logger = logging.getLogger(__name__)
 class PlaylistManagerService:
 
     @staticmethod
-    def refresh_playlists(playlists: list[Playlist]) -> List[Playlist]:
+    def sync_playlists(playlists: list[Playlist]) -> List[Playlist]:
         """
-        Sync playlists from external platform (e.g., Spotify).
+        Sync playlists from external platform (e.g. Spotify, Souncloud).
 
         If selected_ids is provided, only those playlists are synced.
         Otherwise, all playlists are synced.
 
-        :param selected_ids: Optional list of playlist IDs to sync.
+        :param playlists: List of Playlist objects to sync.
         :return: List of playlists that were processed.
         """
         for playlist in playlists:
-            if playlist.platform == 'spotify':
-                try:
+            try:
+                data = None
+                if playlist.platform == 'spotify':
                     data = SpotifyService.get_playlist_data(playlist.external_id)
-                    playlist.name = data['name']
-                    playlist.last_synced = datetime.utcnow()
-                    playlist.image_url = data['image_url']
-                    playlist.track_count = data['track_count']
-                    logger.info("Pulled latest playlist info (ID: %s, external_id: %s)", playlist.id,
-                                playlist.external_id)
-
-                    TrackManagerService.fetch_playlist_tracks(playlist.id)
-
-                except Exception as e:
-                    logger.error("Failed to sync playlist ID %s: %s", playlist.id, e, exc_info=True)
-            elif playlist.platform == 'soundcloud':
-                try:
-                    # For SoundCloud playlists, we use the stored URL to re-fetch the playlist data.
+                elif playlist.platform == 'soundcloud':
                     data = SoundcloudService.get_playlist_data(playlist.url)
-                    playlist.name = data['name']
-                    playlist.last_synced = datetime.utcnow()
-                    playlist.image_url = data['image_url']
-                    playlist.track_count = data['track_count']
-                    logger.info("Pulled latest SoundCloud playlist info (ID: %s, external_id: %s)",
-                                playlist.id, playlist.external_id)
 
-                    TrackManagerService.fetch_playlist_tracks(playlist.id)
-                except Exception as e:
-                    logger.error("Failed to sync SoundCloud playlist ID %s: %s", playlist.id, e, exc_info=True)
+                playlist.name = data['name']
+                playlist.last_synced = datetime.utcnow()
+                playlist.image_url = data['image_url']
+                playlist.track_count = data['track_count']
+                logger.info("Pulled latest playlist info (ID: %s, external_id: %s)", playlist.id,
+                            playlist.external_id)
+
+                TrackManagerService.fetch_playlist_tracks(playlist.id)
+
+            except Exception as e:
+                logger.error("Failed to sync playlist ID %s: %s", playlist.id, e, exc_info=True)
 
         try:
             db.session.commit()
@@ -83,7 +73,7 @@ class PlaylistManagerService:
             except Exception as e:
                 logger.error("Error fetching SoundCloud playlist data for URL %s: %s", url_or_id, e, exc_info=True)
                 return f"Error fetching SoundCloud playlist data: {e}"
-        else:
+        elif "open.spotify.com/playlist" in url_or_id:
             platform = 'spotify'
             try:
                 playlist_data = SpotifyService.get_playlist_data(url_or_id)
@@ -96,6 +86,9 @@ class PlaylistManagerService:
             except Exception as e:
                 logger.error("Error fetching Spotify playlist data for url_or_id '%s': %s", url_or_id, e, exc_info=True)
                 return "Error fetching Spotify playlist data."
+        else:
+            logger.info("Unrecognized platform in url_or_id: %s", url_or_id)
+            return "URL Doesnt Look Right. Please try again with a valid URL."
 
         logger.debug("Fetched playlist data: %s", playlist_data)
 

@@ -52,12 +52,17 @@ class DownloadManager:
     def add_to_queue(self, playlist_id):
         self.download_queue.put(playlist_id)
 
+        # Set cancellation flag
+        if playlist_id not in self.cancellation_flags:
+            self.cancellation_flags[playlist_id] = threading.Event()
+        else:
+            self.cancellation_flags[playlist_id].clear()
+
     def add_playlists_to_queue(self, playlist_ids):
         for playlist_id in playlist_ids:
             self.add_to_queue(playlist_id)
 
     def cancel_download(self, playlist_id):
-        """ todo: Fix cancel button"""
         logger.info(f"Playlist canceled: {playlist_id}")
         if playlist_id in self.cancellation_flags:
             self.cancellation_flags[playlist_id].set()

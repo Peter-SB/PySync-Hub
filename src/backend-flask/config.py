@@ -63,6 +63,7 @@ class Config:
 class TestConfig(Config):
     TESTING = True
     SQLALCHEMY_DATABASE_URI = 'sqlite:///:memory:'
+    WTF_CSRF_ENABLED = False
 
     SPOTIFY_CLIENT_ID = 'dummy_client_id'
     SPOTIFY_CLIENT_SECRET = 'dummy_client_secret'

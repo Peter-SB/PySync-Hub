@@ -53,7 +53,7 @@ def test_sync_playlists_unit(monkeypatch, db_session):
 
 
     # Run sync on this playlist
-    PlaylistManagerService.refresh_playlists([playlist.id])
+    PlaylistManagerService.sync_playlists([playlist.id])
 
     # Refresh the playlist from the database
     synced_playlist = Playlist.query.get(playlist.id)

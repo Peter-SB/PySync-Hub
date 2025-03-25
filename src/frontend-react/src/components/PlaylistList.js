@@ -4,7 +4,7 @@ import PlaylistItem from './PlaylistItem';
 import './PlaylistList.css'; 
 import { Link } from 'react-router-dom';
 
-function PlaylistList({ playlists, refreshPlaylists, selectedPlaylists, onSelectChange }) {
+function PlaylistList({ playlists, fetchPlaylists, selectedPlaylists, onSelectChange }) {
   return (
     <div className="flex-1 min-h-0 overflow-y-auto custom-scrollbar">
       <div id="playlist-list">
@@ -13,7 +13,7 @@ function PlaylistList({ playlists, refreshPlaylists, selectedPlaylists, onSelect
             <PlaylistItem
               key={playlist.id}
               playlist={playlist}
-              refreshPlaylists={refreshPlaylists}
+              fetchPlaylists={fetchPlaylists}
               isSelected={selectedPlaylists.includes(playlist.id)}
               onSelectChange={onSelectChange}
             />

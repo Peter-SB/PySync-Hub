@@ -34,7 +34,8 @@ def create_app(app_config=Config):
 
     logger = logging.getLogger(__name__)
     logger.info(f"Base Path={Config.BASE_PATH}")
-    logger.info(f"DB Path={Config.SQLALCHEMY_DATABASE_URI}")
+    logger.info(f"DB Path={os.path.normpath(Config.SQLALCHEMY_DATABASE_URI)}")
+    logger.info(f"Settings Path={os.path.normpath(Config.SETTINGS_PATH)}")
     logger.info("Flask application initialized")
 
     # Initialize database

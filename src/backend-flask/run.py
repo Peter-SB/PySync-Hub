@@ -3,6 +3,7 @@ import os
 import importlib
 
 def print_debug_info():
+    """ Test function for debugging purposes """
     print("Python executable:", sys.executable)
     print("Script:", sys.argv[0])
     print("Current working directory:", os.getcwd())
@@ -40,8 +41,9 @@ app = create_app(Config)
 
 if __name__ == '__main__':
     print("starting server")
-# print_debug_info()
+    print_debug_info()
     socketio.run(app, debug=True)
 
+# python -m flask run --debug
 # pyinstaller --console --name pysync-hub-backend run.py
 # pyinstaller pysync-hub-backend.spec

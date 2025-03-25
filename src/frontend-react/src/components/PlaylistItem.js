@@ -3,14 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import DownloadStatus from './DownloadStatus.js';
 import { backendUrl } from '../config';
 
-function PlaylistItem({ playlist, refreshPlaylists, isSelected, onSelectChange }) {
+function PlaylistItem({ playlist, fetchPlaylists, isSelected, onSelectChange }) {
   const [isDisabled, setIsDisabled] = useState(playlist.disabled);
   const navigate = useNavigate();
 
-  // Trigger a refresh (sync) for this playlist only
+  // Trigger a sync for this playlist only
   const handleSyncClick = async () => {
     try {
-      const response = await fetch(`${backendUrl}/api/playlists/refresh`, {
+      const response = await fetch(`${backendUrl}/api/playlists/sync`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ playlist_ids: [playlist.id] }),
@@ -32,7 +32,7 @@ function PlaylistItem({ playlist, refreshPlaylists, isSelected, onSelectChange }
       if (!response.ok) {
         console.error('Failed to cancel download');
       }
-      refreshPlaylists();
+      fetchPlaylists();
     } catch (error) {
       console.error('Error cancelling download', error);
     }
@@ -52,7 +52,7 @@ function PlaylistItem({ playlist, refreshPlaylists, isSelected, onSelectChange }
       if (!response.ok) {
         throw new Error('Failed to toggle playlist state');
       }
-      refreshPlaylists();
+      fetchPlaylists();
     } catch (error) {
       console.error('Error toggling playlist state', error);
       // Revert the UI update if there was an error
