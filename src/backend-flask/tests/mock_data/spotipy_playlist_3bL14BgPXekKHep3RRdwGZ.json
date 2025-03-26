@@ -1,0 +1,231 @@
+{
+    "collaborative": false,
+    "description": "",
+    "external_urls": {
+        "spotify": "https://open.spotify.com/playlist/3bL14BgPXekKHep3RRdwGZ"
+    },
+    "followers": {
+        "href": null,
+        "total": 0
+    },
+    "href": "https://api.spotify.com/v1/playlists/3bL14BgPXekKHep3RRdwGZ?additional_types=track",
+    "id": "3bL14BgPXekKHep3RRdwGZ",
+    "images": [
+        {
+            "height": null,
+            "url": "https://i.scdn.co/image/ab67616d00001e02aa22899360d8ba6704732dec",
+            "width": null
+        }
+    ],
+    "name": "Test Playlist 1",
+    "owner": {
+        "display_name": "Peter Semrau-Boughton",
+        "external_urls": {
+            "spotify": "https://open.spotify.com/user/moddersapprentice"
+        },
+        "href": "https://api.spotify.com/v1/users/moddersapprentice"
+    },
+    "primary_color": null,
+    "public": true,
+    "snapshot_id": "AAAAAvesg8A0gHkDzjX2Ygi+w1DvQQc1",
+    "tracks": {
+        "href": "https://api.spotify.com/v1/playlists/3bL14BgPXekKHep3RRdwGZ/tracks?offset=0&limit=100&additional_types=track",
+        "items": [
+            {
+                "added_at": "2025-03-26T08:53:24Z",
+                "added_by": {
+                    "external_urls": {
+                        "spotify": "https://open.spotify.com/user/moddersapprentice"
+                    },
+                    "href": "https://api.spotify.com/v1/users/moddersapprentice",
+                    "id": "moddersapprentice",
+                    "type": "user",
+                    "uri": "spotify:user:moddersapprentice"
+                },
+                "is_local": false,
+                "primary_color": null,
+                "track": {
+                    "preview_url": null,
+                    "explicit": false,
+                    "type": "track",
+                    "episode": false,
+                    "track": true,
+                    "album": {
+                        "type": "album",
+                        "album_type": "album",
+                        "href": "https://api.spotify.com/v1/albums/7iLuHJkrb9KHPkMgddYigh",
+                        "id": "7iLuHJkrb9KHPkMgddYigh",
+                        "images": [
+                            {
+                                "url": "https://i.scdn.co/image/ab67616d0000b273aa22899360d8ba6704732dec",
+                                "width": 640,
+                                "height": 640
+                            },
+                            {
+                                "url": "https://i.scdn.co/image/ab67616d00001e02aa22899360d8ba6704732dec",
+                                "width": 300,
+                                "height": 300
+                            },
+                            {
+                                "url": "https://i.scdn.co/image/ab67616d00004851aa22899360d8ba6704732dec",
+                                "width": 64,
+                                "height": 64
+                            }
+                        ],
+                        "name": "Voulez-Vous",
+                        "release_date": "1979",
+                        "release_date_precision": "year",
+                        "uri": "spotify:album:7iLuHJkrb9KHPkMgddYigh",
+                        "artists": [
+                            {
+                                "external_urls": {
+                                    "spotify": "https://open.spotify.com/artist/0LcJLqbBmaGUft1e9Mm8HV"
+                                },
+                                "href": "https://api.spotify.com/v1/artists/0LcJLqbBmaGUft1e9Mm8HV",
+                                "id": "0LcJLqbBmaGUft1e9Mm8HV",
+                                "name": "ABBA",
+                                "type": "artist",
+                                "uri": "spotify:artist:0LcJLqbBmaGUft1e9Mm8HV"
+                            }
+                        ],
+                        "external_urls": {
+                            "spotify": "https://open.spotify.com/album/7iLuHJkrb9KHPkMgddYigh"
+                        },
+                        "total_tracks": 13
+                    },
+                    "artists": [
+                        {
+                            "external_urls": {
+                                "spotify": "https://open.spotify.com/artist/0LcJLqbBmaGUft1e9Mm8HV"
+                            },
+                            "href": "https://api.spotify.com/v1/artists/0LcJLqbBmaGUft1e9Mm8HV",
+                            "id": "0LcJLqbBmaGUft1e9Mm8HV",
+                            "name": "ABBA",
+                            "type": "artist",
+                            "uri": "spotify:artist:0LcJLqbBmaGUft1e9Mm8HV"
+                        }
+                    ],
+                    "disc_number": 1,
+                    "track_number": 13,
+                    "duration_ms": 292613,
+                    "external_ids": {
+                        "isrc": "SEAYD7901120"
+                    },
+                    "external_urls": {
+                        "spotify": "https://open.spotify.com/track/3vkQ5DAB1qQMYO4Mr9zJN6"
+                    },
+                    "href": "https://api.spotify.com/v1/tracks/3vkQ5DAB1qQMYO4Mr9zJN6",
+                    "id": "3vkQ5DAB1qQMYO4Mr9zJN6",
+                    "name": "Gimme! Gimme! Gimme! (A Man After Midnight)",
+                    "popularity": 81,
+                    "uri": "spotify:track:3vkQ5DAB1qQMYO4Mr9zJN6",
+                    "is_local": false
+                },
+                "video_thumbnail": {
+                    "url": null
+                }
+            },
+            {
+                "added_at": "2025-03-26T08:53:26Z",
+                "added_by": {
+                    "external_urls": {
+                        "spotify": "https://open.spotify.com/user/moddersapprentice"
+                    },
+                    "href": "https://api.spotify.com/v1/users/moddersapprentice",
+                    "id": "moddersapprentice",
+                    "type": "user",
+                    "uri": "spotify:user:moddersapprentice"
+                },
+                "is_local": false,
+                "primary_color": null,
+                "track": {
+                    "preview_url": null,
+                    "explicit": false,
+                    "type": "track",
+                    "episode": false,
+                    "track": true,
+                    "album": {
+                        "type": "album",
+                        "album_type": "album",
+                        "href": "https://api.spotify.com/v1/albums/1V6a99EbTTIegOhWoPxYI9",
+                        "id": "1V6a99EbTTIegOhWoPxYI9",
+                        "images": [
+                            {
+                                "url": "https://i.scdn.co/image/ab67616d0000b27370f7a1b35d5165c85b95a0e0",
+                                "width": 640,
+                                "height": 640
+                            },
+                            {
+                                "url": "https://i.scdn.co/image/ab67616d00001e0270f7a1b35d5165c85b95a0e0",
+                                "width": 300,
+                                "height": 300
+                            },
+                            {
+                                "url": "https://i.scdn.co/image/ab67616d0000485170f7a1b35d5165c85b95a0e0",
+                                "width": 64,
+                                "height": 64
+                            }
+                        ],
+                        "name": "Arrival",
+                        "release_date": "1976",
+                        "release_date_precision": "year",
+                        "uri": "spotify:album:1V6a99EbTTIegOhWoPxYI9",
+                        "artists": [
+                            {
+                                "external_urls": {
+                                    "spotify": "https://open.spotify.com/artist/0LcJLqbBmaGUft1e9Mm8HV"
+                                },
+                                "href": "https://api.spotify.com/v1/artists/0LcJLqbBmaGUft1e9Mm8HV",
+                                "id": "0LcJLqbBmaGUft1e9Mm8HV",
+                                "name": "ABBA",
+                                "type": "artist",
+                                "uri": "spotify:artist:0LcJLqbBmaGUft1e9Mm8HV"
+                            }
+                        ],
+                        "external_urls": {
+                            "spotify": "https://open.spotify.com/album/1V6a99EbTTIegOhWoPxYI9"
+                        },
+                        "total_tracks": 12
+                    },
+                    "artists": [
+                        {
+                            "external_urls": {
+                                "spotify": "https://open.spotify.com/artist/0LcJLqbBmaGUft1e9Mm8HV"
+                            },
+                            "href": "https://api.spotify.com/v1/artists/0LcJLqbBmaGUft1e9Mm8HV",
+                            "id": "0LcJLqbBmaGUft1e9Mm8HV",
+                            "name": "ABBA",
+                            "type": "artist",
+                            "uri": "spotify:artist:0LcJLqbBmaGUft1e9Mm8HV"
+                        }
+                    ],
+                    "disc_number": 1,
+                    "track_number": 2,
+                    "duration_ms": 230400,
+                    "external_ids": {
+                        "isrc": "SEAYD7601020"
+                    },
+                    "external_urls": {
+                        "spotify": "https://open.spotify.com/track/0GjEhVFGZW8afUYGChu3Rr"
+                    },
+                    "href": "https://api.spotify.com/v1/tracks/0GjEhVFGZW8afUYGChu3Rr",
+                    "id": "0GjEhVFGZW8afUYGChu3Rr",
+                    "name": "Dancing Queen",
+                    "popularity": 85,
+                    "uri": "spotify:track:0GjEhVFGZW8afUYGChu3Rr",
+                    "is_local": false
+                },
+                "video_thumbnail": {
+                    "url": null
+                }
+            }
+        ],
+        "limit": 100,
+        "next": null,
+        "offset": 0,
+        "previous": null,
+        "total": 2
+    },
+    "type": "playlist",
+    "uri": "spotify:playlist:3bL14BgPXekKHep3RRdwGZ"
+}

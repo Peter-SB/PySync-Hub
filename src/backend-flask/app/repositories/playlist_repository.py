@@ -41,16 +41,25 @@ class PlaylistRepository:
             name=playlist_data['name'],
             platform=playlist_data['platform'],
             external_id=playlist_data['external_id'],
-            last_synced=datetime.utcnow(),
+            last_synced=None,
             created_at=datetime.utcnow(),
             image_url=playlist_data.get('image_url'),
             track_count=playlist_data.get('track_count'),
-            url=playlist_data('url'),
-            disabled=False
+            url=playlist_data.get('url'),
+            disabled=False,
+            download_status="ready"
         )
         db.session.add(playlist)
-        db.session.commit()
-        logger.info("Created new playlist with external_id: %s", playlist.external_id)
+
+        try:
+            db.session.commit()
+            logger.info("Added new %s playlist with external_id: %s", playlist_data['platform'],
+                        playlist_data['external_id'])
+        except Exception as e:
+            logger.error("Database commit failed when adding playlist: %s", e, exc_info=True)
+            db.session.rollback()
+            return "Database Error"
+
         return playlist
 
     @staticmethod

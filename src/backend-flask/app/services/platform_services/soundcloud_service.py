@@ -1,4 +1,6 @@
+import json
 import os
+import re
 import time
 
 import requests
@@ -8,6 +10,13 @@ from app.models import Track
 from config import Config
 
 logger = logging.getLogger(__name__)
+
+
+class PlaylistNotFoundException(Exception):
+    def __init__(self, message, status_code):
+        super().__init__(message)
+        self.status_code = status_code
+
 
 class SoundcloudService:
     @staticmethod
@@ -21,9 +30,10 @@ class SoundcloudService:
             logger.error("HTTP GET error for URL %s: %s", url, response.text)
 
             if response.status_code == 404:
-                raise Exception("Playlist not found. Could it be private or deleted?")
+                raise PlaylistNotFoundException("Playlist not found. Could it be private or deleted?", 404)
 
-            raise Exception(f"HTTP GET error: {response.status_code}")
+            raise Exception(f"HTTP GET error: {response.status_code} {response.text}")
+
         return response.json()
 
     @staticmethod
@@ -48,11 +58,13 @@ class SoundcloudService:
         }
 
     @staticmethod
-    def _resolve_playlist(playlist_url: str) -> dict:
+    @DeprecationWarning
+    def _resolve_playlist_old(playlist_url: str) -> dict:
         """
         Resolves a SoundCloud playlist URL using the SoundCloud API.
+        Deprecated by SoundCloud api change.
         """
-        client_id = Config.SOUNDCLOUD_CLIENT_ID
+        client_id = "akcDl6lB9RfwyhLSb2Xw2MwPR3Ow85Kr" # Config.SOUNDCLOUD_CLIENT_ID
         if not client_id:
             raise ValueError("Missing SoundCloud client ID in environment variables.")
 
@@ -67,6 +79,42 @@ class SoundcloudService:
         }
         logger.info("Resolving playlist URL: %s", resolve_url)
         return SoundcloudService._make_http_get_request(resolve_url, headers)
+
+    @staticmethod
+    def _resolve_playlist(playlist_url: str) -> dict:
+        from bs4 import BeautifulSoup
+        """
+        Resolves a SoundCloud playlist URL using the SoundCloud API.
+        """
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36"
+        }
+
+        response = requests.get(playlist_url, headers=headers)
+        if response.status_code != 200:
+            return {"error": "Failed to retrieve page"}
+
+        # Extract script containing window.__sc_hydration
+        soup = BeautifulSoup(response.text, "html.parser")
+        script_tags = soup.find_all("script")
+
+        hydration_data = None
+        for script in script_tags:
+            if "window.__sc_hydration" in script.text:
+                match = re.search(r"window\.__sc_hydration\s*=\s*(\[\{.*?\}\]);", script.text, re.DOTALL)
+                if match:
+                    hydration_data = json.loads(match.group(1))
+                    break
+
+        if not hydration_data:
+            return {"error": "Playlist data not found"}
+
+        # Find the playlist data
+        for item in hydration_data:
+            if item.get("hydratable") == "playlist":
+                return item["data"]  # This contains the playlist information
+
+        return {"error": "No playlist data found"}
 
     @staticmethod
     def get_playlist_data(playlist_url: str) -> dict:
@@ -85,7 +133,8 @@ class SoundcloudService:
                 'external_id': str(data.get('id')),
                 'image_url': image_url,
                 'track_count': data.get('track_count'),
-                'url': data.get('permalink_url')
+                'url': data.get('permalink_url'),
+                'platform': 'soundcloud'
             }
             return playlist_data
         except Exception as e:
@@ -112,8 +161,6 @@ class SoundcloudService:
             logger.info("Fetched %d tracks for SoundCloud playlist", len(resolved_tracks))
 
             new_track_ids = [track.get('id') for track in resolved_tracks]
-
-
 
             # todo: add back to reduce redundant calls to the soundcloud api
             # # Get the track IDs in the order from the playlist

@@ -8,6 +8,7 @@ from spotipy import SpotifyException
 
 from app.extensions import db
 from app.models import Playlist
+from app.repositories.playlist_repository import PlaylistRepository
 from app.services.platform_services.music_platform_services import MusicPlatformFactory
 from app.services.platform_services.soundcloud_service import SoundcloudService
 from app.services.platform_services.spotify_service import SpotifyService
@@ -31,7 +32,7 @@ class PlaylistManagerService:
         """
         for playlist in playlists:
             try:
-                data = MusicPlatformFactory.get_service(playlist.platform)
+                data = MusicPlatformFactory.get_service(playlist.platform).get_playlist_data(playlist.url)
 
                 playlist.name = data['name']
                 playlist.last_synced = datetime.utcnow()
@@ -55,43 +56,33 @@ class PlaylistManagerService:
         return playlists
 
     @staticmethod
-    def add_playlists(url_or_id) -> Optional[str]:
-        logger.info("Attempting to add playlist with url_or_id: %s", url_or_id)
+    def add_playlists(playlist_url) -> Optional[str]:
+        """ Add a new playlist from a platform url.
+        :return: Error sting or None if successful"""
 
-        if not url_or_id:
-            logger.info("No url_or_id found: %s", url_or_id)
+        logger.info("Attempting to add playlist with url_or_id: %s", playlist_url)
+
+        if not playlist_url:
+            logger.info("No url_or_id found: %s", playlist_url)
             return "No URL or ID Detected"
+        try:
+            musicPlatformService = MusicPlatformFactory.get_service_by_url(playlist_url)
+            playlist_data = musicPlatformService.get_playlist_data(playlist_url)
 
-        if "soundcloud.com" in url_or_id:
-            platform = 'soundcloud'
-            try:
-                playlist_data = SoundcloudService.get_playlist_data(url_or_id)
-                track_data = SoundcloudService.get_playlist_tracks(url_or_id)
-            except Exception as e:
-                logger.error("Error fetching SoundCloud playlist data for URL %s: %s", url_or_id, e, exc_info=True)
-                return f"Error fetching SoundCloud playlist data: {e}"
-        elif "open.spotify.com/playlist" in url_or_id:
-            platform = 'spotify'
-            try:
-                playlist_data = SpotifyService.get_playlist_data(url_or_id)
-            except SpotifyException as e:
-                if e.http_status == 404:
-                    logger.error("Playlist not found for url_or_id: %s", url_or_id)
-                    return "Playlist not found. Please try another URL or ID."
-                logger.error("Spotify Error: %s", e.http_status)
-                return "There was a Spotify Error."
-            except Exception as e:
-                logger.error("Error fetching Spotify playlist data for url_or_id '%s': %s", url_or_id, e, exc_info=True)
-                return "Error fetching Spotify playlist data."
-        else:
-            logger.info("Unrecognized platform in url_or_id: %s", url_or_id)
-            return "URL Doesnt Look Right. Please try again with a valid URL."
+        except Exception as e:
+            logger.error("Error fetching playlist data for URL %s: %s", playlist_url, e, exc_info=True)
+            if "404" in str(e):
+                return "Playlist not found. Please check the playlist is public or try another URL."
+
+            return f"Error Adding Playlist: {e}"
+
 
         logger.debug("Fetched playlist data: %s", playlist_data)
+        print(playlist_data)
 
         existing = Playlist.query.filter_by(
             external_id=playlist_data['external_id'],
-            platform=platform
+            platform=playlist_data['platform']
         ).first()
 
         if existing:
@@ -99,29 +90,13 @@ class PlaylistManagerService:
             return "Playlist Already Exists"
 
         else:
-            playlist = Playlist(
-                name=playlist_data['name'],
-                platform=platform,
-                external_id=playlist_data['external_id'],
-                image_url=playlist_data['image_url'],
-                track_count=playlist_data['track_count'],
-                url=playlist_data['url'],
-                download_status="ready"
-            )
-            db.session.add(playlist)
-            try:
-                db.session.commit()
-                logger.info("Added new %s playlist with external_id: %s", platform, playlist_data['external_id'])
-            except Exception as e:
-                logger.error("Database commit failed when adding playlist: %s", e, exc_info=True)
-                db.session.rollback()
-                return "Database Error"
+            playlist = PlaylistRepository.create_playlist(playlist_data)
+        try:
+            TrackManagerService.fetch_playlist_tracks(playlist.id)
+        except Exception as e:
+            logger.error("Error fetching tracks for new playlist: %s", e, exc_info=True)
+            return "Error fetching tracks for new playlist"
 
-            try:
-                TrackManagerService.fetch_playlist_tracks(playlist.id)
-            except Exception as e:
-                logger.error("Error fetching tracks for new playlist: %s", e, exc_info=True)
-                return "Error fetching tracks for new playlist"
         return None
 
     @staticmethod

@@ -73,71 +73,61 @@ class TestAddPlaylist:
         "external_id": "soundcloud123",
         "image_url": "http://fake.image/soundcloud.jpg",
         "track_count": 15,
-        "url": "https://soundcloud.com/fake_playlist"
+        "url": "https://soundcloud.com/fake_playlist",
+        "platform": "soundcloud"
     }
 
     def test_add_playlist_valid_spotify(self, client, monkeypatch):
-        response = client.post('/api/playlists', json={"url_or_id": "https://open.spotify.com/playlist/123TestId"})
+        response = client.post('/api/playlists', json={"url_or_id": "https://open.spotify.com/playlist/3bL14BgPXekKHep3RRdwGZ"})
 
         assert response.status_code == 201
         playlists = response.get_json()
-        assert any(p["external_id"] == "123TestId" for p in playlists)
+
+        assert any(p["external_id"] == "3bL14BgPXekKHep3RRdwGZ" for p in playlists)
+        added_playlist = Playlist.query.filter_by(external_id="3bL14BgPXekKHep3RRdwGZ").first()
+        assert added_playlist.name == "Test Playlist 1"
+        assert added_playlist.track_count == 2
+        assert added_playlist.platform == "spotify"
 
     def test_add_playlist_valid_soundcloud(self, client, monkeypatch):
-        fake_soundcloud_tracks = [{"id": "track1"}, {"id": "track2"}]
 
-        monkeypatch.setattr(
-            "app.services.playlist_manager_service.SoundcloudService.get_playlist_data",
-            lambda url: self.fake_soundcloud_playlist_data
-        )
-        monkeypatch.setattr(
-            "app.services.playlist_manager_service.SoundcloudService.get_playlist_tracks",
-            lambda url: fake_soundcloud_tracks
-        )
-        monkeypatch.setattr(
-            "app.services.playlist_manager_service.TrackManagerService.fetch_playlist_tracks",
-            lambda playlist_id: None
-        )
 
-        response = client.post('/api/playlists', json={"url_or_id": "https://soundcloud.com/username/playlist"})
+        response = client.post('/api/playlists', json={"url_or_id": "https://soundcloud.com/schmoot-point/sets/omwhp"})
 
         assert response.status_code == 201
         playlists = response.get_json()
-        assert any(p["external_id"] == "soundcloud123" for p in playlists)
+
+        assert any(p["external_id"] == "1890498842" for p in playlists)
+        added_playlist = Playlist.query.filter_by(external_id="1890498842").first()
+        assert added_playlist.name == "OMWHP"
+        assert added_playlist.track_count == 14
+        assert added_playlist.platform == "soundcloud"
 
     def test_add_playlist_already_added(self, client, monkeypatch):
-        response1 = client.post('/api/playlists', json={"url_or_id": "https://open.spotify.com/playlist/123TestId"})
+        response1 = client.post('/api/playlists', json={"url_or_id": "https://open.spotify.com/playlist/3bL14BgPXekKHep3RRdwGZ"})
         assert response1.status_code == 201
 
-        response2 = client.post('/api/playlists', json={"url_or_id": "https://open.spotify.com/playlist/123TestId"})
+        response2 = client.post('/api/playlists', json={"url_or_id": "https://open.spotify.com/playlist/3bL14BgPXekKHep3RRdwGZ"})
         assert response2.status_code == 400
         error_message = response2.get_json().get("error")
         assert error_message == "Playlist Already Exists"
 
     def test_add_playlist_not_error_spotify(self, client, monkeypatch):
-        def fake_get_playlist_data_404(url):
-            raise SpotifyException(http_status=404, msg="Not Found")
-
-        monkeypatch.setattr(
-            "app.services.playlist_manager_service.SpotifyService.get_playlist_data",
-            fake_get_playlist_data_404
-        )
-
         response = client.post('/api/playlists', json={"url_or_id": "https://open.spotify.com/playlist/error"})
         assert response.status_code == 400
         error_message = response.get_json().get("error")
 
-        assert error_message == "Playlist not found. Please try another URL or ID."
+        assert error_message == ("Playlist not found. Please check the playlist is public or try another URL.")
 
     def test_add_playlist_invalid_url(self, client, monkeypatch):
         response = client.post('/api/playlists', json={"url_or_id": "invalid-url"})
 
         assert response.status_code == 400
         error_message = response.get_json().get("error")
-        assert error_message == "URL Doesnt Look Right. Please try again with a valid URL."
+        assert error_message == "Error Adding Playlist: URL Doesnt Look Right. Please try again with a valid URL."
 
     def test_add_playlist_id(self, client, monkeypatch):
         response = client.post('/api/playlists', json={"url_or_id": "12345"})
         assert response.status_code == 400
         error_message = response.get_json().get("error")
-        assert error_message == "URL Doesnt Look Right. Please try again with a valid URL."
+        assert error_message == "Error Adding Playlist: URL Doesnt Look Right. Please try again with a valid URL."

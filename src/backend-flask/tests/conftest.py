@@ -1,9 +1,13 @@
+import os
+import sys
+
 import pytest
 from app import create_app, SpotifyService
+from app.services.platform_services.soundcloud_service import SoundcloudService
 from config import TestConfig
 from app.extensions import db
 from tests.mocks.DummySpotifyClient import DummySpotifyClient
-
+from tests.mocks.DummySoundcloudService import DummySoundcloudService
 
 @pytest.fixture(scope="session")
 def app():
@@ -47,3 +51,9 @@ def mock_spotify_client(monkeypatch):
     """Automatically replace SpotifyService.get_client for all tests"""
     print("Mocking SpotifyService.get_client")
     monkeypatch.setattr(SpotifyService, "get_client", lambda: DummySpotifyClient())
+
+@pytest.fixture(autouse=True)
+def mock_soundcloud_client(monkeypatch):
+    """Automatically replace DummySoundcloudService for all tests"""
+    print("Mocking SoundcloudService._make_http_get_request")
+    monkeypatch.setattr("app.services.platform_services.soundcloud_service.SoundcloudService", DummySoundcloudService)

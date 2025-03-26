@@ -43,7 +43,7 @@ class Config:
             yaml.safe_dump(default_settings, f, default_flow_style=False)
         print(f"Created new settings file at: {SETTINGS_PATH}")
 
-    with open(SETTINGS_PATH, 'r') as f: # todo: handle creating new file
+    with open(SETTINGS_PATH, 'r') as f: # todo: handle creating new file better
         settings = yaml.safe_load(f)
     SPOTIFY_CLIENT_ID = settings.get('SPOTIFY_CLIENT_ID')
     SPOTIFY_CLIENT_SECRET = settings.get('SPOTIFY_CLIENT_SECRET')
@@ -68,3 +68,4 @@ class TestConfig(Config):
 
     SPOTIFY_CLIENT_ID = 'dummy_client_id'
     SPOTIFY_CLIENT_SECRET = 'dummy_client_secret'
+    SOUNDCLOUD_CLIENT_ID = "dummy_soundcloud_client_id"

@@ -25,4 +25,4 @@ class MusicPlatformFactory:
         elif "spotify.com" in url:
             return SpotifyService
         else:
-            raise ValueError(f"Unsupported URL: {url}")
+            raise ValueError(f"URL Doesnt Look Right. Please try again with a valid URL.")

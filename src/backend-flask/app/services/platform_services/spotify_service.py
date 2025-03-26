@@ -32,7 +32,8 @@ class SpotifyService:
                 'external_id': playlist_id,
                 'image_url': next(iter(response.get('images', [])), {}).get('url'),
                 'track_count': response.get('tracks', {}).get("total", "0"),
-                'url': response.get("external_urls", {}).get("spotify", "")
+                'url': response.get("external_urls", {}).get("spotify", ""),
+                'platform': 'spotify'
             }
 
             return data
