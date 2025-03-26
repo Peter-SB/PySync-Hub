@@ -1,13 +1,15 @@
-// src/pages/DownloadPage.js
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import AddPlaylistForm from '../components/AddPlaylistForm';
 import PlaylistList from '../components/PlaylistList';
+import PlaylistSortOrder from '../components/PlaylistSortOrder';
 import { backendUrl } from '../config';
 
 function DownloadPage({ playlists, setPlaylists }) {
   const [errorMessage, setErrorMessage] = useState('');
   const [exportStatus, setExportStatus] = useState('');
   const [selectedPlaylists, setSelectedPlaylists] = useState([]);
+  const [sortBy, setSortBy] = useState("created_at"); // default sort by name
+  const [sortOrder, setSortOrder] = useState("dec"); // ascending order by default
 
   const fetchPlaylists = useCallback(async () => {
     try {
@@ -23,6 +25,29 @@ function DownloadPage({ playlists, setPlaylists }) {
   useEffect(() => {
     fetchPlaylists();
   }, [fetchPlaylists]);
+
+  // Sort playlists based on the selected sort criterion and order.
+  const sortedPlaylists = useMemo(() => {
+    return playlists.slice().sort((a, b) => {
+      let aVal = a[sortBy];
+      let bVal = b[sortBy];
+
+      if (sortBy === "name") {
+        aVal = aVal.toLowerCase();
+        bVal = bVal.toLowerCase();
+      } else {
+        // For date fields, convert to Date objects (using a fallback for null values)
+        aVal = aVal ? new Date(aVal) : new Date(0);
+        bVal = bVal ? new Date(bVal) : new Date(0);
+      }
+
+      if (sortOrder === "asc") {
+        return aVal > bVal ? 1 : aVal < bVal ? -1 : 0;
+      } else {
+        return aVal < bVal ? 1 : aVal > bVal ? -1 : 0;
+      }
+    });
+  }, [playlists, sortBy, sortOrder]);
 
   // Handle export action
   const handleExport = async () => {
@@ -90,8 +115,8 @@ function DownloadPage({ playlists, setPlaylists }) {
   };
 
   return (
-    <div id="download-page" className="flex flex-col h-screen p-4 pt-2">      
-      {/*Header box */}
+    <div id="download-page" className="flex flex-col h-screen p-4 pt-2">
+      {/* Header box */}
       <div id="header-box" className="bg-white p-4 rounded-lg mb-1 shadow">
         <h1 className="text-3xl font-semibold text-gray-800 mb-7">Playlist Downloads</h1>
         <AddPlaylistForm onPlaylistAdded={fetchPlaylists} setError={setErrorMessage} />
@@ -109,6 +134,7 @@ function DownloadPage({ playlists, setPlaylists }) {
             </button>
           </div>
           <div className="flex items-center gap-2 ml-auto">
+            <PlaylistSortOrder sortBy={sortBy} setSortBy={setSortBy} sortOrder={sortOrder} setSortOrder={setSortOrder} />
             {selectedPlaylists.length > 0 && (
               <button
                 onClick={handleDelete}
@@ -136,7 +162,7 @@ function DownloadPage({ playlists, setPlaylists }) {
       )}
 
       <PlaylistList
-        playlists={playlists}
+        playlists={sortedPlaylists}
         fetchPlaylists={fetchPlaylists}
         selectedPlaylists={selectedPlaylists}
         onSelectChange={handleCheckboxChange}

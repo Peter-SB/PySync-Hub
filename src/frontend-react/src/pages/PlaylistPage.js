@@ -157,13 +157,15 @@ function PlaylistPage({ playlists }) {
                                                     <img
                                                         src="./icons/warning.png"
                                                         alt="Warning"
+                                                        title={`Error: ${track.notes_errors}`}
                                                         className="w-4 h-4 mx-1 inline"
                                                     />
                                                 )}
                                             {track.download_location ? (
                                                 <img
                                                     src="./icons/accept.png"
-                                                    alt="Warning"
+                                                    alt="Downloaded"
+                                                    title='Downloaded'
                                                     className="w-4 h-4 ml-2 inline"
                                                 />
                                             ) : (

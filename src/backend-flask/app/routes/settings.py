@@ -8,7 +8,7 @@ from app.routes import api
 
 logger = logging.getLogger(__name__)
 
-@api.route('/api/settings', methods=['GET'])
+@api.route('/api/settings', methods=['GET', 'POST'])
 def settings():
     DEFAULT_SETTINGS = {
         'SPOTIFY_CLIENT_ID': '',

@@ -5,11 +5,24 @@ from app.services.platform_services.spotify_service import SpotifyService
 
 logger = logging.getLogger(__name__)
 
+
 class MusicPlatformFactory:
     @staticmethod
-    def get_service(url_or_id):
-        """Returns the appropriate service instance based on the URL."""
-        if "soundcloud.com" in url_or_id:
+    def get_service(platform):
+        """Returns the appropriate service instance based on the platform."""
+        if platform == "soundcloud":
             return SoundcloudService
-        else:
+        elif platform == "spotify":
             return SpotifyService
+        else:
+            raise ValueError(f"Unsupported platform: {platform}")
+
+    @staticmethod
+    def get_service_by_url(url):
+        """Returns the appropriate service instance based on the URL."""
+        if "soundcloud.com" in url:
+            return SoundcloudService
+        elif "spotify.com" in url:
+            return SpotifyService
+        else:
+            raise ValueError(f"Unsupported URL: {url}")

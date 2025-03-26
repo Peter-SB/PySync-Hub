@@ -8,6 +8,7 @@ from spotipy import SpotifyException
 
 from app.extensions import db
 from app.models import Playlist
+from app.services.platform_services.music_platform_services import MusicPlatformFactory
 from app.services.platform_services.soundcloud_service import SoundcloudService
 from app.services.platform_services.spotify_service import SpotifyService
 from app.services.track_manager_service import TrackManagerService
@@ -30,11 +31,7 @@ class PlaylistManagerService:
         """
         for playlist in playlists:
             try:
-                data = None
-                if playlist.platform == 'spotify':
-                    data = SpotifyService.get_playlist_data(playlist.external_id)
-                elif playlist.platform == 'soundcloud':
-                    data = SoundcloudService.get_playlist_data(playlist.url)
+                data = MusicPlatformFactory.get_service(playlist.platform)
 
                 playlist.name = data['name']
                 playlist.last_synced = datetime.utcnow()

@@ -1,7 +1,9 @@
 import pytest
-from app import create_app
+from app import create_app, SpotifyService
 from config import TestConfig
 from app.extensions import db
+from tests.mocks.DummySpotifyClient import DummySpotifyClient
+
 
 @pytest.fixture(scope="session")
 def app():
@@ -38,3 +40,10 @@ def init_database(app):
 def client(app):
     """Returns a test client for making requests."""
     return app.test_client()
+
+
+@pytest.fixture(autouse=True)
+def mock_spotify_client(monkeypatch):
+    """Automatically replace SpotifyService.get_client for all tests"""
+    print("Mocking SpotifyService.get_client")
+    monkeypatch.setattr(SpotifyService, "get_client", lambda: DummySpotifyClient())
