@@ -23,25 +23,19 @@ class SpotifyDownloadService(BaseDownloadService):
         # Determine the query string for options (even if URL exists)
         query = f"{track.name} {track.artist}"
 
-        sanitized_title, url_to_use = cls.method_name(query, track)
-
+        sanitized_title, url_to_use = cls._determine_download_details(query, track)
         file_path = os.path.join(Config.DOWNLOAD_FOLDER, f"{sanitized_title}.mp3")
 
-        # Check if the file already exists to avoid duplicate downloads
         if os.path.exists(file_path):
             logger.info("Track '%s' already exists at '%s'. Skipping download.", track.name, file_path)
             track.download_location = file_path
-            # track.notes_errors = "Already Downloaded, Skipped"
         else:
-            # Download using the determined URL
             ydl_opts = SpotifyDownloadService._generate_yt_dlp_options(query, sanitized_title)
             with YoutubeDL(ydl_opts) as ydl:
-                # Note: We pass a list with the URL to download directly
                 ydl.download([url_to_use])
-            # Embed metadata after download
+
             FileDownloadUtils.embed_track_metadata(file_path, track)
             track.download_location = file_path
-            #track.notes_errors = "Successfully Downloaded"
             logger.info("Downloaded track '%s' to '%s'", track.name, file_path)
 
         db.session.add(track)
@@ -49,8 +43,13 @@ class SpotifyDownloadService(BaseDownloadService):
         logger.info("Processed track '%s' with file '%s'", track.name, file_path)
 
     @classmethod
-    def method_name(cls, query, track):
-        """Determine the download URL to use for a track a"""
+    def _determine_download_details(cls, query, track):
+        """Determine the download URL and the file name
+
+        :param query: The query string to search for
+        :param track: The track object to use
+        :return: The sanitized title (filename) and the URL to use
+        """
         if track.download_url:
             url_to_use = track.download_url
             logger.info("Using pre-existing download URL for track '%s'", track.name)

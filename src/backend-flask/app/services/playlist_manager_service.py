@@ -9,7 +9,7 @@ from spotipy import SpotifyException
 from app.extensions import db
 from app.models import Playlist
 from app.repositories.playlist_repository import PlaylistRepository
-from app.services.platform_services.music_platform_services import MusicPlatformFactory
+from app.services.platform_services.platform_services_factory import PlatformServiceFactory
 from app.services.platform_services.soundcloud_service import SoundcloudService
 from app.services.platform_services.spotify_service import SpotifyService
 from app.services.track_manager_service import TrackManagerService
@@ -32,7 +32,7 @@ class PlaylistManagerService:
         """
         for playlist in playlists:
             try:
-                data = MusicPlatformFactory.get_service(playlist.platform).get_playlist_data(playlist.url)
+                data = PlatformServiceFactory.get_service(playlist.platform).get_playlist_data(playlist.url)
 
                 playlist.name = data['name']
                 playlist.last_synced = datetime.utcnow()
@@ -66,7 +66,7 @@ class PlaylistManagerService:
             logger.info("No url_or_id found: %s", playlist_url)
             return "No URL or ID Detected"
         try:
-            musicPlatformService = MusicPlatformFactory.get_service_by_url(playlist_url)
+            musicPlatformService = PlatformServiceFactory.get_service_by_url(playlist_url)
             playlist_data = musicPlatformService.get_playlist_data(playlist_url)
 
         except Exception as e:
@@ -76,9 +76,7 @@ class PlaylistManagerService:
 
             return f"Error Adding Playlist: {e}"
 
-
         logger.debug("Fetched playlist data: %s", playlist_data)
-        print(playlist_data)
 
         existing = Playlist.query.filter_by(
             external_id=playlist_data['external_id'],
@@ -87,7 +85,7 @@ class PlaylistManagerService:
 
         if existing:
             logger.info("Playlist already exists with external_id: %s", playlist_data['external_id'])
-            return "Playlist Already Exists"
+            return "Playlist Already Added"
 
         else:
             playlist = PlaylistRepository.create_playlist(playlist_data)
@@ -101,6 +99,7 @@ class PlaylistManagerService:
 
     @staticmethod
     def delete_playlists(selected_ids):
+        """ todo: Move to PlaylistRepository """
         logger.info("Deleting playlists with IDs: %s", selected_ids)
 
         if selected_ids:

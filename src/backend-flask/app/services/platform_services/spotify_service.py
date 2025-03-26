@@ -18,9 +18,9 @@ class SpotifyService:
         ))
 
     @staticmethod
-    def get_playlist_data(url_or_id):
+    def get_playlist_data(url):
         try:
-            playlist_id = SpotifyService._extract_playlist_id(url_or_id)
+            playlist_id = SpotifyService._extract_playlist_id(url)
 
             client = SpotifyService.get_client()
             response = client.playlist(playlist_id)
@@ -43,13 +43,13 @@ class SpotifyService:
 
 
     @staticmethod
-    def get_playlist_tracks(url_or_id):
+    def get_playlist_tracks(url):
         """
         Fetches the tracks for a given Spotify playlist.
         Returns a list of dictionaries with track information.
         """
         try:
-            playlist_id = SpotifyService._extract_playlist_id(url_or_id)
+            playlist_id = SpotifyService._extract_playlist_id(url)
             client = SpotifyService.get_client()
 
             tracks_data = []
@@ -87,13 +87,13 @@ class SpotifyService:
             return tracks_data
 
         except Exception as e:
-            logger.error("Error fetching tracks for playlist %s: %s", url_or_id, e, exc_info=True)
+            logger.error("Error fetching tracks for playlist %s: %s", url, e, exc_info=True)
             raise e
 
     @staticmethod
-    def _extract_playlist_id(url_or_id: str) -> str:
-        if 'open.spotify.com/playlist/' in url_or_id:
-            playlist_id = url_or_id.split('/')[-1].split('?')[0]
+    def _extract_playlist_id(url: str) -> str:
+        if 'open.spotify.com/playlist/' in url:
+            playlist_id = url.split('/')[-1].split('?')[0]
         else:
-            playlist_id = url_or_id
+            playlist_id = url
         return playlist_id

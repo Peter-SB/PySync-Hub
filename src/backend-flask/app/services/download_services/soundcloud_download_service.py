@@ -31,22 +31,19 @@ class SoundcloudDownloadService(BaseDownloadService):
         sanitized_title = FileDownloadUtils.sanitize_filename(track_title)
         file_path = os.path.join(os.getcwd(), "downloads", f"{sanitized_title}.mp3")
 
-
-
-        # Check if the track file already exists
         if os.path.exists(file_path):
             logger.info("Track '%s' already exists at '%s'. Skipping download.", track.name, file_path)
             track.download_location = file_path
-            #track.notes_errors = "Already Downloaded, Skipped"
+
         else:
             ydl_opts = SoundcloudDownloadService._generate_yt_dlp_options(sanitized_title)
             with YoutubeDL(ydl_opts) as ydl:
                 # Download the track from its SoundCloud URL
                 ydl.download([track.download_url])
-            # Embed metadata after download
+
             FileDownloadUtils.embed_track_metadata(file_path, track)
+
             track.download_location = file_path
-            #track.notes_errors = "Successfully Downloaded"
             logger.info("Downloaded track '%s' to '%s'", track.name, file_path)
 
         db.session.add(track)

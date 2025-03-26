@@ -87,6 +87,14 @@ jobs:
           mkdir -p artifact/dir
           mv dist artifact
 
+      - name: Create Shortcut to PySync Hub EXE
+        run: |
+          $ws = New-Object -ComObject WScript.Shell
+          $shortcut = $ws.CreateShortcut("${{ github.workspace }}\\PySync Hub.lnk")
+          $shortcut.TargetPath = "${{ github.workspace }}\\dist\\PySync-Hub-win32-x64\\PySync-Hub.exe"
+          $shortcut.WorkingDirectory = "${{ github.workspace }}\\dist\\backend-flask"
+          $shortcut.Save()
+
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v4
         with:

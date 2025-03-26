@@ -1,86 +1,93 @@
-import threading
-import pytest
-from flask import Flask
-from app.models import Playlist
-from app.services.download_services.spotify_download_service import SpotifyDownloadService
 from app.workers.download_worker import DownloadManager
+from app.repositories.playlist_repository import PlaylistRepository
+from app.services.download_services.spotify_download_service import SpotifyDownloadService
+from app.services.download_services.soundcloud_download_service import SoundcloudDownloadService
 
 
-# Fixture for a dummy Flask application
-@pytest.fixture
-def app():
-    app = Flask(__name__)
-    app.config["TESTING"] = True
-    with app.app_context():
-        yield app
+class DummyPlaylist:
+    def __init__(self, id, platform, name="Dummy Playlist", tracks=None):
+        self.id = id
+        self.platform = platform
+        self.name = name
+        self.tracks = tracks or []
 
-# Fixture for an instance of DownloadManager.
-@pytest.fixture
-def download_manager(app):
-    manager = DownloadManager()
-    yield manager
-    # Optionally: if you add a shutdown mechanism to DownloadManager,
-    # call it here to gracefully stop the background thread.
 
-# Test when a valid playlist is found.
-def test_valid_playlist(app, download_manager, monkeypatch):
-    calls = []  # To record calls to the download function
+class TestDownloadWorker:
+    def test_download_worker_nonexistent_playlist(self, app, monkeypatch):
+        """
+        Test that the download worker simply completes a task when the playlist does not exist.
+        """
+        manager = DownloadManager(app)
+        get_playlist_called = False
 
-    # Create a dummy playlist object.
-    dummy_playlist = type("DummyPlaylist", (), {"id": 1})()
+        def fake_get_playlist_by_id(playlist_id):
+            nonlocal get_playlist_called
+            get_playlist_called = True
+            return None  # Simulate playlist not found
 
-    # Monkeypatch Playlist.query.get to return the dummy playlist when playlist_id == 1.
-    def dummy_get(playlist_id):
-        return dummy_playlist if playlist_id == 1 else None
+        monkeypatch.setattr(PlaylistRepository, "get_playlist_by_id", fake_get_playlist_by_id)
 
-    # Replace the Playlist.query with one that uses our dummy_get.
-    DummyQuery = type("DummyQuery", (), {"get": staticmethod(dummy_get)})
-    monkeypatch.setattr(Playlist, "query", DummyQuery)
+        manager.add_to_queue("nonexistent_playlist")
+        manager.download_queue.join()
 
-    # Monkeypatch SpotifyDownloadService.download_playlist to record its call.
-    def dummy_download_playlist(playlist, cancellation_flags):
-        calls.append((playlist, cancellation_flags))
-    monkeypatch.setattr(SpotifyDownloadService, "download_playlist", dummy_download_playlist)
+        assert get_playlist_called is True
 
-    # Add the valid playlist id to the queue.
-    download_manager.add_to_queue(1)
+        manager.shutdown()
 
-    # Wait for the queue to be processed.
-    download_manager.download_queue.join()
+    def test_download_worker_spotify(self, app, monkeypatch):
+        """
+        Test that when a Spotify playlist is enqueued, the SpotifyDownloadService is called.
+        """
+        dummy_playlist = DummyPlaylist(id="spotify1", platform="spotify", name="Spotify Playlist")
+        spotify_called = False
 
-    # Verify that the download function was called exactly once with the dummy playlist.
-    assert len(calls) == 1
-    assert calls[0][0] == dummy_playlist
+        def fake_spotify_download(playlist, cancellation_flags):
+            nonlocal spotify_called
+            spotify_called = True
 
-# Test when an invalid playlist id is added.
-def test_invalid_playlist(app, download_manager, monkeypatch):
-    calls = []  # To record calls to the download function
+        monkeypatch.setattr(
+            PlaylistRepository,
+            "get_playlist_by_id",
+            lambda playlist_id: dummy_playlist if playlist_id == "spotify1" else None,
+        )
+        monkeypatch.setattr(SpotifyDownloadService, "download_playlist", fake_spotify_download)
 
-    # Make Playlist.query.get always return None.
-    def dummy_get(playlist_id):
-        return None
-    DummyQuery = type("DummyQuery", (), {"get": staticmethod(dummy_get)})
-    monkeypatch.setattr(Playlist, "query", DummyQuery)
+        manager = DownloadManager(app)
+        manager.add_to_queue("spotify1")
+        manager.download_queue.join()  # Wait until the task is processed
 
-    # Monkeypatch the download function as before.
-    def dummy_download_playlist(playlist, cancellation_flags):
-        calls.append((playlist, cancellation_flags))
-    monkeypatch.setattr(SpotifyDownloadService, "download_playlist", dummy_download_playlist)
+        assert "spotify1" in manager.cancellation_flags
+        assert not manager.cancellation_flags["spotify1"].is_set()
 
-    # Add an invalid playlist id.
-    download_manager.add_to_queue(999)
-    download_manager.download_queue.join()
+        assert spotify_called is True
 
-    # Because the playlist wasn’t found, the download function should never be called.
-    assert len(calls) == 0
+        manager.shutdown()
 
-# Test the cancel_download functionality.
-def test_cancel_download(app, download_manager):
-    # Manually add a cancellation flag (a threading.Event) for playlist id 1.
-    event = threading.Event()
-    download_manager.cancellation_flags[1] = event
+    def test_download_worker_soundcloud(self, app, monkeypatch):
+        """
+        Test that when a SoundCloud playlist is enqueued, the SoundcloudDownloadService is called.
+        """
+        dummy_playlist = DummyPlaylist(id="sc1", platform="soundcloud", name="SoundCloud Playlist")
+        soundcloud_called = False
 
-    download_manager.cancel_download(1)
+        def fake_soundcloud_download(playlist, cancellation_flags):
+            nonlocal soundcloud_called
+            soundcloud_called = True
 
-    # The event should be set after cancellation.
-    assert event.is_set()
+        monkeypatch.setattr(
+            PlaylistRepository,
+            "get_playlist_by_id",
+            lambda playlist_id: dummy_playlist if playlist_id == "sc1" else None,
+        )
+        monkeypatch.setattr(SoundcloudDownloadService, "download_playlist", fake_soundcloud_download)
+
+        manager = DownloadManager(app)
+        manager.add_to_queue("sc1")
+        manager.download_queue.join()
+
+        assert "sc1" in manager.cancellation_flags
+        assert not manager.cancellation_flags["sc1"].is_set()
+
+        assert soundcloud_called is True
+
+        manager.shutdown()

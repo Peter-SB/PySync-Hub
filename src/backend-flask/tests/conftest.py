@@ -6,8 +6,10 @@ from app import create_app, SpotifyService
 from app.services.platform_services.soundcloud_service import SoundcloudService
 from config import TestConfig
 from app.extensions import db
-from tests.mocks.DummySpotifyClient import DummySpotifyClient
-from tests.mocks.DummySoundcloudService import DummySoundcloudService
+from tests.mocks.mock_spotify_client import MockSpotifyClient
+from tests.mocks.mock_soundcloud_service import MockSoundcloudService
+from tests.mocks.mock_ytdl import MockYoutubeDL
+
 
 @pytest.fixture(scope="session")
 def app():
@@ -45,15 +47,19 @@ def client(app):
     """Returns a test client for making requests."""
     return app.test_client()
 
-
 @pytest.fixture(autouse=True)
 def mock_spotify_client(monkeypatch):
     """Automatically replace SpotifyService.get_client for all tests"""
     print("Mocking SpotifyService.get_client")
-    monkeypatch.setattr(SpotifyService, "get_client", lambda: DummySpotifyClient())
+    monkeypatch.setattr(SpotifyService, "get_client", lambda: MockSpotifyClient())
 
 @pytest.fixture(autouse=True)
 def mock_soundcloud_client(monkeypatch):
     """Automatically replace DummySoundcloudService for all tests"""
     print("Mocking SoundcloudService._make_http_get_request")
-    monkeypatch.setattr("app.services.platform_services.soundcloud_service.SoundcloudService", DummySoundcloudService)
+    monkeypatch.setattr("app.services.platform_services.soundcloud_service.SoundcloudService", MockSoundcloudService)
+
+@pytest.fixture(autouse=True)
+def mock_ytdlp(monkeypatch):
+    # Patch the YoutubeDL used in SpotifyDownloadService so that all calls use DummyYoutubeDL.
+    monkeypatch.setattr("app.services.download_services.spotify_download_service.YoutubeDL", MockYoutubeDL)

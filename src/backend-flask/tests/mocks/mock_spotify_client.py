@@ -8,7 +8,9 @@ from app import SpotifyService
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 
-class DummySpotifyClient:
+class MockSpotifyClient:
+    """ Mock Spotify Client overrides the playlist and playlist_items methods and returns saved response objects
+    for seamless unit testing. """
 
     def playlist(self, playlist_id):
         """ Mock Spotipy Client playlist method

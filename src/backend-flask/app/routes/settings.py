@@ -19,7 +19,7 @@ def settings():
 
     settings_path = Config.SETTINGS_PATH
 
-    if not os.path.exists(settings_path):
+    if not os.path.exists(settings_path) and not Config.TESTING:
         logger.info("Creating default settings file at location:%s", settings_path)
         with open(settings_path, 'w') as f:
             yaml.safe_dump(DEFAULT_SETTINGS, f)

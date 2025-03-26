@@ -8,7 +8,6 @@ from app.repositories.playlist_repository import PlaylistRepository
 from app.services.download_services.spotify_download_service import SpotifyDownloadService
 from app.services.download_services.soundcloud_download_service import SoundcloudDownloadService
 
-
 logger = logging.getLogger(__name__)
 
 
@@ -25,12 +24,18 @@ class DownloadManager:
 
         logger.info("Download Manager Initialised")
 
-
     def _download_worker(self):
         """ Background worker that processes the download queue. """
         logger.info("Download Worker Started")
         while True:
             playlist_id = self.download_queue.get()  # blocks until a task is available
+
+            # Check for shutdown signal
+            if playlist_id is None:
+                self.download_queue.task_done()
+                logger.info("Shutdown signal received. Exiting download worker.")
+                break
+
             with self.app.app_context():
                 playlist = PlaylistRepository.get_playlist_by_id(playlist_id)
                 if not playlist:
@@ -68,4 +73,10 @@ class DownloadManager:
             self.cancellation_flags[playlist_id].set()
             logger.info(f"cancellation_flags: {self.cancellation_flags[playlist_id]}")
 
-
+    def shutdown(self):
+        logger.info("Shutting down DownloadManager...")
+        # Queue shutdown signal
+        self.download_queue.put(None)
+        # Wait for the worker thread to finish its current task and exit
+        self.worker_thread.join()
+        logger.info("Download Manager shutdown")

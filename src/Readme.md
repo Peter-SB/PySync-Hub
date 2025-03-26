@@ -39,13 +39,13 @@ Ensure the following tools are installed on your system:
      git --version
      ```
 
-All Together:
-```bash
-node -v
-npm -v
-python --version
-pip --version     
-```
+5. **Full Command**:
+    ```bash
+    node -v
+    npm -v
+    python --version
+    pip --version     
+    ```
 
 ---
 
@@ -76,20 +76,18 @@ pip --version
 4. **Install FFmpeg and FFprobe** 
    - Follow the instructions in [src/ffmpeg/ReadMe.md](src\ffmpeg\ReadMe.md) to download and place the binaries in the `src/ffmpeg/` directory.
 
-
-All Together:  
-
-```bash
-cd src
-npm install
-cd frontend-react
-npm install
-cd ../..
-
-cd src/backend-flask
-pip install -r requirements.txt
-cd ../..
-```
+5. **Full Command**:
+    ```bash
+    cd src
+    npm install
+    cd frontend-react
+    npm install
+    cd ../..
+    
+    cd src/backend-flask
+    pip install -r requirements.txt
+    cd ../..
+    ```
 
 ---
 

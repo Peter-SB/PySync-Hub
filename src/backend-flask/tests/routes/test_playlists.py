@@ -3,9 +3,6 @@ from spotipy import SpotifyException
 
 from app.models import Playlist
 from app.repositories.playlist_repository import PlaylistRepository
-from tests.mocks.DummySpotifyClient import DummySpotifyClient
-
-dummy_test_client = DummySpotifyClient() # Create an instance of the DummySpotifyClient class to call fixture
 
 @pytest.mark.usefixtures("client", "init_database")
 class TestGetPlaylists():
@@ -90,8 +87,6 @@ class TestAddPlaylist:
         assert added_playlist.platform == "spotify"
 
     def test_add_playlist_valid_soundcloud(self, client, monkeypatch):
-
-
         response = client.post('/api/playlists', json={"url_or_id": "https://soundcloud.com/schmoot-point/sets/omwhp"})
 
         assert response.status_code == 201
@@ -103,14 +98,23 @@ class TestAddPlaylist:
         assert added_playlist.track_count == 14
         assert added_playlist.platform == "soundcloud"
 
-    def test_add_playlist_already_added(self, client, monkeypatch):
+    def test_add_playlist_already_added_spotify(self, client, monkeypatch):
         response1 = client.post('/api/playlists', json={"url_or_id": "https://open.spotify.com/playlist/3bL14BgPXekKHep3RRdwGZ"})
         assert response1.status_code == 201
 
         response2 = client.post('/api/playlists', json={"url_or_id": "https://open.spotify.com/playlist/3bL14BgPXekKHep3RRdwGZ"})
         assert response2.status_code == 400
         error_message = response2.get_json().get("error")
-        assert error_message == "Playlist Already Exists"
+        assert error_message == "Playlist Already Added"
+
+    def test_add_playlist_already_added_soundcloud(self, client, monkeypatch):
+        response1 = client.post('/api/playlists', json={"url_or_id": "https://soundcloud.com/schmoot-point/sets/omwhp"})
+        assert response1.status_code == 201
+
+        response2 = client.post('/api/playlists', json={"url_or_id": "https://soundcloud.com/schmoot-point/sets/omwhp"})
+        assert response2.status_code == 400
+        error_message = response2.get_json().get("error")
+        assert error_message == "Playlist Already Added"
 
     def test_add_playlist_not_error_spotify(self, client, monkeypatch):
         response = client.post('/api/playlists', json={"url_or_id": "https://open.spotify.com/playlist/error"})
