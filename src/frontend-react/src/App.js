@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from 'react';
-// import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'; // Use this for development and when running in web app
+import React, { useState, useEffect, useCallback } from 'react';
 import { HashRouter as Router, Routes, Route } from 'react-router-dom';  // Use this for production and when running in Electron. Because Electron uses file:// protocol and BrowserRouter doesn't work with file:// protocol
 
 import io from 'socket.io-client';
@@ -37,21 +36,20 @@ function App() {
     return () => socket.disconnect();
   }, []);
 
-  const fetchPlaylists = async () => {
+  const fetchPlaylists = useCallback(async () => {
     try {
       const response = await fetch(`${backendUrl}/api/playlists`);
-      console.log(response);
       const data = await response.json();
       setPlaylists(data);
     } catch (error) {
-      console.error("Error fetching playlists", error);
-      setErrorMessage("Error fetching playlists");
+      console.error("Server Error", error);
+      setErrorMessage("Server Error: " + error.message + ". Please check if the server is running. See Help");
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchPlaylists();
-  }, []);
+  }, [fetchPlaylists]);
 
   return (
     <Router>
@@ -59,7 +57,7 @@ function App() {
         <Sidebar />
         <main className="flex-1">
           <Routes>
-            <Route path="/" element={<DownloadPage playlists={playlists} setPlaylists={setPlaylists} />} />
+            <Route path="/" element={<DownloadPage playlists={playlists} fetchPlaylists={fetchPlaylists} errorMessage={errorMessage} setErrorMessage={setErrorMessage} />} />
             <Route path="/playlist/:playlistId" element={<PlaylistPage playlists={playlists} />} />
             <Route path="/tracks" element={<TrackPage />} />
             <Route path="/settings" element={<SettingsPage />} />

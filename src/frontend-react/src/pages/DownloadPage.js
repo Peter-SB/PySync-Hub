@@ -1,30 +1,14 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import AddPlaylistForm from '../components/AddPlaylistForm';
 import PlaylistList from '../components/PlaylistList';
 import PlaylistSortOrder from '../components/PlaylistSortOrder';
 import { backendUrl } from '../config';
 
-function DownloadPage({ playlists, setPlaylists }) {
-  const [errorMessage, setErrorMessage] = useState('');
+function DownloadPage({ playlists, fetchPlaylists, errorMessage, setErrorMessage }) {
   const [exportStatus, setExportStatus] = useState('');
   const [selectedPlaylists, setSelectedPlaylists] = useState([]);
   const [sortBy, setSortBy] = useState("created_at"); // default sort by name
   const [sortOrder, setSortOrder] = useState("dec"); // ascending order by default
-
-  const fetchPlaylists = useCallback(async () => {
-    try {
-      const response = await fetch(`${backendUrl}/api/playlists`);
-      const data = await response.json();
-      setPlaylists(data);
-    } catch (error) {
-      console.error("Error fetching playlists", error);
-      setErrorMessage("Error fetching playlists");
-    }
-  }, [setPlaylists]);
-
-  useEffect(() => {
-    fetchPlaylists();
-  }, [fetchPlaylists]);
 
   // Sort playlists based on the selected sort criterion and order.
   const sortedPlaylists = useMemo(() => {

@@ -3,7 +3,7 @@
 ## Export
 - export page?
 - error display
-- Potential Bug: playlists with same names
+- Potential Bug: Playlists With Same Names - Tested, not an issue.
 
 ## Playlist/Track Managment
  - Better Errors

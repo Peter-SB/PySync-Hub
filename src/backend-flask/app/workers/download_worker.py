@@ -50,7 +50,6 @@ class DownloadManager:
                     SoundcloudDownloadService.download_playlist(playlist, self.cancellation_flags)
 
                 self.cancellation_flags[playlist.id].clear()
-                logger.info(f"cancellation_flags: {self.cancellation_flags}")
 
             self.download_queue.task_done()
 
