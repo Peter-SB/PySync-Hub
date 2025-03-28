@@ -143,7 +143,7 @@ function PlaylistItem({ playlist, fetchPlaylists, isSelected, onSelectChange }) 
         <div className="relative w-[35px] h-[21px] bg-gray-400 border border-gray-300 rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:ring-gray-600 disabled:opacity-50 disabled:pointer-events-none
                 peer-checked:bg-gray-100
                 before:inline-block before:w-4 before:h-4 before:bg-white before:rounded-full before:shadow before:transition-all before:ease-in-out before:duration-200
-                before:translate-x-[14px] peer-checked:before:translate-x-0">
+                before:translate-x-[17px] before:translate-y-[-0.5px] peer-checked:before:translate-x-0">
         </div>
       </label>
     </div>

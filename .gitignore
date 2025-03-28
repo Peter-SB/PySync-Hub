@@ -27,6 +27,8 @@ build/
 out/
 dist/
 
+.spotipyoauthcache
+
 ffmpeg/ffmpeg
 ffmpeg/ffprobe
 ffmpeg/ffprobe.exe

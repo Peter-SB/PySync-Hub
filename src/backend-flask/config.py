@@ -31,6 +31,11 @@ class Config:
 
     SPOTIFY_CLIENT_ID = None
     SPOTIFY_CLIENT_SECRET = None
+    SPOTIFY_OAUTH_SCOPE = 'user-library-read playlist-read-private'
+    SPOTIFY_REDIRECT_URI = 'http://localhost:5000/api/spotify_auth/callback'
+    SPOTIFY_TOKEN_CACHE = '.spotipyoauthcache'
+    SPOTIFY_PORT_NUMBER = 8888
+
     SOUNDCLOUD_CLIENT_ID = None
 
     if not os.path.exists(SETTINGS_PATH) and not TESTING:

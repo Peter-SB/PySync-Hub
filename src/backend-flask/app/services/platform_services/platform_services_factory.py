@@ -1,7 +1,6 @@
 import logging
 from typing import Type
 
-from app import SpotifyService
 from app.services.platform_services.soundcloud_service import SoundcloudService
 from app.services.platform_services.spotify_service import SpotifyService
 

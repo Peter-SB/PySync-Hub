@@ -41,7 +41,7 @@ class PlaylistManagerService:
                 logger.info("Pulled latest playlist info (ID: %s, external_id: %s)", playlist.id,
                             playlist.external_id)
 
-                TrackManagerService.fetch_playlist_tracks(playlist.id)
+                TrackManagerService.fetch_playlist_tracks(playlist.id) # todo: investigate if this make duplicate calls with get_playlist_data
 
             except Exception as e:
                 logger.error("Failed to sync playlist ID %s: %s", playlist.id, e, exc_info=True)
@@ -110,9 +110,7 @@ class PlaylistManagerService:
                 selected_ids_int = []
 
             try:
-                # Bulk delete; synchronize_session=False for performance since we don't need the session updates
-                Playlist.query.filter(Playlist.id.in_(selected_ids_int)).delete(synchronize_session=False)
-                db.session.commit()
+                PlaylistRepository.delete_playlists_by_ids(selected_ids_int)
                 logger.info("Deleted playlists with IDs: %s", selected_ids_int)
             except Exception as e:
                 logger.error("Error deleting playlists with IDs %s: %s", selected_ids_int, e, exc_info=True)

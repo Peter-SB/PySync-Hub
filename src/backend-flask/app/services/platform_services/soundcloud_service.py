@@ -5,8 +5,10 @@ import time
 
 import requests
 import logging
+from bs4 import BeautifulSoup
 
 from app.models import Track
+from app.repositories.playlist_repository import PlaylistRepository
 from config import Config
 
 logger = logging.getLogger(__name__)
@@ -17,10 +19,30 @@ class PlaylistNotFoundException(Exception):
         super().__init__(message)
         self.status_code = status_code
 
+headers = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36"
+}
 
 class SoundcloudService:
     @staticmethod
-    def _make_http_get_request(url: str, headers: dict) -> dict:
+    def _make_http_get_request(url: str, headers: dict, query_params = None) -> dict:
+        """
+        Helper method for making HTTP GET requests with error handling.
+        """
+        logger.info("Making GET request to: %s", url)
+        response = requests.get(url, headers=headers, params=query_params)
+        if response.status_code != 200:
+            logger.error("HTTP GET error for URL %s: %s", url, response.text)
+
+            if response.status_code == 404:
+                raise PlaylistNotFoundException("Playlist not found. Could it be private or deleted?", 404)
+
+            raise Exception(f"HTTP GET error: {response.status_code} {response.text}")
+
+        return response.json()
+
+    @staticmethod
+    def _make_html_get_request(url: str, headers: dict) -> str:
         """
         Helper method for making HTTP GET requests with error handling.
         """
@@ -34,7 +56,7 @@ class SoundcloudService:
 
             raise Exception(f"HTTP GET error: {response.status_code} {response.text}")
 
-        return response.json()
+        return response.text
 
     @staticmethod
     def _parse_track(track: dict) -> dict:
@@ -82,18 +104,13 @@ class SoundcloudService:
 
     @staticmethod
     def _resolve_playlist(playlist_url: str) -> dict:
-        from bs4 import BeautifulSoup
         """
         Resolves a SoundCloud playlist URL using the SoundCloud API.
         Playlist data is stored in a script tag in the HTML of the playlist page.
         """
-        headers = {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36"
-        }
-
         response = requests.get(playlist_url, headers=headers)
         if response.status_code != 200:
-            return {"error": "Failed to retrieve page"}
+            raise Exception("Failed to retrieve page")
 
         # Extract script containing window.__sc_hydration
         soup = BeautifulSoup(response.text, "html.parser")
@@ -108,14 +125,98 @@ class SoundcloudService:
                     break
 
         if not hydration_data:
-            return {"error": "Playlist data not found"}
+            raise Exception("Playlist data not found")
 
         # Find the playlist data
         for item in hydration_data:
             if item.get("hydratable") == "playlist":
                 return item["data"]  # This contains the playlist information
 
-        return {"error": "No playlist data found"}
+        raise Exception("No playlist data found")
+
+    @staticmethod
+    def _resolve_likes_playlist(playlist_url: str) -> dict:
+        """
+        Get the liked tracks playlist info.
+
+        Get the liked tracks of a user from soundcloud.
+        First get the user id with a request to soundcloud.com/{username}. (get the id from the hydrated script e.g "id":2121716)
+        Then get the tracks from api-v2.soundcloud.com/users/{user_id}/likes?client_id={}&limit=25&offset=0
+        (if there is a "next_href" key in the response, continue loading are more tracks)
+        """
+        response = requests.get(playlist_url, headers=headers)
+        if response.status_code != 200:
+            raise Exception(f"Failed to retrieve user page. Status code: {response.status_code}")
+
+        # Extract script containing window.__sc_hydration
+        soup = BeautifulSoup(response.text, "html.parser")
+        script_tags = soup.find_all("script")
+
+        hydration_data = None
+        for script in script_tags:
+            if "window.__sc_hydration" in script.text:
+                match = re.search(r"window\.__sc_hydration\s*=\s*(\[\{.*?\}\]);", script.text, re.DOTALL)
+                if match:
+                    try:
+                        hydration_data = json.loads(match.group(1))
+                        break
+                    except Exception as e:
+                        raise Exception(f"Error parsing hydration soundcloud user id JSON: {e}")
+
+        if not hydration_data:
+            raise Exception("User ID data not found")
+
+        user_data = None
+        for item in hydration_data:
+            if item.get("hydratable") == "user":
+                user_data = item["data"]
+                break
+        if not user_data:
+            raise Exception("User data not found in hydration data")
+
+        return {
+            'title': f"Likes by {user_data.get("first_name")}",
+            'id': user_data.get("id"),
+            'artwork_url': user_data.get("avatar_url"),
+            'track_count': user_data.get('likes_count'),
+            'permalink_url': f"{playlist_url}",
+        }
+
+    @staticmethod
+    def _resolve_likes_playlist_tracks(playlist_url) -> list[dict]:
+        """
+
+        :param playlist_url: url of the liked track playlist used to resolve the playlist from the db
+        :return: List of track dictionaries in _parse_track format
+        """
+        playlist = PlaylistRepository.get_playlist_by_url(playlist_url)
+        if not playlist:
+            raise Exception(f"Playlist not found in you database for url: {playlist_url}")
+
+        client_id = Config.SOUNDCLOUD_CLIENT_ID
+        if not client_id:
+            raise ValueError("Missing SoundCloud client ID in environment variables.")
+
+        limit = 25
+        liked_tracks = []
+        api_url = (f"https://api-v2.soundcloud.com/users/{playlist.external_id}/likes?"
+                   f"client_id={client_id}&limit={limit}&offset=0")
+        query_params = [("client_id", client_id)]
+        while True:
+            data = SoundcloudService._make_http_get_request(api_url, headers, query_params)
+            if "collection" not in data:
+                break
+
+            liked_tracks.extend(data["collection"])
+
+            # If there is no further page, exit the loop.
+            if not data.get("collection") or not data.get("next_href"):
+                break
+            api_url = data.get("next_href")
+            time.sleep(0.1)  # be nice to the API
+        liked_tracks_formatted = [SoundcloudService._parse_track(track.get("track")) for track in liked_tracks if track.get("track")]
+
+        return liked_tracks_formatted
 
     @staticmethod
     def get_playlist_data(playlist_url: str) -> dict:
@@ -123,8 +224,13 @@ class SoundcloudService:
         Retrieve playlist data from SoundCloud
         """
         try:
-            data = SoundcloudService._resolve_playlist(playlist_url)
+            if "likes" in playlist_url:
+                data = SoundcloudService._resolve_likes_playlist(playlist_url)
+            else:
+                data = SoundcloudService._resolve_playlist(playlist_url)
+
             image_url = data.get('artwork_url')
+            # Use the first tracks artwork as fallback if playlist has no image
             if not image_url and data.get('tracks'):
                 first_track = data.get('tracks')[0]
                 image_url = first_track.get('artwork_url')
@@ -149,15 +255,18 @@ class SoundcloudService:
         Returns a list of dictionaries containing track information
         in the order they appear in the SoundCloud playlist.
 
-        :return: List of track dictionaries
+        :return: List of track dictionaries in _parse_track format
 
         todo: fix track order by rewriting the exclude existing track logic because thats excluding tacks on other
         playlists. Need to pass all tracks back, just query the db for existing tracks and exclude them from the
         call to the soundcloud api
         """
         try:
-            data = SoundcloudService._resolve_playlist(playlist_url)
-            resolved_tracks = data.get('tracks', [])
+            if "likes" in playlist_url:
+                return SoundcloudService._resolve_likes_playlist_tracks(playlist_url)
+            else:
+                data = SoundcloudService._resolve_playlist(playlist_url)
+                resolved_tracks = data.get('tracks', [])
 
             logger.info("Fetched %d tracks for SoundCloud playlist", len(resolved_tracks))
 
@@ -183,12 +292,6 @@ class SoundcloudService:
 
             tracks_metadata = []
             client_id = Config.SOUNDCLOUD_CLIENT_ID
-            headers = {
-                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-                              "AppleWebKit/537.36 (KHTML, like Gecko) "
-                              "Chrome/132.0.0.0 Safari/537.36",
-                "Accept": "application/json"
-            }
 
             # Fetch metadata in batches to avoid spamming requests
             for i in range(0, len(new_track_ids), 20):
@@ -218,3 +321,5 @@ class SoundcloudService:
         except Exception as e:
             logger.error("Error fetching SoundCloud playlist tracks: %s", e, exc_info=True)
             raise e
+
+

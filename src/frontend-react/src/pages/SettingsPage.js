@@ -63,6 +63,10 @@ function SettingsPage() {
     alert(helpText);
   };
 
+  const handleLoginClick = () => {
+    window.open(`${backendUrl}/api/spotify_auth/login`, '_blank');
+  };
+
   // Check if the save button should be disabled
   const isSaveDisabled = !((spotifyClientId && spotifyClientSecret) || soundcloudClientId);
 
@@ -74,8 +78,8 @@ function SettingsPage() {
       <div className="py-5 border-y-2 ">
         {/* Spotify Settings */}
         <div className="mb-10">
-          <h2 className="text-xl font-semibold mb-2">API Settings</h2>
-          <p className='py-2'>These API keys are required to sync with Spotify or SoundCloud.</p>
+          <h2 className="text-xl font-semibold mb-2">API Settings <span className="text-red-500">*</span></h2>
+          <p className='py-2 mb-2'>These API keys are required to sync with Spotify or SoundCloud.</p>
           <div className="mb-4">
             <label className="block font-medium">Spotify Client ID <span className="text-red-500">*</span></label>
             <div className="flex items-center">
@@ -130,6 +134,20 @@ function SettingsPage() {
               </button>
             </div>
           </div>
+        </div>
+      </div>
+      {/* Spotify Login */}
+      <div className="py-5 border-b-2 ">
+        <div className="mb-4 ">
+          <div className="mb-4"></div>
+          <p className="mb-2"> <span className='font-medium'>Login with Spotify</span> to access your liked songs.</p>
+          <button
+            onClick={handleLoginClick}
+            className="flex items-center px-3 py-2 rounded bg-green-500 text-white"
+          >
+            <img src="./icons/spotify.svg" alt="Spotify" className="w-6 h-6 mr-2 grayscale brightness-0 filter invert" />
+            Login
+          </button>
         </div>
       </div>
       <p className='py-2 mt-5'>Note, you may need to restart after making changes to settings.</p>

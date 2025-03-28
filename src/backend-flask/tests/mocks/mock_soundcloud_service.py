@@ -12,6 +12,16 @@ class MockSoundcloudService(SoundcloudService):
     response objects for seamless unit testing. """
 
     @staticmethod
+    def return_data_from_mock_file(filename: str) -> dict:
+        file_path = os.path.join(current_dir, "../mock_data", filename)
+        if os.path.exists(file_path):
+            print(f"Soundcloud Playlist Response Mock Data Found: {filename}")
+            with open(file_path, 'r') as file:
+                return json.load(file)
+
+        raise Exception(f"Mock data file not found : {filename}")
+
+    @staticmethod
     def _make_http_get_request(url: str, headers: dict) -> dict:
         """
         Dummy Soundcloud _make_http_get_request method
@@ -28,31 +38,52 @@ class MockSoundcloudService(SoundcloudService):
 
         if "tracks?ids=" in url:
             url_hash = hashlib.md5(url.encode("utf-8")).hexdigest()  # Has the url for a short unique filename
-            filename = f"soundcloud_request_{url_hash}.json"
-            file_path = os.path.join(current_dir, "../mock_data", filename)
-            if os.path.exists(file_path):
-                print(f"Soundcloud Request Response Mock Data Found: {file_path}")
-                with open(file_path, 'r', encoding="utf-8") as file:
-                    return json.load(file)
-            raise Exception(f"Mock data not found Soundcloud Request Response: {file_path}")
+            file_path = os.path.join(current_dir, "../mock_data", f"soundcloud_request_{url_hash}.json")
+            return MockSoundcloudService.return_data_from_mock_file(file_path)
+
+        if "likes" in url:
+            user_name = url.rstrip("/").split("/")[-1]
+            file_path = os.path.join(current_dir, "../mock_data", f"soundcloud_likes_{user_name}.json")
+            return MockSoundcloudService.return_data_from_mock_file(file_path)
 
         raise Exception(f"Mock data not found for request: {url}")
 
     @staticmethod
-    def _resolve_playlist(playlist_url: str) -> dict:
+    def _make_html_get_request(url: str, headers: dict) -> dict:
         """
         Dummy Soundcloud _resolve_playlist method
         If playlist_id is "error" raise PlaylistNotFoundException
         Else return mock data from file with playlist_id
         """
-        if playlist_url == "error":
+        if "error" in url:
             raise PlaylistNotFoundException("Playlist not found. Could it be private or deleted?", 404)
 
-        playlist_id = playlist_url.rstrip("/").split("/")[-1]
-        file_path = os.path.join(current_dir, "../mock_data", f"soundcloud_playlist_{playlist_id}.json")
-        if os.path.exists(file_path):
-            print(f"Soundcloud Playlist Response Mock Data Found: soundcloud_playlist_{playlist_id}.json")
-            with open(file_path, 'r') as file:
-                return json.load(file)
+        if "sets" in url:
+            user_name = url.rstrip("/").split("/")[-2]
+            file_path = os.path.join(current_dir, "../mock_data", f"soundcloud_user_{user_name}.json")
+            return MockSoundcloudService.return_data_from_mock_file(file_path)
 
-        raise Exception(f"Mock data not found for playlist_id: {playlist_id}")
+        # User profile
+        user_name = url.rstrip("/").split("/")[-1]
+        file_path = os.path.join(current_dir, "../mock_data", f"soundcloud_user_{user_name}.json")
+        return MockSoundcloudService.return_data_from_mock_file(file_path)
+
+
+    # @staticmethod
+    # def _resolve_playlist(playlist_url: str) -> dict:
+    #     """
+    #     Dummy Soundcloud _resolve_playlist method
+    #     If playlist_id is "error" raise PlaylistNotFoundException
+    #     Else return mock data from file with playlist_id
+    #     """
+    #     if playlist_url == "error":
+    #         raise PlaylistNotFoundException("Playlist not found. Could it be private or deleted?", 404)
+    #
+    #     playlist_id = playlist_url.rstrip("/").split("/")[-1]
+    #     file_path = os.path.join(current_dir, "../mock_data", f"soundcloud_playlist_{playlist_id}.json")
+    #     if os.path.exists(file_path):
+    #         print(f"Soundcloud Playlist Response Mock Data Found: soundcloud_playlist_{playlist_id}.json")
+    #         with open(file_path, 'r') as file:
+    #             return json.load(file)
+    #
+    #     raise Exception(f"Mock playlist data not found for playlist_id: {playlist_id}")

@@ -3,7 +3,7 @@ from datetime import datetime
 from typing import List
 
 from app.extensions import db, socketio
-from app.models import Playlist
+from app.models import Playlist, PlaylistTrack
 
 logger = logging.getLogger(__name__)
 
@@ -28,6 +28,11 @@ class PlaylistRepository:
     def get_playlist_by_id(playlist_id: int) -> Playlist:
         logger.debug(f"Fetching playlists with IDs: {playlist_id}")
         return Playlist.query.filter(Playlist.id == playlist_id).first()
+
+    @staticmethod
+    def get_playlist_by_url(url: str) -> Playlist:
+        logger.debug(f"Fetching playlists with URL: {url}")
+        return Playlist.query.filter(Playlist.url == url).first()
 
     @staticmethod
     def get_playlist(playlist_id):
@@ -76,7 +81,9 @@ class PlaylistRepository:
 
     @staticmethod
     def delete_playlists_by_ids(playlist_ids):
+        PlaylistTrack.query.filter(PlaylistTrack.playlist_id.in_(playlist_ids)).delete(synchronize_session=False)
         Playlist.query.filter(Playlist.id.in_(playlist_ids)).delete(synchronize_session=False)
+
         db.session.commit()
         logger.info("Deleted playlists with IDs: %s", playlist_ids)
 

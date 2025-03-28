@@ -14,7 +14,7 @@ PySync DJ Hub is a desktop app that allows you to seamlessly sync your playlists
     <img src="docs/images/pysync-16-03-25-home.png" alt="PySync Hub" style="width:80%; height:auto;">
 </div>
 
-**Ethos:** This app is built with the hope that more people take up DJing and get more people get into dance music. The quality of audio downloaded by this app is capped at 128kbps and all audio sourced from publicly available sources. **Please buy the music you love and support the artists. The music scene is dying, and it needs everyone's support.**
+**Ethos:** This app is built with the hope that more people take up DJing and get more people get into dance music. The quality of audio downloaded by this app is capped at 128kbps and all audio sourced from publicly available sources. **Please buy the music your love and support the artists. The music scene is dying, and it needs everyone's support.**
 
 **How it works:** The program has three main stages. The first, adding playlists. This step involves querying the music platforms API's for your playlists information and adding them to the local database. The second stage is syncing the playlists. This step involves downloading the tracks from public sources, such as YouTube, using a Python library called yt-dlp. The final stage is exporting the playlists to Rekordbox. This step involves generating an iTunes XML file that can be imported into Rekordbox.  
 

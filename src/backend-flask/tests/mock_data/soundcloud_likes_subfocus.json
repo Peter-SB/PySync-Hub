@@ -1,0 +1,1537 @@
+{
+    "collection": [
+        {
+            "created_at": "2024-11-27T19:14:15Z",
+            "kind": "like",
+            "track": {
+                "artwork_url": "https://i1.sndcdn.com/artworks-jzhF6HuyQb9p8ziX-3WK9rg-large.png",
+                "caption": null,
+                "commentable": true,
+                "comment_count": 157,
+                "created_at": "2024-11-27T13:03:08Z",
+                "description": "Watch on YouTube: https://youtu.be/VUAptldGhD0?si=KE2WUbUUx9WwCV-_\n\nSub Focus, Dimension, Culture Shock & 1991 perform the first ever drum & bass set on the main stage at EDC Orlando.\n\n@subfocus @dimension_uk @culture-shock @1991_music",
+                "downloadable": false,
+                "download_count": 0,
+                "duration": 4144039,
+                "full_duration": 4144039,
+                "embeddable_by": "all",
+                "genre": "Drum & Bass",
+                "has_downloads_left": false,
+                "id": 1968214187,
+                "kind": "track",
+                "label_name": "",
+                "last_modified": "2024-11-27T19:13:10Z",
+                "license": "all-rights-reserved",
+                "likes_count": 4692,
+                "permalink": "edcorlando24",
+                "permalink_url": "https://soundcloud.com/worshipartists/edcorlando24",
+                "playback_count": 97772,
+                "public": true,
+                "publisher_metadata": {
+                    "id": 1968214187,
+                    "urn": "soundcloud:tracks:1968214187",
+                    "artist": "Sub Focus, Dimension, Culture Shock, 1991",
+                    "explicit": false
+                },
+                "purchase_title": "Watch on YouTube...",
+                "purchase_url": "https://youtu.be/VUAptldGhD0?si=KE2WUbUUx9WwCV-_",
+                "release_date": "2024-11-27T00:00:00Z",
+                "reposts_count": 192,
+                "secret_token": null,
+                "sharing": "public",
+                "state": "finished",
+                "streamable": true,
+                "tag_list": "subfocus dimension cultureshock 1991 dnb \"Drum & Bass\"",
+                "title": "WORSHIP @ EDC Orlando 2024 - Sub Focus, Dimension, Culture Shock & 1991",
+                "uri": "https://api.soundcloud.com/tracks/1968214187",
+                "urn": "soundcloud:tracks:1968214187",
+                "user_id": 168345221,
+                "visuals": null,
+                "waveform_url": "https://wave.sndcdn.com/qBPvAHbdi3Fe_m.json",
+                "display_date": "2024-11-27T19:13:10Z",
+                "media": {
+                    "transcodings": [
+                        {
+                            "url": "https://api-v2.soundcloud.com/media/soundcloud:tracks:1968214187/f6fc5506-d3e7-41a3-949d-b17228962c91/stream/hls",
+                            "preset": "mp3_1_0",
+                            "duration": 4144039,
+                            "snipped": false,
+                            "format": {
+                                "protocol": "hls",
+                                "mime_type": "audio/mpeg"
+                            },
+                            "quality": "sq",
+                            "is_legacy_transcoding": true
+                        },
+                        {
+                            "url": "https://api-v2.soundcloud.com/media/soundcloud:tracks:1968214187/f6fc5506-d3e7-41a3-949d-b17228962c91/stream/progressive",
+                            "preset": "mp3_1_0",
+                            "duration": 4144039,
+                            "snipped": false,
+                            "format": {
+                                "protocol": "progressive",
+                                "mime_type": "audio/mpeg"
+                            },
+                            "quality": "sq",
+                            "is_legacy_transcoding": true
+                        },
+                        {
+                            "url": "https://api-v2.soundcloud.com/media/soundcloud:tracks:1968214187/8680eefa-0ac0-4a92-b4e0-0c25cca29d22/stream/hls",
+                            "preset": "opus_0_0",
+                            "duration": 4144007,
+                            "snipped": false,
+                            "format": {
+                                "protocol": "hls",
+                                "mime_type": "audio/ogg; codecs=\"opus\""
+                            },
+                            "quality": "sq",
+                            "is_legacy_transcoding": true
+                        }
+                    ]
+                },
+                "station_urn": "soundcloud:system-playlists:track-stations:1968214187",
+                "station_permalink": "track-stations:1968214187",
+                "track_authorization": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJnZW8iOiJHQiIsInN1YiI6IiIsInJpZCI6IiIsImlhdCI6MTc0MzA5NDIyNX0.0Zu9lUUeFwatMAIjGijy00VjKXjG35kkXV8kfBvixxI",
+                "monetization_model": "NOT_APPLICABLE",
+                "policy": "ALLOW",
+                "user": {
+                    "avatar_url": "https://i1.sndcdn.com/avatars-000318181325-pz8cyg-large.jpg",
+                    "first_name": "",
+                    "followers_count": 4727,
+                    "full_name": "",
+                    "id": 168345221,
+                    "kind": "user",
+                    "last_modified": "2024-05-15T15:14:03Z",
+                    "last_name": "",
+                    "permalink": "worshipartists",
+                    "permalink_url": "https://soundcloud.com/worshipartists",
+                    "uri": "https://api.soundcloud.com/users/168345221",
+                    "urn": "soundcloud:users:168345221",
+                    "username": "WORSHIP",
+                    "verified": false,
+                    "city": "",
+                    "country_code": null,
+                    "badges": {
+                        "pro": false,
+                        "creator_mid_tier": false,
+                        "pro_unlimited": true,
+                        "verified": false
+                    },
+                    "station_urn": "soundcloud:system-playlists:artist-stations:168345221",
+                    "station_permalink": "artist-stations:168345221"
+                }
+            }
+        },
+        {
+            "created_at": "2024-04-11T19:37:04Z",
+            "kind": "like",
+            "track": {
+                "artwork_url": "https://i1.sndcdn.com/artworks-XiehMa1eNnrt5UkU-wj168Q-large.jpg",
+                "caption": null,
+                "commentable": true,
+                "comment_count": 486,
+                "created_at": "2024-04-10T17:29:15Z",
+                "description": "YouTube / Apple Music: https://ffm.to/worshipdnbnl\n\nSub Focus, Dimension, Culture Shock & 1991 return for a highly-anticipated rooftop session, this time in New York with our friends UKF & Brownies & Lemonade.\n\n@subfocus @dimension_uk @culture-shock @1991_music @ukf @browniesandlemonade",
+                "downloadable": false,
+                "download_count": 0,
+                "duration": 5031053,
+                "full_duration": 5031053,
+                "embeddable_by": "all",
+                "genre": "Drum & Bass",
+                "has_downloads_left": false,
+                "id": 1797807826,
+                "kind": "track",
+                "label_name": null,
+                "last_modified": "2024-04-11T19:39:40Z",
+                "license": "all-rights-reserved",
+                "likes_count": 10076,
+                "permalink": "newyork-livestream",
+                "permalink_url": "https://soundcloud.com/worshipartists/newyork-livestream",
+                "playback_count": 275433,
+                "public": true,
+                "publisher_metadata": {
+                    "id": 1797807826,
+                    "urn": "soundcloud:tracks:1797807826",
+                    "contains_music": true
+                },
+                "purchase_title": "YouTube / Apple Music",
+                "purchase_url": "https://ffm.to/worshipdnbnl",
+                "release_date": null,
+                "reposts_count": 426,
+                "secret_token": null,
+                "sharing": "public",
+                "state": "finished",
+                "streamable": true,
+                "tag_list": "",
+                "title": "Sub Focus, Dimension, Culture Shock & 1991 | New York Livestream | WORSHIP x DNBNL x UKF",
+                "uri": "https://api.soundcloud.com/tracks/1797807826",
+                "urn": "soundcloud:tracks:1797807826",
+                "user_id": 168345221,
+                "visuals": null,
+                "waveform_url": "https://wave.sndcdn.com/mgTdL505kdRz_m.json",
+                "display_date": "2024-04-11T18:00:04Z",
+                "media": {
+                    "transcodings": [
+                        {
+                            "url": "https://api-v2.soundcloud.com/media/soundcloud:tracks:1797807826/a09e21fc-26ee-4efa-b9d8-30453cb6a9cd/stream/hls",
+                            "preset": "mp3_1_0",
+                            "duration": 5031053,
+                            "snipped": false,
+                            "format": {
+                                "protocol": "hls",
+                                "mime_type": "audio/mpeg"
+                            },
+                            "quality": "sq",
+                            "is_legacy_transcoding": true
+                        },
+                        {
+                            "url": "https://api-v2.soundcloud.com/media/soundcloud:tracks:1797807826/a09e21fc-26ee-4efa-b9d8-30453cb6a9cd/stream/progressive",
+                            "preset": "mp3_1_0",
+                            "duration": 5031053,
+                            "snipped": false,
+                            "format": {
+                                "protocol": "progressive",
+                                "mime_type": "audio/mpeg"
+                            },
+                            "quality": "sq",
+                            "is_legacy_transcoding": true
+                        },
+                        {
+                            "url": "https://api-v2.soundcloud.com/media/soundcloud:tracks:1797807826/3395b7f4-23a3-4135-9153-7d9b518dd290/stream/hls",
+                            "preset": "opus_0_0",
+                            "duration": 5031011,
+                            "snipped": false,
+                            "format": {
+                                "protocol": "hls",
+                                "mime_type": "audio/ogg; codecs=\"opus\""
+                            },
+                            "quality": "sq",
+                            "is_legacy_transcoding": true
+                        }
+                    ]
+                },
+                "station_urn": "soundcloud:system-playlists:track-stations:1797807826",
+                "station_permalink": "track-stations:1797807826",
+                "track_authorization": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJnZW8iOiJHQiIsInN1YiI6IiIsInJpZCI6IiIsImlhdCI6MTc0MzA5NDIyNX0.0Zu9lUUeFwatMAIjGijy00VjKXjG35kkXV8kfBvixxI",
+                "monetization_model": "NOT_APPLICABLE",
+                "policy": "ALLOW",
+                "user": {
+                    "avatar_url": "https://i1.sndcdn.com/avatars-000318181325-pz8cyg-large.jpg",
+                    "first_name": "",
+                    "followers_count": 4727,
+                    "full_name": "",
+                    "id": 168345221,
+                    "kind": "user",
+                    "last_modified": "2024-05-15T15:14:03Z",
+                    "last_name": "",
+                    "permalink": "worshipartists",
+                    "permalink_url": "https://soundcloud.com/worshipartists",
+                    "uri": "https://api.soundcloud.com/users/168345221",
+                    "urn": "soundcloud:users:168345221",
+                    "username": "WORSHIP",
+                    "verified": false,
+                    "city": "",
+                    "country_code": null,
+                    "badges": {
+                        "pro": false,
+                        "creator_mid_tier": false,
+                        "pro_unlimited": true,
+                        "verified": false
+                    },
+                    "station_urn": "soundcloud:system-playlists:artist-stations:168345221",
+                    "station_permalink": "artist-stations:168345221"
+                }
+            }
+        },
+        {
+            "created_at": "2022-07-26T22:42:34Z",
+            "kind": "like",
+            "track": {
+                "artwork_url": "https://i1.sndcdn.com/artworks-wGcNLh1cxsxk-0-large.jpg",
+                "caption": null,
+                "commentable": true,
+                "comment_count": 35,
+                "created_at": "2022-07-26T15:45:05Z",
+                "description": null,
+                "downloadable": false,
+                "download_count": 0,
+                "duration": 160031,
+                "full_duration": 160026,
+                "embeddable_by": "all",
+                "genre": "Pop",
+                "has_downloads_left": false,
+                "id": 1312196983,
+                "kind": "track",
+                "label_name": "Black Butter",
+                "last_modified": "2024-08-06T20:46:17Z",
+                "license": "all-rights-reserved",
+                "likes_count": 1601,
+                "permalink": "hate-me-demo",
+                "permalink_url": "https://soundcloud.com/charlotteplankmusic/hate-me-demo",
+                "playback_count": 73266,
+                "public": true,
+                "publisher_metadata": {
+                    "id": 1312196983,
+                    "urn": "soundcloud:tracks:1312196983",
+                    "artist": "Charlotte Plank",
+                    "album_title": "Hate Me",
+                    "contains_music": true,
+                    "upc_or_ean": "196922001215",
+                    "isrc": "USA2P2215960",
+                    "explicit": false,
+                    "p_line": "(P) 2023 RCA Records / Sony BB Limited under exclusive licence from Ellen Josephine Limited / Life is Beautiful Music Ltd",
+                    "p_line_for_display": "℗ 2023 RCA Records / Sony BB Limited under exclusive licence from Ellen Josephine Limited / Life is Beautiful Music Ltd",
+                    "writer_composer": "Matt Wills, Christopher Wood",
+                    "release_title": "Hate Me (Demo)"
+                },
+                "purchase_title": null,
+                "purchase_url": null,
+                "release_date": "2022-07-26T00:00:00Z",
+                "reposts_count": 62,
+                "secret_token": null,
+                "sharing": "public",
+                "state": "finished",
+                "streamable": true,
+                "tag_list": "",
+                "title": "Hate Me (Demo)",
+                "uri": "https://api.soundcloud.com/tracks/1312196983",
+                "urn": "soundcloud:tracks:1312196983",
+                "user_id": 224673620,
+                "visuals": null,
+                "waveform_url": "https://wave.sndcdn.com/3eqaNMlOPOcN_m.json",
+                "display_date": "2022-07-26T00:00:00Z",
+                "media": {
+                    "transcodings": [
+                        {
+                            "url": "https://api-v2.soundcloud.com/media/soundcloud:tracks:1312196983/3ec47d4a-09c2-42e8-8c54-1122a2d02960/stream/ctr-encrypted-hls",
+                            "preset": "aac_160k",
+                            "duration": 160031,
+                            "snipped": false,
+                            "format": {
+                                "protocol": "ctr-encrypted-hls",
+                                "mime_type": "audio/mp4; codecs=\"mp4a.40.2\""
+                            },
+                            "quality": "sq",
+                            "is_legacy_transcoding": false
+                        },
+                        {
+                            "url": "https://api-v2.soundcloud.com/media/soundcloud:tracks:1312196983/3ec47d4a-09c2-42e8-8c54-1122a2d02960/stream/cbc-encrypted-hls",
+                            "preset": "aac_160k",
+                            "duration": 160031,
+                            "snipped": false,
+                            "format": {
+                                "protocol": "cbc-encrypted-hls",
+                                "mime_type": "audio/mp4; codecs=\"mp4a.40.2\""
+                            },
+                            "quality": "sq",
+                            "is_legacy_transcoding": false
+                        },
+                        {
+                            "url": "https://api-v2.soundcloud.com/media/soundcloud:tracks:1312196983/dfffa384-4a46-45e5-8931-25414234a3ab/stream/ctr-encrypted-hls",
+                            "preset": "abr_sq",
+                            "duration": 160031,
+                            "snipped": false,
+                            "format": {
+                                "protocol": "ctr-encrypted-hls",
+                                "mime_type": "audio/mpegurl"
+                            },
+                            "quality": "sq",
+                            "is_legacy_transcoding": false
+                        },
+                        {
+                            "url": "https://api-v2.soundcloud.com/media/soundcloud:tracks:1312196983/dfffa384-4a46-45e5-8931-25414234a3ab/stream/cbc-encrypted-hls",
+                            "preset": "abr_sq",
+                            "duration": 160031,
+                            "snipped": false,
+                            "format": {
+                                "protocol": "cbc-encrypted-hls",
+                                "mime_type": "audio/mpegurl"
+                            },
+                            "quality": "sq",
+                            "is_legacy_transcoding": false
+                        },
+                        {
+                            "url": "https://api-v2.soundcloud.com/media/soundcloud:tracks:1312196983/0722add2-b1ab-47db-826d-23b9e5ce86a7/stream/hls",
+                            "preset": "mp3_1_0",
+                            "duration": 160026,
+                            "snipped": false,
+                            "format": {
+                                "protocol": "hls",
+                                "mime_type": "audio/mpeg"
+                            },
+                            "quality": "sq",
+                            "is_legacy_transcoding": true
+                        },
+                        {
+                            "url": "https://api-v2.soundcloud.com/media/soundcloud:tracks:1312196983/0722add2-b1ab-47db-826d-23b9e5ce86a7/stream/progressive",
+                            "preset": "mp3_1_0",
+                            "duration": 160026,
+                            "snipped": false,
+                            "format": {
+                                "protocol": "progressive",
+                                "mime_type": "audio/mpeg"
+                            },
+                            "quality": "sq",
+                            "is_legacy_transcoding": true
+                        },
+                        {
+                            "url": "https://api-v2.soundcloud.com/media/soundcloud:tracks:1312196983/697a68e1-ed38-4733-ba6a-337f6a829267/stream/hls",
+                            "preset": "opus_0_0",
+                            "duration": 160007,
+                            "snipped": false,
+                            "format": {
+                                "protocol": "hls",
+                                "mime_type": "audio/ogg; codecs=\"opus\""
+                            },
+                            "quality": "sq",
+                            "is_legacy_transcoding": true
+                        }
+                    ]
+                },
+                "station_urn": "soundcloud:system-playlists:track-stations:1312196983",
+                "station_permalink": "track-stations:1312196983",
+                "track_authorization": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJnZW8iOiJHQiIsInN1YiI6IiIsInJpZCI6IjE1YmQ0N2U4LTg5OTctNGMwZi04NzAwLTM5MDQ5MjQyNDhhZSIsImlhdCI6MTc0MzA5NDIyNX0.jcudJgh9CSkUdqYheNRGzNLs5vcpFE60r8S5M04XHGc",
+                "monetization_model": "AD_SUPPORTED",
+                "policy": "MONETIZE",
+                "user": {
+                    "avatar_url": "https://i1.sndcdn.com/avatars-2hZV4XGRQPnoUQ7H-ywev3g-large.jpg",
+                    "first_name": "Charlotte ",
+                    "followers_count": 3764,
+                    "full_name": "Charlotte  Plank",
+                    "id": 224673620,
+                    "kind": "user",
+                    "last_modified": "2025-03-18T13:38:52Z",
+                    "last_name": "Plank",
+                    "permalink": "charlotteplankmusic",
+                    "permalink_url": "https://soundcloud.com/charlotteplankmusic",
+                    "uri": "https://api.soundcloud.com/users/224673620",
+                    "urn": "soundcloud:users:224673620",
+                    "username": "Charlotte Plank",
+                    "verified": true,
+                    "city": "",
+                    "country_code": "GB",
+                    "badges": {
+                        "pro": false,
+                        "creator_mid_tier": false,
+                        "pro_unlimited": true,
+                        "verified": true
+                    },
+                    "station_urn": "soundcloud:system-playlists:artist-stations:224673620",
+                    "station_permalink": "artist-stations:224673620"
+                }
+            }
+        },
+        {
+            "created_at": "2022-04-01T09:40:58Z",
+            "kind": "like",
+            "track": {
+                "artwork_url": "https://i1.sndcdn.com/artworks-0Fz0DOY5sWe6ZA9D-59iRVA-large.jpg",
+                "caption": null,
+                "commentable": true,
+                "comment_count": 110,
+                "created_at": "2022-03-31T22:29:40Z",
+                "description": "",
+                "downloadable": false,
+                "download_count": 0,
+                "duration": 194534,
+                "full_duration": 194534,
+                "embeddable_by": "all",
+                "genre": "Drum & Bass",
+                "has_downloads_left": false,
+                "id": 1242286252,
+                "kind": "track",
+                "label_name": "Thrive Musixc",
+                "last_modified": "2022-05-23T07:16:33Z",
+                "license": "all-rights-reserved",
+                "likes_count": 12774,
+                "permalink": "do-it-to-it-ft-cherish-sub-focus-remix",
+                "permalink_url": "https://soundcloud.com/acraze-3/do-it-to-it-ft-cherish-sub-focus-remix",
+                "playback_count": 562835,
+                "public": true,
+                "publisher_metadata": {
+                    "id": 1242286252,
+                    "urn": "soundcloud:tracks:1242286252",
+                    "artist": "Acraze, Cherish, Sub Focus",
+                    "contains_music": true,
+                    "isrc": "QZFPL2100155"
+                },
+                "purchase_title": null,
+                "purchase_url": null,
+                "release_date": "2022-05-01T00:00:00Z",
+                "reposts_count": 458,
+                "secret_token": null,
+                "sharing": "public",
+                "state": "finished",
+                "streamable": true,
+                "tag_list": "",
+                "title": "Do It To It (ft. Cherish)(Sub Focus Remix)",
+                "uri": "https://api.soundcloud.com/tracks/1242286252",
+                "urn": "soundcloud:tracks:1242286252",
+                "user_id": 158448429,
+                "visuals": null,
+                "waveform_url": "https://wave.sndcdn.com/rAx0GyYkDnyf_m.json",
+                "display_date": "2022-04-01T04:02:23Z",
+                "media": {
+                    "transcodings": [
+                        {
+                            "url": "https://api-v2.soundcloud.com/media/soundcloud:tracks:1242286252/d4f5b7dd-ac5c-41ba-bcfb-eadbfd6190f4/stream/hls",
+                            "preset": "mp3_1_0",
+                            "duration": 194534,
+                            "snipped": false,
+                            "format": {
+                                "protocol": "hls",
+                                "mime_type": "audio/mpeg"
+                            },
+                            "quality": "sq",
+                            "is_legacy_transcoding": true
+                        },
+                        {
+                            "url": "https://api-v2.soundcloud.com/media/soundcloud:tracks:1242286252/c3a42c20-eab1-424b-9795-38424efa99d1/stream/hls",
+                            "preset": "opus_0_0",
+                            "duration": 194489,
+                            "snipped": false,
+                            "format": {
+                                "protocol": "hls",
+                                "mime_type": "audio/ogg; codecs=\"opus\""
+                            },
+                            "quality": "sq",
+                            "is_legacy_transcoding": true
+                        }
+                    ]
+                },
+                "station_urn": "soundcloud:system-playlists:track-stations:1242286252",
+                "station_permalink": "track-stations:1242286252",
+                "track_authorization": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJnZW8iOiJHQiIsInN1YiI6IiIsInJpZCI6ImFhNzA4MzVkLThlYzYtNDZjYy1iMzJiLTliZTZkMWVhODA3OCIsImlhdCI6MTc0MzA5NDIyNX0.t9IaYB_wzwGYwLdwvaoKGa-JpftdHynCh3kYpnfJ_24",
+                "monetization_model": "AD_SUPPORTED",
+                "policy": "MONETIZE",
+                "user": {
+                    "avatar_url": "https://i1.sndcdn.com/avatars-lEMINMH3vEeTZtr9-hdBfsw-large.jpg",
+                    "first_name": "",
+                    "followers_count": 48086,
+                    "full_name": "",
+                    "id": 158448429,
+                    "kind": "user",
+                    "last_modified": "2025-03-14T14:36:13Z",
+                    "last_name": "",
+                    "permalink": "acraze-3",
+                    "permalink_url": "https://soundcloud.com/acraze-3",
+                    "uri": "https://api.soundcloud.com/users/158448429",
+                    "urn": "soundcloud:users:158448429",
+                    "username": "ACRAZE",
+                    "verified": true,
+                    "city": "Orlando",
+                    "country_code": "US",
+                    "badges": {
+                        "pro": false,
+                        "creator_mid_tier": false,
+                        "pro_unlimited": true,
+                        "verified": true
+                    },
+                    "station_urn": "soundcloud:system-playlists:artist-stations:158448429",
+                    "station_permalink": "artist-stations:158448429"
+                }
+            }
+        },
+        {
+            "created_at": "2022-02-25T16:08:37Z",
+            "kind": "like",
+            "track": {
+                "artwork_url": "https://i1.sndcdn.com/artworks-wAlwp5Xc0Qvj-0-large.jpg",
+                "caption": null,
+                "commentable": true,
+                "comment_count": 85,
+                "created_at": "2022-02-24T23:20:38Z",
+                "description": "Download / stream: https://bit.ly/SEQLP002",
+                "downloadable": false,
+                "download_count": 0,
+                "duration": 249678,
+                "full_duration": 249704,
+                "embeddable_by": "all",
+                "genre": "Electronic",
+                "has_downloads_left": false,
+                "id": 1222004902,
+                "kind": "track",
+                "label_name": "RAM Records",
+                "last_modified": "2024-10-24T23:47:58Z",
+                "license": "all-rights-reserved",
+                "likes_count": 5420,
+                "permalink": "recombine",
+                "permalink_url": "https://soundcloud.com/culture-shock/recombine",
+                "playback_count": 236191,
+                "public": true,
+                "publisher_metadata": {
+                    "id": 1222004902,
+                    "urn": "soundcloud:tracks:1222004902",
+                    "artist": "Culture Shock & Sub Focus",
+                    "album_title": "Sequel",
+                    "contains_music": true,
+                    "upc_or_ean": "4050538792676",
+                    "isrc": "GB5KW2200600",
+                    "explicit": false,
+                    "p_line": "℗ 2022 RAM Records Limited",
+                    "p_line_for_display": "℗ 2022 RAM Records Limited",
+                    "c_line": "© 2022 RAM Records Limited",
+                    "c_line_for_display": "© 2022 RAM Records Limited",
+                    "release_title": "Recombine"
+                },
+                "purchase_title": "Listen",
+                "purchase_url": "https://bit.ly/SEQLP002",
+                "release_date": "2022-02-25T00:00:00Z",
+                "reposts_count": 204,
+                "secret_token": null,
+                "sharing": "public",
+                "state": "finished",
+                "streamable": true,
+                "tag_list": "",
+                "title": "Recombine",
+                "uri": "https://api.soundcloud.com/tracks/1222004902",
+                "urn": "soundcloud:tracks:1222004902",
+                "user_id": 843252,
+                "visuals": null,
+                "waveform_url": "https://wave.sndcdn.com/pnkxD4MbRYDV_m.json",
+                "display_date": "2022-02-25T00:00:00Z",
+                "media": {
+                    "transcodings": [
+                        {
+                            "url": "https://api-v2.soundcloud.com/media/soundcloud:tracks:1222004902/cd2b9f67-9a5c-4ed4-b6a5-9c7b4d3bdd41/stream/ctr-encrypted-hls",
+                            "preset": "aac_160k",
+                            "duration": 249678,
+                            "snipped": false,
+                            "format": {
+                                "protocol": "ctr-encrypted-hls",
+                                "mime_type": "audio/mp4; codecs=\"mp4a.40.2\""
+                            },
+                            "quality": "sq",
+                            "is_legacy_transcoding": false
+                        },
+                        {
+                            "url": "https://api-v2.soundcloud.com/media/soundcloud:tracks:1222004902/cd2b9f67-9a5c-4ed4-b6a5-9c7b4d3bdd41/stream/cbc-encrypted-hls",
+                            "preset": "aac_160k",
+                            "duration": 249678,
+                            "snipped": false,
+                            "format": {
+                                "protocol": "cbc-encrypted-hls",
+                                "mime_type": "audio/mp4; codecs=\"mp4a.40.2\""
+                            },
+                            "quality": "sq",
+                            "is_legacy_transcoding": false
+                        },
+                        {
+                            "url": "https://api-v2.soundcloud.com/media/soundcloud:tracks:1222004902/d12dfc86-106a-4617-abb3-6f125c33a509/stream/ctr-encrypted-hls",
+                            "preset": "abr_sq",
+                            "duration": 249678,
+                            "snipped": false,
+                            "format": {
+                                "protocol": "ctr-encrypted-hls",
+                                "mime_type": "audio/mpegurl"
+                            },
+                            "quality": "sq",
+                            "is_legacy_transcoding": false
+                        },
+                        {
+                            "url": "https://api-v2.soundcloud.com/media/soundcloud:tracks:1222004902/d12dfc86-106a-4617-abb3-6f125c33a509/stream/cbc-encrypted-hls",
+                            "preset": "abr_sq",
+                            "duration": 249678,
+                            "snipped": false,
+                            "format": {
+                                "protocol": "cbc-encrypted-hls",
+                                "mime_type": "audio/mpegurl"
+                            },
+                            "quality": "sq",
+                            "is_legacy_transcoding": false
+                        },
+                        {
+                            "url": "https://api-v2.soundcloud.com/media/soundcloud:tracks:1222004902/46032a52-7adb-45c7-9726-c84d5c70f318/stream/hls",
+                            "preset": "mp3_1_0",
+                            "duration": 249704,
+                            "snipped": false,
+                            "format": {
+                                "protocol": "hls",
+                                "mime_type": "audio/mpeg"
+                            },
+                            "quality": "sq",
+                            "is_legacy_transcoding": true
+                        },
+                        {
+                            "url": "https://api-v2.soundcloud.com/media/soundcloud:tracks:1222004902/46032a52-7adb-45c7-9726-c84d5c70f318/stream/progressive",
+                            "preset": "mp3_1_0",
+                            "duration": 249704,
+                            "snipped": false,
+                            "format": {
+                                "protocol": "progressive",
+                                "mime_type": "audio/mpeg"
+                            },
+                            "quality": "sq",
+                            "is_legacy_transcoding": true
+                        },
+                        {
+                            "url": "https://api-v2.soundcloud.com/media/soundcloud:tracks:1222004902/8416ac95-a74d-4d9a-8a63-a1f1ed5d8bbb/stream/hls",
+                            "preset": "opus_0_0",
+                            "duration": 249662,
+                            "snipped": false,
+                            "format": {
+                                "protocol": "hls",
+                                "mime_type": "audio/ogg; codecs=\"opus\""
+                            },
+                            "quality": "sq",
+                            "is_legacy_transcoding": true
+                        }
+                    ]
+                },
+                "station_urn": "soundcloud:system-playlists:track-stations:1222004902",
+                "station_permalink": "track-stations:1222004902",
+                "track_authorization": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJnZW8iOiJHQiIsInN1YiI6IiIsInJpZCI6ImI4YTMwNWI2LWEzMTItNGJhZC05ZGM3LTc3YmJiZjUxMTU4NCIsImlhdCI6MTc0MzA5NDIyNX0.Qwds-2jJUq-qiwscD-qVEbKLU0Cc2UZWjwYClY2LFFg",
+                "monetization_model": "AD_SUPPORTED",
+                "policy": "MONETIZE",
+                "user": {
+                    "avatar_url": "https://i1.sndcdn.com/avatars-sIHvfwfODKY58tzo-gpYHaA-large.jpg",
+                    "first_name": "",
+                    "followers_count": 74793,
+                    "full_name": "",
+                    "id": 843252,
+                    "kind": "user",
+                    "last_modified": "2025-02-03T19:04:03Z",
+                    "last_name": "",
+                    "permalink": "culture-shock",
+                    "permalink_url": "https://soundcloud.com/culture-shock",
+                    "uri": "https://api.soundcloud.com/users/843252",
+                    "urn": "soundcloud:users:843252",
+                    "username": "CULTURE SHOCK",
+                    "verified": true,
+                    "city": "London",
+                    "country_code": null,
+                    "badges": {
+                        "pro": false,
+                        "creator_mid_tier": false,
+                        "pro_unlimited": true,
+                        "verified": true
+                    },
+                    "station_urn": "soundcloud:system-playlists:artist-stations:843252",
+                    "station_permalink": "artist-stations:843252"
+                }
+            }
+        },
+        {
+            "created_at": "2021-01-15T09:41:02Z",
+            "kind": "like",
+            "track": {
+                "artwork_url": "https://i1.sndcdn.com/artworks-eyhIWuOFt5p3-0-large.jpg",
+                "caption": null,
+                "commentable": true,
+                "comment_count": 149,
+                "created_at": "2020-12-04T14:54:43Z",
+                "description": null,
+                "downloadable": false,
+                "download_count": 0,
+                "duration": 276396,
+                "full_duration": 276402,
+                "embeddable_by": "all",
+                "genre": "Dance",
+                "has_downloads_left": false,
+                "id": 941355547,
+                "kind": "track",
+                "label_name": "RCA Records Label",
+                "last_modified": "2024-12-11T21:43:34Z",
+                "license": "all-rights-reserved",
+                "likes_count": 7242,
+                "permalink": "easier-sub-focus-remix-feat",
+                "permalink_url": "https://soundcloud.com/camelphat/easier-sub-focus-remix-feat",
+                "playback_count": 349616,
+                "public": true,
+                "publisher_metadata": {
+                    "id": 941355547,
+                    "urn": "soundcloud:tracks:941355547",
+                    "artist": "CamelPhat feat. LOWES",
+                    "album_title": "Easier",
+                    "contains_music": true,
+                    "upc_or_ean": "886448960614",
+                    "isrc": "GBARL2001586",
+                    "explicit": false,
+                    "p_line": "(P) 2021 CamelPhat Limited under exclusive licence to Sony Music Entertainment UK Limited",
+                    "p_line_for_display": "℗ 2021 CamelPhat Limited under exclusive licence to Sony Music Entertainment UK Limited",
+                    "writer_composer": "David Whelan, Michael Di Scala, Justin Parker, Florence Welch",
+                    "release_title": "Easier (Sub Focus Remix) [feat. LOWES]"
+                },
+                "purchase_title": null,
+                "purchase_url": null,
+                "release_date": "2021-01-14T00:00:00Z",
+                "reposts_count": 463,
+                "secret_token": null,
+                "sharing": "public",
+                "state": "finished",
+                "streamable": true,
+                "tag_list": "",
+                "title": "Easier (Sub Focus Remix) [feat. LOWES]",
+                "uri": "https://api.soundcloud.com/tracks/941355547",
+                "urn": "soundcloud:tracks:941355547",
+                "user_id": 2074299,
+                "visuals": null,
+                "waveform_url": "https://wave.sndcdn.com/bVWSW38usmxd_m.json",
+                "display_date": "2021-01-14T18:10:00Z",
+                "media": {
+                    "transcodings": [
+                        {
+                            "url": "https://api-v2.soundcloud.com/media/soundcloud:tracks:941355547/fa9bc528-3845-4e32-aaf5-9c06b6b6a340/stream/ctr-encrypted-hls",
+                            "preset": "aac_160k",
+                            "duration": 276396,
+                            "snipped": false,
+                            "format": {
+                                "protocol": "ctr-encrypted-hls",
+                                "mime_type": "audio/mp4; codecs=\"mp4a.40.2\""
+                            },
+                            "quality": "sq",
+                            "is_legacy_transcoding": false
+                        },
+                        {
+                            "url": "https://api-v2.soundcloud.com/media/soundcloud:tracks:941355547/fa9bc528-3845-4e32-aaf5-9c06b6b6a340/stream/cbc-encrypted-hls",
+                            "preset": "aac_160k",
+                            "duration": 276396,
+                            "snipped": false,
+                            "format": {
+                                "protocol": "cbc-encrypted-hls",
+                                "mime_type": "audio/mp4; codecs=\"mp4a.40.2\""
+                            },
+                            "quality": "sq",
+                            "is_legacy_transcoding": false
+                        },
+                        {
+                            "url": "https://api-v2.soundcloud.com/media/soundcloud:tracks:941355547/b7c44138-b728-40c3-b21b-07e40fe501b1/stream/ctr-encrypted-hls",
+                            "preset": "abr_sq",
+                            "duration": 276396,
+                            "snipped": false,
+                            "format": {
+                                "protocol": "ctr-encrypted-hls",
+                                "mime_type": "audio/mpegurl"
+                            },
+                            "quality": "sq",
+                            "is_legacy_transcoding": false
+                        },
+                        {
+                            "url": "https://api-v2.soundcloud.com/media/soundcloud:tracks:941355547/b7c44138-b728-40c3-b21b-07e40fe501b1/stream/cbc-encrypted-hls",
+                            "preset": "abr_sq",
+                            "duration": 276396,
+                            "snipped": false,
+                            "format": {
+                                "protocol": "cbc-encrypted-hls",
+                                "mime_type": "audio/mpegurl"
+                            },
+                            "quality": "sq",
+                            "is_legacy_transcoding": false
+                        },
+                        {
+                            "url": "https://api-v2.soundcloud.com/media/soundcloud:tracks:941355547/eb2ee609-4570-4276-952e-d9d9c49c5de4/stream/hls",
+                            "preset": "mp3_0_1",
+                            "duration": 276402,
+                            "snipped": false,
+                            "format": {
+                                "protocol": "hls",
+                                "mime_type": "audio/mpeg"
+                            },
+                            "quality": "sq",
+                            "is_legacy_transcoding": true
+                        },
+                        {
+                            "url": "https://api-v2.soundcloud.com/media/soundcloud:tracks:941355547/eb2ee609-4570-4276-952e-d9d9c49c5de4/stream/progressive",
+                            "preset": "mp3_0_1",
+                            "duration": 276402,
+                            "snipped": false,
+                            "format": {
+                                "protocol": "progressive",
+                                "mime_type": "audio/mpeg"
+                            },
+                            "quality": "sq",
+                            "is_legacy_transcoding": true
+                        },
+                        {
+                            "url": "https://api-v2.soundcloud.com/media/soundcloud:tracks:941355547/0e6b2241-6669-4469-a131-6044bddac290/stream/hls",
+                            "preset": "opus_0_0",
+                            "duration": 276380,
+                            "snipped": false,
+                            "format": {
+                                "protocol": "hls",
+                                "mime_type": "audio/ogg; codecs=\"opus\""
+                            },
+                            "quality": "sq",
+                            "is_legacy_transcoding": true
+                        }
+                    ]
+                },
+                "station_urn": "soundcloud:system-playlists:track-stations:941355547",
+                "station_permalink": "track-stations:941355547",
+                "track_authorization": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJnZW8iOiJHQiIsInN1YiI6IiIsInJpZCI6Ijc4ODkzYmRjLThiZjYtNDQyOC04NWMxLWQ5NmE5NTVjNDBmZSIsImlhdCI6MTc0MzA5NDIyNX0.lWdkASdSj44vyuViUEs968tWGnqYgZT1Vs-g1ka1RMc",
+                "monetization_model": "AD_SUPPORTED",
+                "policy": "MONETIZE",
+                "user": {
+                    "avatar_url": "https://i1.sndcdn.com/avatars-000325902220-wzqncc-large.jpg",
+                    "first_name": "CAMEL",
+                    "followers_count": 168829,
+                    "full_name": "CAMEL PHAT",
+                    "id": 2074299,
+                    "kind": "user",
+                    "last_modified": "2023-09-15T00:55:56Z",
+                    "last_name": "PHAT",
+                    "permalink": "camelphat",
+                    "permalink_url": "https://soundcloud.com/camelphat",
+                    "uri": "https://api.soundcloud.com/users/2074299",
+                    "urn": "soundcloud:users:2074299",
+                    "username": "CAMELPHAT",
+                    "verified": true,
+                    "city": "",
+                    "country_code": null,
+                    "badges": {
+                        "pro": false,
+                        "creator_mid_tier": false,
+                        "pro_unlimited": true,
+                        "verified": true
+                    },
+                    "station_urn": "soundcloud:system-playlists:artist-stations:2074299",
+                    "station_permalink": "artist-stations:2074299"
+                }
+            }
+        },
+        {
+            "created_at": "2020-12-10T17:51:08Z",
+            "kind": "like",
+            "track": {
+                "artwork_url": "https://i1.sndcdn.com/artworks-5hYiCCxMpUZEUwvb-KDRKyA-large.jpg",
+                "caption": null,
+                "commentable": true,
+                "comment_count": 2,
+                "created_at": "2020-12-08T08:04:34Z",
+                "description": "Sub Focus goes Back To Back! Willy talks with him about his new \"Portals\" album with Wilkinson, dubplate culture, sharing studio space with Nero + Chase &amp; Status, creative freedom vs. expectations, science fiction, social media &amp; toxicity online, remixing The Prodigy, Deadmau5 &amp; Rusko, graphic design &amp; aesthetic, escapism, his legendary live show &amp; much more! Follow Willy Joy: http://willyjoy.com Follow Sub Focus: https://www.subfocus.com Get involved: http://GAsenate.com",
+                "downloadable": false,
+                "download_count": 0,
+                "duration": 5682155,
+                "full_duration": 5682155,
+                "embeddable_by": "all",
+                "genre": null,
+                "has_downloads_left": false,
+                "id": 943464865,
+                "kind": "track",
+                "label_name": null,
+                "last_modified": "2020-12-08T08:10:21Z",
+                "license": "all-rights-reserved",
+                "likes_count": 191,
+                "permalink": "186-sub-focus",
+                "permalink_url": "https://soundcloud.com/backtobackpod/186-sub-focus",
+                "playback_count": 10324,
+                "public": true,
+                "publisher_metadata": null,
+                "purchase_title": null,
+                "purchase_url": null,
+                "release_date": null,
+                "reposts_count": 20,
+                "secret_token": null,
+                "sharing": "public",
+                "state": "finished",
+                "streamable": true,
+                "tag_list": "Dance & EDM",
+                "title": "186: Sub Focus",
+                "uri": "https://api.soundcloud.com/tracks/943464865",
+                "urn": "soundcloud:tracks:943464865",
+                "user_id": 293666453,
+                "visuals": null,
+                "waveform_url": "https://wave.sndcdn.com/BHR60FVaDyM6_m.json",
+                "display_date": "2020-12-08T08:04:34Z",
+                "media": {
+                    "transcodings": [
+                        {
+                            "url": "https://api-v2.soundcloud.com/media/soundcloud:tracks:943464865/39e237c1-5c54-4aac-a371-fa35ac02acd6/stream/hls",
+                            "preset": "mp3_0_1",
+                            "duration": 5682155,
+                            "snipped": false,
+                            "format": {
+                                "protocol": "hls",
+                                "mime_type": "audio/mpeg"
+                            },
+                            "quality": "sq",
+                            "is_legacy_transcoding": true
+                        },
+                        {
+                            "url": "https://api-v2.soundcloud.com/media/soundcloud:tracks:943464865/39e237c1-5c54-4aac-a371-fa35ac02acd6/stream/progressive",
+                            "preset": "mp3_0_1",
+                            "duration": 5682155,
+                            "snipped": false,
+                            "format": {
+                                "protocol": "progressive",
+                                "mime_type": "audio/mpeg"
+                            },
+                            "quality": "sq",
+                            "is_legacy_transcoding": true
+                        },
+                        {
+                            "url": "https://api-v2.soundcloud.com/media/soundcloud:tracks:943464865/3f418801-225f-499b-832e-c5be8f47aa2c/stream/hls",
+                            "preset": "opus_0_0",
+                            "duration": 5682136,
+                            "snipped": false,
+                            "format": {
+                                "protocol": "hls",
+                                "mime_type": "audio/ogg; codecs=\"opus\""
+                            },
+                            "quality": "sq",
+                            "is_legacy_transcoding": true
+                        }
+                    ]
+                },
+                "station_urn": "soundcloud:system-playlists:track-stations:943464865",
+                "station_permalink": "track-stations:943464865",
+                "track_authorization": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJnZW8iOiJHQiIsInN1YiI6IiIsInJpZCI6ImRjNTM2MzdmLTZmM2UtNDIyMC04ZTA2LTAwMjlhMmQyNmNjNCIsImlhdCI6MTc0MzA5NDIyNX0.1z50Q_O9BfQMQeMFgbZmnCUeukvHYHScHIz1BWA1hic",
+                "monetization_model": "NOT_APPLICABLE",
+                "policy": "ALLOW",
+                "user": {
+                    "avatar_url": "https://i1.sndcdn.com/avatars-000316063061-xc9fdk-large.jpg",
+                    "first_name": "Willy",
+                    "followers_count": 5046,
+                    "full_name": "Willy Joy",
+                    "id": 293666453,
+                    "kind": "user",
+                    "last_modified": "2019-09-03T07:11:10Z",
+                    "last_name": "Joy",
+                    "permalink": "backtobackpod",
+                    "permalink_url": "https://soundcloud.com/backtobackpod",
+                    "uri": "https://api.soundcloud.com/users/293666453",
+                    "urn": "soundcloud:users:293666453",
+                    "username": "Back To Back Podcast with Willy Joy",
+                    "verified": false,
+                    "city": null,
+                    "country_code": null,
+                    "badges": {
+                        "pro": false,
+                        "creator_mid_tier": false,
+                        "pro_unlimited": true,
+                        "verified": false
+                    },
+                    "station_urn": "soundcloud:system-playlists:artist-stations:293666453",
+                    "station_permalink": "artist-stations:293666453"
+                }
+            }
+        },
+        {
+            "created_at": "2020-10-30T15:25:47Z",
+            "kind": "like",
+            "track": {
+                "artwork_url": "https://i1.sndcdn.com/artworks-VEPOs8lqSktB-0-large.jpg",
+                "caption": null,
+                "commentable": true,
+                "comment_count": 40,
+                "created_at": "2020-10-01T15:36:33Z",
+                "description": null,
+                "downloadable": false,
+                "download_count": 0,
+                "duration": 242781,
+                "full_duration": 242808,
+                "embeddable_by": "all",
+                "genre": "Dance - Drum & Bass",
+                "has_downloads_left": false,
+                "id": 902828776,
+                "kind": "track",
+                "label_name": "Hospital Records",
+                "last_modified": "2025-03-05T00:11:13Z",
+                "license": "all-rights-reserved",
+                "likes_count": 3302,
+                "permalink": "destiny-feat-jozzy",
+                "permalink_url": "https://soundcloud.com/netsky/destiny-feat-jozzy",
+                "playback_count": 148490,
+                "public": true,
+                "publisher_metadata": {
+                    "id": 902828776,
+                    "urn": "soundcloud:tracks:902828776",
+                    "artist": "Netsky, Sub Focus",
+                    "album_title": "Second Nature",
+                    "contains_music": true,
+                    "upc_or_ean": "5060514964804",
+                    "isrc": "GBCJY2000472",
+                    "explicit": false,
+                    "p_line": "2020 BD Music Limited, under exclusive license to Hospital Records Limited",
+                    "p_line_for_display": "℗ 2020 BD Music Limited, under exclusive license to Hospital Records Limited",
+                    "c_line": "2020 BD Music Limited, under exclusive license to Hospital Records Limited",
+                    "c_line_for_display": "© 2020 BD Music Limited, under exclusive license to Hospital Records Limited",
+                    "release_title": "Destiny (feat. Jozzy)"
+                },
+                "purchase_title": null,
+                "purchase_url": null,
+                "release_date": "2020-10-30T00:00:00Z",
+                "reposts_count": 211,
+                "secret_token": null,
+                "sharing": "public",
+                "state": "finished",
+                "streamable": true,
+                "tag_list": "",
+                "title": "Destiny (feat. Jozzy)",
+                "uri": "https://api.soundcloud.com/tracks/902828776",
+                "urn": "soundcloud:tracks:902828776",
+                "user_id": 16768,
+                "visuals": null,
+                "waveform_url": "https://wave.sndcdn.com/yb91jj6yw9Mi_m.json",
+                "display_date": "2020-10-30T00:00:00Z",
+                "media": {
+                    "transcodings": [
+                        {
+                            "url": "https://api-v2.soundcloud.com/media/soundcloud:tracks:902828776/bb99669c-f7e8-4046-88e0-9a3dec9fc5ac/stream/ctr-encrypted-hls",
+                            "preset": "aac_160k",
+                            "duration": 242781,
+                            "snipped": false,
+                            "format": {
+                                "protocol": "ctr-encrypted-hls",
+                                "mime_type": "audio/mp4; codecs=\"mp4a.40.2\""
+                            },
+                            "quality": "sq",
+                            "is_legacy_transcoding": false
+                        },
+                        {
+                            "url": "https://api-v2.soundcloud.com/media/soundcloud:tracks:902828776/bb99669c-f7e8-4046-88e0-9a3dec9fc5ac/stream/cbc-encrypted-hls",
+                            "preset": "aac_160k",
+                            "duration": 242781,
+                            "snipped": false,
+                            "format": {
+                                "protocol": "cbc-encrypted-hls",
+                                "mime_type": "audio/mp4; codecs=\"mp4a.40.2\""
+                            },
+                            "quality": "sq",
+                            "is_legacy_transcoding": false
+                        },
+                        {
+                            "url": "https://api-v2.soundcloud.com/media/soundcloud:tracks:902828776/b73d2278-6cff-436c-913d-47c49849e830/stream/ctr-encrypted-hls",
+                            "preset": "abr_sq",
+                            "duration": 242781,
+                            "snipped": false,
+                            "format": {
+                                "protocol": "ctr-encrypted-hls",
+                                "mime_type": "audio/mpegurl"
+                            },
+                            "quality": "sq",
+                            "is_legacy_transcoding": false
+                        },
+                        {
+                            "url": "https://api-v2.soundcloud.com/media/soundcloud:tracks:902828776/b73d2278-6cff-436c-913d-47c49849e830/stream/cbc-encrypted-hls",
+                            "preset": "abr_sq",
+                            "duration": 242781,
+                            "snipped": false,
+                            "format": {
+                                "protocol": "cbc-encrypted-hls",
+                                "mime_type": "audio/mpegurl"
+                            },
+                            "quality": "sq",
+                            "is_legacy_transcoding": false
+                        },
+                        {
+                            "url": "https://api-v2.soundcloud.com/media/soundcloud:tracks:902828776/af3ac09e-9b32-4820-9315-9284a58a9f42/stream/hls",
+                            "preset": "mp3_1_0",
+                            "duration": 242808,
+                            "snipped": false,
+                            "format": {
+                                "protocol": "hls",
+                                "mime_type": "audio/mpeg"
+                            },
+                            "quality": "sq",
+                            "is_legacy_transcoding": true
+                        },
+                        {
+                            "url": "https://api-v2.soundcloud.com/media/soundcloud:tracks:902828776/af3ac09e-9b32-4820-9315-9284a58a9f42/stream/progressive",
+                            "preset": "mp3_1_0",
+                            "duration": 242808,
+                            "snipped": false,
+                            "format": {
+                                "protocol": "progressive",
+                                "mime_type": "audio/mpeg"
+                            },
+                            "quality": "sq",
+                            "is_legacy_transcoding": true
+                        },
+                        {
+                            "url": "https://api-v2.soundcloud.com/media/soundcloud:tracks:902828776/a70a4894-59c3-497f-accc-af5896857715/stream/hls",
+                            "preset": "opus_0_0",
+                            "duration": 242765,
+                            "snipped": false,
+                            "format": {
+                                "protocol": "hls",
+                                "mime_type": "audio/ogg; codecs=\"opus\""
+                            },
+                            "quality": "sq",
+                            "is_legacy_transcoding": true
+                        }
+                    ]
+                },
+                "station_urn": "soundcloud:system-playlists:track-stations:902828776",
+                "station_permalink": "track-stations:902828776",
+                "track_authorization": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJnZW8iOiJHQiIsInN1YiI6IiIsInJpZCI6IjcyY2Q1MzU1LTRhODUtNDZhMi05ZDc4LTlkZTg4YTRlMGE1ZCIsImlhdCI6MTc0MzA5NDIyNX0.pLaOeWogRt7CLKl1eU2oG7NfzuK5CWkMO6H2pCmSs4Q",
+                "monetization_model": "AD_SUPPORTED",
+                "policy": "MONETIZE",
+                "user": {
+                    "avatar_url": "https://i1.sndcdn.com/avatars-NDjq4lNdvbPkfHEq-CNCz9g-large.jpg",
+                    "first_name": "Boris",
+                    "followers_count": 231157,
+                    "full_name": "Boris Daenen",
+                    "id": 16768,
+                    "kind": "user",
+                    "last_modified": "2025-01-31T13:30:39Z",
+                    "last_name": "Daenen",
+                    "permalink": "netsky",
+                    "permalink_url": "https://soundcloud.com/netsky",
+                    "uri": "https://api.soundcloud.com/users/16768",
+                    "urn": "soundcloud:users:16768",
+                    "username": "Netsky",
+                    "verified": true,
+                    "city": "Antwerp",
+                    "country_code": "BE",
+                    "badges": {
+                        "pro": false,
+                        "creator_mid_tier": false,
+                        "pro_unlimited": true,
+                        "verified": true
+                    },
+                    "station_urn": "soundcloud:system-playlists:artist-stations:16768",
+                    "station_permalink": "artist-stations:16768"
+                }
+            }
+        },
+        {
+            "created_at": "2020-10-30T15:25:43Z",
+            "kind": "like",
+            "track": {
+                "artwork_url": "https://i1.sndcdn.com/artworks-OsrlztO3VA3d-0-large.png",
+                "caption": null,
+                "commentable": true,
+                "comment_count": 63,
+                "created_at": "2020-08-06T16:07:24Z",
+                "description": "Taken from the new album 'A View of U', out now on Ninja Tune: https://machinedrum.lnk.to/avouSo\n\nFollow Machinedrum -\nSpotify: https://found.ee/machinedrum-sp\nApple Music: https://found.ee/machinedrum-am\nInstagram: https://found.ee/machinedrum-ig\nFacebook: https://found.ee/machinedrum-fb\nTwitter: https://found.ee/machinedrum-tw\nYoutube: https://found.ee/machinedrum-yt\nBandcamp: https://found.ee/machinedrum-bc\nSoundcloud: https://found.ee/machinedrum-sc\nTikTok: https://found.ee/machinedrum-tt",
+                "downloadable": false,
+                "download_count": 0,
+                "duration": 341058,
+                "full_duration": 341081,
+                "embeddable_by": "all",
+                "genre": "Electronic",
+                "has_downloads_left": false,
+                "id": 871282945,
+                "kind": "track",
+                "label_name": "Ninja Tune",
+                "last_modified": "2024-08-19T12:22:35Z",
+                "license": "all-rights-reserved",
+                "likes_count": 2415,
+                "permalink": "1000-miles-feat-sub-focus-1",
+                "permalink_url": "https://soundcloud.com/machinedrum/1000-miles-feat-sub-focus-1",
+                "playback_count": 68531,
+                "public": true,
+                "publisher_metadata": {
+                    "id": 871282945,
+                    "urn": "soundcloud:tracks:871282945",
+                    "artist": "Machinedrum featuring Sub Focus",
+                    "album_title": "A View of U",
+                    "contains_music": true,
+                    "upc_or_ean": "5054429142679",
+                    "isrc": "GBCFB2000362",
+                    "explicit": false,
+                    "p_line": "2020 Ninja Tune",
+                    "p_line_for_display": "℗ 2020 Ninja Tune",
+                    "c_line": "2020 Ninja Tune",
+                    "c_line_for_display": "© 2020 Ninja Tune",
+                    "release_title": "1000 Miles (feat. Sub Focus)"
+                },
+                "purchase_title": "Buy",
+                "purchase_url": "https://machinedrum.lnk.to/avouSo",
+                "release_date": "2020-10-09T00:00:00Z",
+                "reposts_count": 262,
+                "secret_token": null,
+                "sharing": "public",
+                "state": "finished",
+                "streamable": true,
+                "tag_list": "",
+                "title": "1000 Miles (feat. Sub Focus)",
+                "uri": "https://api.soundcloud.com/tracks/871282945",
+                "urn": "soundcloud:tracks:871282945",
+                "user_id": 1382,
+                "visuals": null,
+                "waveform_url": "https://wave.sndcdn.com/UcFvIhslqLVf_m.json",
+                "display_date": "2020-10-09T00:00:00Z",
+                "media": {
+                    "transcodings": [
+                        {
+                            "url": "https://api-v2.soundcloud.com/media/soundcloud:tracks:871282945/6300ea64-121f-4685-821a-aef899ceedaf/stream/ctr-encrypted-hls",
+                            "preset": "aac_160k",
+                            "duration": 341058,
+                            "snipped": false,
+                            "format": {
+                                "protocol": "ctr-encrypted-hls",
+                                "mime_type": "audio/mp4; codecs=\"mp4a.40.2\""
+                            },
+                            "quality": "sq",
+                            "is_legacy_transcoding": false
+                        },
+                        {
+                            "url": "https://api-v2.soundcloud.com/media/soundcloud:tracks:871282945/6300ea64-121f-4685-821a-aef899ceedaf/stream/cbc-encrypted-hls",
+                            "preset": "aac_160k",
+                            "duration": 341058,
+                            "snipped": false,
+                            "format": {
+                                "protocol": "cbc-encrypted-hls",
+                                "mime_type": "audio/mp4; codecs=\"mp4a.40.2\""
+                            },
+                            "quality": "sq",
+                            "is_legacy_transcoding": false
+                        },
+                        {
+                            "url": "https://api-v2.soundcloud.com/media/soundcloud:tracks:871282945/6d96df94-803a-47ff-9f44-815ed3c5373a/stream/ctr-encrypted-hls",
+                            "preset": "abr_sq",
+                            "duration": 341058,
+                            "snipped": false,
+                            "format": {
+                                "protocol": "ctr-encrypted-hls",
+                                "mime_type": "audio/mpegurl"
+                            },
+                            "quality": "sq",
+                            "is_legacy_transcoding": false
+                        },
+                        {
+                            "url": "https://api-v2.soundcloud.com/media/soundcloud:tracks:871282945/6d96df94-803a-47ff-9f44-815ed3c5373a/stream/cbc-encrypted-hls",
+                            "preset": "abr_sq",
+                            "duration": 341058,
+                            "snipped": false,
+                            "format": {
+                                "protocol": "cbc-encrypted-hls",
+                                "mime_type": "audio/mpegurl"
+                            },
+                            "quality": "sq",
+                            "is_legacy_transcoding": false
+                        },
+                        {
+                            "url": "https://api-v2.soundcloud.com/media/soundcloud:tracks:871282945/7e9e902f-dc80-4d06-94e4-22aa011f9381/stream/hls",
+                            "preset": "mp3_0_1",
+                            "duration": 341081,
+                            "snipped": false,
+                            "format": {
+                                "protocol": "hls",
+                                "mime_type": "audio/mpeg"
+                            },
+                            "quality": "sq",
+                            "is_legacy_transcoding": true
+                        },
+                        {
+                            "url": "https://api-v2.soundcloud.com/media/soundcloud:tracks:871282945/7e9e902f-dc80-4d06-94e4-22aa011f9381/stream/progressive",
+                            "preset": "mp3_0_1",
+                            "duration": 341081,
+                            "snipped": false,
+                            "format": {
+                                "protocol": "progressive",
+                                "mime_type": "audio/mpeg"
+                            },
+                            "quality": "sq",
+                            "is_legacy_transcoding": true
+                        },
+                        {
+                            "url": "https://api-v2.soundcloud.com/media/soundcloud:tracks:871282945/c42cdc2f-d4d0-47ad-b715-8720b51a7d57/stream/hls",
+                            "preset": "opus_0_0",
+                            "duration": 341042,
+                            "snipped": false,
+                            "format": {
+                                "protocol": "hls",
+                                "mime_type": "audio/ogg; codecs=\"opus\""
+                            },
+                            "quality": "sq",
+                            "is_legacy_transcoding": true
+                        }
+                    ]
+                },
+                "station_urn": "soundcloud:system-playlists:track-stations:871282945",
+                "station_permalink": "track-stations:871282945",
+                "track_authorization": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJnZW8iOiJHQiIsInN1YiI6IiIsInJpZCI6ImM2MTUxYjhiLWZhZTYtNDM2Ny1hMjQ1LTAxNzAwYTY1ODU3ZSIsImlhdCI6MTc0MzA5NDIyNX0.brWUWvmFQ8Ay93pLCHSvgEQcMvx_9ShFN9ne7iOzvAE",
+                "monetization_model": "AD_SUPPORTED",
+                "policy": "MONETIZE",
+                "user": {
+                    "avatar_url": "https://i1.sndcdn.com/avatars-gORoZ9kala9OX0uk-e8zzMQ-large.jpg",
+                    "first_name": "t",
+                    "followers_count": 180843,
+                    "full_name": "t stewart",
+                    "id": 1382,
+                    "kind": "user",
+                    "last_modified": "2025-03-05T12:50:23Z",
+                    "last_name": "stewart",
+                    "permalink": "machinedrum",
+                    "permalink_url": "https://soundcloud.com/machinedrum",
+                    "uri": "https://api.soundcloud.com/users/1382",
+                    "urn": "soundcloud:users:1382",
+                    "username": "Machinedrum",
+                    "verified": true,
+                    "city": "Los Angeles",
+                    "country_code": "US",
+                    "badges": {
+                        "pro": false,
+                        "creator_mid_tier": false,
+                        "pro_unlimited": true,
+                        "verified": true
+                    },
+                    "station_urn": "soundcloud:system-playlists:artist-stations:1382",
+                    "station_permalink": "artist-stations:1382"
+                }
+            }
+        },
+        {
+            "created_at": "2020-05-22T14:40:43Z",
+            "kind": "like",
+            "track": {
+                "artwork_url": "https://i1.sndcdn.com/artworks-1cvvRXIjOtj5-0-large.jpg",
+                "caption": null,
+                "commentable": true,
+                "comment_count": 44,
+                "created_at": "2020-05-15T03:15:59Z",
+                "description": null,
+                "downloadable": false,
+                "download_count": 0,
+                "duration": 299054,
+                "full_duration": 299076,
+                "embeddable_by": "all",
+                "genre": "Electronic",
+                "has_downloads_left": false,
+                "id": 820803151,
+                "kind": "track",
+                "label_name": "EMI",
+                "last_modified": "2024-08-14T13:02:39Z",
+                "license": "all-rights-reserved",
+                "likes_count": 4501,
+                "permalink": "sub-focus-wilkinson-just-hold",
+                "permalink_url": "https://soundcloud.com/wilkinsonuk/sub-focus-wilkinson-just-hold",
+                "playback_count": 180296,
+                "public": true,
+                "publisher_metadata": {
+                    "id": 820803151,
+                    "urn": "soundcloud:tracks:820803151",
+                    "artist": "Sub Focus, Wilkinson",
+                    "album_title": "Just Hold On",
+                    "contains_music": true,
+                    "upc_or_ean": "00602508923197",
+                    "isrc": "GBUM72002179",
+                    "explicit": false,
+                    "p_line": "A Virgin EMI Records recording; ℗ 2020 Universal Music Operations Limited",
+                    "p_line_for_display": "℗ A Virgin EMI Records recording; ℗ 2020 Universal Music Operations Limited",
+                    "c_line": "© 2020 Universal Music Operations Limited",
+                    "c_line_for_display": "© 2020 Universal Music Operations Limited",
+                    "release_title": "Just Hold On (Sub Focus & Wilkinson vs. Pola & Bryson Remix)"
+                },
+                "purchase_title": null,
+                "purchase_url": null,
+                "release_date": "2020-05-22T00:00:00Z",
+                "reposts_count": 298,
+                "secret_token": null,
+                "sharing": "public",
+                "state": "finished",
+                "streamable": true,
+                "tag_list": "",
+                "title": "Just Hold On (Sub Focus & Wilkinson vs. Pola & Bryson Remix)",
+                "uri": "https://api.soundcloud.com/tracks/820803151",
+                "urn": "soundcloud:tracks:820803151",
+                "user_id": 65981,
+                "visuals": null,
+                "waveform_url": "https://wave.sndcdn.com/t9uGSrLvZ6nz_m.json",
+                "display_date": "2020-05-22T00:00:00Z",
+                "media": {
+                    "transcodings": [
+                        {
+                            "url": "https://api-v2.soundcloud.com/media/soundcloud:tracks:820803151/b55e1196-cabb-4160-b62a-a0af5c24636d/stream/ctr-encrypted-hls",
+                            "preset": "aac_160k",
+                            "duration": 299054,
+                            "snipped": false,
+                            "format": {
+                                "protocol": "ctr-encrypted-hls",
+                                "mime_type": "audio/mp4; codecs=\"mp4a.40.2\""
+                            },
+                            "quality": "sq",
+                            "is_legacy_transcoding": false
+                        },
+                        {
+                            "url": "https://api-v2.soundcloud.com/media/soundcloud:tracks:820803151/b55e1196-cabb-4160-b62a-a0af5c24636d/stream/cbc-encrypted-hls",
+                            "preset": "aac_160k",
+                            "duration": 299054,
+                            "snipped": false,
+                            "format": {
+                                "protocol": "cbc-encrypted-hls",
+                                "mime_type": "audio/mp4; codecs=\"mp4a.40.2\""
+                            },
+                            "quality": "sq",
+                            "is_legacy_transcoding": false
+                        },
+                        {
+                            "url": "https://api-v2.soundcloud.com/media/soundcloud:tracks:820803151/17954642-8e43-4da1-b716-88eb1f3246d6/stream/ctr-encrypted-hls",
+                            "preset": "abr_sq",
+                            "duration": 299054,
+                            "snipped": false,
+                            "format": {
+                                "protocol": "ctr-encrypted-hls",
+                                "mime_type": "audio/mpegurl"
+                            },
+                            "quality": "sq",
+                            "is_legacy_transcoding": false
+                        },
+                        {
+                            "url": "https://api-v2.soundcloud.com/media/soundcloud:tracks:820803151/17954642-8e43-4da1-b716-88eb1f3246d6/stream/cbc-encrypted-hls",
+                            "preset": "abr_sq",
+                            "duration": 299054,
+                            "snipped": false,
+                            "format": {
+                                "protocol": "cbc-encrypted-hls",
+                                "mime_type": "audio/mpegurl"
+                            },
+                            "quality": "sq",
+                            "is_legacy_transcoding": false
+                        },
+                        {
+                            "url": "https://api-v2.soundcloud.com/media/soundcloud:tracks:820803151/615cbeeb-8fde-464a-bf0b-09bdc006c09a/stream/hls",
+                            "preset": "mp3_0_1",
+                            "duration": 299076,
+                            "snipped": false,
+                            "format": {
+                                "protocol": "hls",
+                                "mime_type": "audio/mpeg"
+                            },
+                            "quality": "sq",
+                            "is_legacy_transcoding": true
+                        },
+                        {
+                            "url": "https://api-v2.soundcloud.com/media/soundcloud:tracks:820803151/08fd0205-e3f1-405e-903e-330531f35426/stream/hls",
+                            "preset": "opus_0_0",
+                            "duration": 299037,
+                            "snipped": false,
+                            "format": {
+                                "protocol": "hls",
+                                "mime_type": "audio/ogg; codecs=\"opus\""
+                            },
+                            "quality": "sq",
+                            "is_legacy_transcoding": true
+                        }
+                    ]
+                },
+                "station_urn": "soundcloud:system-playlists:track-stations:820803151",
+                "station_permalink": "track-stations:820803151",
+                "track_authorization": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJnZW8iOiJHQiIsInN1YiI6IiIsInJpZCI6ImUxNDQ5NzVkLTA0M2MtNDY5Yy1iYWQ0LThmZWZiMzc3YTA4YiIsImlhdCI6MTc0MzA5NDIyNX0.zY52NWTqCW5W50rwmNiKhjb3pzBCPsRxy2r9GaaIYr4",
+                "monetization_model": "AD_SUPPORTED",
+                "policy": "MONETIZE",
+                "user": {
+                    "avatar_url": "https://i1.sndcdn.com/avatars-em8oSakB810VTyj9-JcfmIA-large.jpg",
+                    "first_name": "",
+                    "followers_count": 126594,
+                    "full_name": "",
+                    "id": 65981,
+                    "kind": "user",
+                    "last_modified": "2025-02-25T19:30:59Z",
+                    "last_name": "",
+                    "permalink": "wilkinsonuk",
+                    "permalink_url": "https://soundcloud.com/wilkinsonuk",
+                    "uri": "https://api.soundcloud.com/users/65981",
+                    "urn": "soundcloud:users:65981",
+                    "username": "Wilkinson UK",
+                    "verified": true,
+                    "city": "London",
+                    "country_code": null,
+                    "badges": {
+                        "pro": false,
+                        "creator_mid_tier": false,
+                        "pro_unlimited": true,
+                        "verified": true
+                    },
+                    "station_urn": "soundcloud:system-playlists:artist-stations:65981",
+                    "station_permalink": "artist-stations:65981"
+                }
+            }
+        }
+    ],
+    "next_href": "null",
+    "query_urn": null
+}

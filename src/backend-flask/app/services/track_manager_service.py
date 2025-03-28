@@ -24,9 +24,9 @@ class TrackManagerService:
 
         try:
             if playlist.platform == 'spotify':
-                # Fetch the track data from Spotify using the playlist's external ID
-                tracks_data = SpotifyService.get_playlist_tracks(playlist.external_id)
+                tracks_data = SpotifyService.get_playlist_tracks(playlist.url)
             elif playlist.platform == 'soundcloud':
+                print(f"------{playlist.to_dict()}")
                 tracks_data = SoundcloudService.get_playlist_tracks(playlist.url)
 
             logger.info("Fetched %d tracks for playlist %s", len(tracks_data), playlist.name)

@@ -98,6 +98,18 @@ class TestAddPlaylist:
         assert added_playlist.track_count == 14
         assert added_playlist.platform == "soundcloud"
 
+    def test_add_playlist_soundcloud_likes(self, client, monkeypatch):
+        response = client.post('/api/playlists', json={"url_or_id": "https://soundcloud.com/subfocus/likes"})
+
+        assert response.status_code == 201
+        playlists = response.get_json()
+
+        assert any(p["external_id"] == "2121716" for p in playlists)
+        added_playlist = Playlist.query.filter_by(external_id="2121716").first()
+        assert added_playlist.name == "Sub Focus's Liked Tracks"
+        assert added_playlist.track_count == 49
+        assert added_playlist.platform == "soundcloud"
+
     def test_add_playlist_already_added_spotify(self, client, monkeypatch):
         response1 = client.post('/api/playlists', json={"url_or_id": "https://open.spotify.com/playlist/3bL14BgPXekKHep3RRdwGZ"})
         assert response1.status_code == 201

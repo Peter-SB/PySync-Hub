@@ -29,7 +29,7 @@ This is the directory where the main flask application logic is stored. The app 
 ```    
 
 ### \_\_init__.py In Flask
-This file plays a special role in Flask because the app factory, create_app. 
+This file plays a special role in Flask because it contains the Flask app factory, create_app. 
 
 ### Services
 
