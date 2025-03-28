@@ -1,5 +1,7 @@
 import logging
 import os
+import time
+
 import yaml
 from flask import Blueprint, request, jsonify, current_app
 
@@ -13,6 +15,18 @@ from config import Config
 
 logger = logging.getLogger(__name__)
 
+@api.route('/api/tracks/<int:track_id>', methods=['GET'])
+def get_track(track_id):
+    try:
+        logger.info("Fetching track %s", track_id)
+        track = Track.query.get(track_id)
+        if not track:
+            return jsonify({'error': 'Track not found'}), 404
+
+        return jsonify(track.to_dict()), 200
+    except Exception as e:
+        logger.error("Error fetching track: %s", e, exc_info=True)
+        return jsonify({'error': 'Failed to fetch track', 'message': str(e)}), 500
 
 @api.route('/api/tracks/<int:track_id>', methods=['PUT', 'OPTIONS'])
 def update_track(track_id):
@@ -44,11 +58,13 @@ def update_track(track_id):
 def re_download_track(track_id):
     try:
         logger.info("Re-downloading track %s", track_id)
-        track = Track.query.get(track_id)
+        track: Track = Track.query.get(track_id)
         if not track:
             return jsonify({'error': 'Track not found'}), 404
 
+        logger.info("Clearing previous download for track %s, location %s", track_id, track.download_location)
         if track.download_location and os.path.exists(track.download_location):
+            logger.info("Removing file, location %s", track.download_location)
             os.remove(track.download_location)
 
         # Optionally clear previous download details
@@ -65,8 +81,8 @@ def re_download_track(track_id):
             SoundcloudDownloadService.download_track(track)
         else:
             return jsonify({'error': 'Platform not supported for downloading'}), 400
-
-        return jsonify(track.to_dict()), 200
+        logger.info("Re-downloaded track %s", Track.query.get(track_id).to_dict())
+        return jsonify(Track.query.get(track_id).to_dict()), 200
 
     except Exception as e:
         logger.error("Error re-downloading track (ID: %s): %s", track_id, e, exc_info=True)

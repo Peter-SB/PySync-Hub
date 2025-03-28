@@ -30,6 +30,8 @@ class FileDownloadUtils:
         :param track: Track data from Spotify.
         :param track_file_path: Path to the MP3 audio file.
         """
+        logger.info(f"Embedding metadata for track '{track.name}' at '{file_path}'")
+
         audio = MP3(file_path, ID3=ID3)
 
         track_name = track.name

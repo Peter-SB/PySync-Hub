@@ -9,6 +9,7 @@
  - Better Errors
  - Improve ui updates
  - Repository Patter Use
+ - Disable individual tracks
 
 
 ## Downloading

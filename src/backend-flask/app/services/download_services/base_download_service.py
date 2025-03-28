@@ -68,7 +68,6 @@ class BaseDownloadService(ABC):
         db.session.add(track)
         db.session.commit()
 
-
         if FileDownloadUtils.is_track_already_downloaded(track):
             return
 

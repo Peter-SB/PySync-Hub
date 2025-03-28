@@ -24,10 +24,10 @@ export default function Sidebar({ onExport }) {
               </Link>
             </li>
             <li className="mb-4">
-              <Link to="/help" className="flex items-center space-x-3 p-3 rounded hover:bg-gray-700 hover:text-white">
+              <a href="https://github.com/Peter-SB/PySync-Hub/blob/master/docs/Help.md" target="_blank" rel="noopener noreferrer" className="flex items-center space-x-3 p-3 rounded hover:bg-gray-700 hover:text-white">
                 <FontAwesomeIcon icon={faQuestion} className="text-2xl mx-1" />
                 <span>Help</span>
-              </Link>
+              </a>
             </li>
           </ul>
         </nav>

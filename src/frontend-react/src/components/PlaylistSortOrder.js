@@ -1,25 +1,4 @@
-import React, { useState } from "react";
-
 const PlaylistSortOrder = ({ sortBy, setSortBy, sortOrder, setSortOrder }) => {
-    const [isOpen, setIsOpen] = useState(false);
-
-    // Open when the mouse enters either the button or the dropdown,
-    // and close only when it leaves both.
-    const handleMouseEnter = () => setIsOpen(true);
-    const handleMouseLeave = () => setIsOpen(false);
-
-    const displaySortBy = sortBy === "name" ? "Name" : "Created At";
-    const displaySortOrder = sortOrder === "asc" ? "Ascending" : "Descending";
-    const isDescending = sortOrder === "desc" || sortOrder === "dec";
-
-    const handleSelect = (field, value) => {
-        if (field === "sortBy") {
-            setSortBy(value);
-        } else if (field === "sortOrder") {
-            setSortOrder(value); // always set descending as "desc"
-        }
-    };
-
     return (
         <div className="relative group inline-block text-left cursor-pointer">
             <div className="flex relative group">

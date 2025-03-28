@@ -187,7 +187,7 @@ function PlaylistPage({ playlists }) {
                 <TrackModal
                     track={selectedTrack}
                     onClose={() => setSelectedTrack(null)}
-                    onUpdate={handleUpdateTrack}
+                    handleUpdateTrack={handleUpdateTrack}
                 />
             )}
         </div>

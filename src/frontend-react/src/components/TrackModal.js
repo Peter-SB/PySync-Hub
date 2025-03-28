@@ -1,8 +1,8 @@
 // src/components/TrackModal.js
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { backendUrl } from '../config';
 
-const TrackModal = ({ track, onClose, onUpdate }) => {
+const TrackModal = ({ track, onClose, handleUpdateTrack }) => {
     const [downloadUrl, setDownloadUrl] = useState(track.download_url || '');
     const [downloadLocation, setDownloadLocation] = useState(track.download_location || '');
     const [saving, setSaving] = useState(false);
@@ -25,7 +25,7 @@ const TrackModal = ({ track, onClose, onUpdate }) => {
             });
             if (response.ok) {
                 const updatedTrack = await response.json();
-                onUpdate(updatedTrack);
+                handleUpdateTrack(updatedTrack);
                 onClose();
             } else {
                 const data = await response.json();
@@ -37,11 +37,13 @@ const TrackModal = ({ track, onClose, onUpdate }) => {
         } finally {
             setSaving(false);
         }
+        setSaving(false);
     };
 
-    const handleReDownload = async () => {
+    const handleRedownload = async () => {
         setSaving(true);
         setError('');
+
         try {
             const saveResponse = await fetch(`${backendUrl}/api/tracks/${track.id}`, {
                 method: 'PUT',
@@ -56,12 +58,13 @@ const TrackModal = ({ track, onClose, onUpdate }) => {
             if (!saveResponse.ok) {
                 const saveErrorData = await saveResponse.json();
                 setError(saveErrorData.error || 'Failed to save download URL');
-                return; // Cancel re-download if save fails
+                return; 
             }
+            
         } catch (err) {
             console.error(err);
             setError('Error saving download URL');
-            return; // Cancel re-download if save fails
+            return;
         } finally {
             setSaving(false);
         }
@@ -71,10 +74,11 @@ const TrackModal = ({ track, onClose, onUpdate }) => {
             const response = await fetch(`${backendUrl}/api/tracks/${track.id}/download`, {
                 method: 'POST',
             });
-
             if (response.ok) {
                 const updatedTrack = await response.json();
-                onUpdate(updatedTrack);
+                handleUpdateTrack(updatedTrack);
+                setDownloadLocation(updatedTrack.download_location || '');
+                setDownloadUrl(updatedTrack.download_url || '');
             } else {
                 const data = await response.json();
                 setError(data.error || 'Failed to re-download track');
@@ -143,11 +147,11 @@ const TrackModal = ({ track, onClose, onUpdate }) => {
                     </div>
                     <div className="flex justify-center mt-6">
                         <button
-                            onClick={handleReDownload}
+                            onClick={handleRedownload}
                             className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
                             disabled={downloading}
                         >
-                            {downloading ? 'Downloading...' : 'ReDownload'}
+                            {downloading ? 'Downloading...' : 'Redownload'}
                         </button>
                     </div>
                 </div>
