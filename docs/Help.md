@@ -6,7 +6,7 @@ This page will go over how to use this software as well as some common issues an
 
 The program consists of three primary stages: adding playlists, downloading the audio files, and exporting you library to Rekordbox.
 
-### Adding Playlists:
+## 1. Adding Playlists:
 
 Make sure you have set you API keys in `settings.py` before running the program. Without them the software cannot communicate with the relevant platform. You can get these keys by following the instructions in the instructions in the [Getting Started](../Readme.md#getting-started) guide.
 
@@ -30,12 +30,12 @@ https://open.spotify.com/collection/tracks
 
 Once playlists are added you can click into them and see their tracks. From there you can view and modify track information such as audio source url and file location.
 
-### Syncing/Download Playlists:
+## 2. Syncing/Download Playlists:
 
 Once playlist are added they can be synced (i.e downloaded). This will get the up to date playlist infomation and then add the playlist to a queue to be downloaded in the background. The download bar displays progress along side the downloaded count.
 Playlist are saved to a `/music_downloads` folder in the root of the program. **Note:** moving them from this folder will break the link between the program and the file causing the program to redownload the file.
 
-### Exporting To Rekordbox:
+## 3. Exporting To Rekordbox:
 
 When exporting to Rekordbox, the program will generate a `rekordbox.xml` file in the `rekordbox_library_exports` folder. 
 This file is imported to Rekordbox in Rekordbox Advanced Settings.
@@ -62,3 +62,6 @@ Enjoy!
 4. If you are downloading a soundcloud playlist, its possible that the app my need updating. Go to the [GitHub Page](https://github.com/Peter-SB/PySync-Hub)
 
 
+## Troubleshooting Installing
+
+### 1. Antivirus 

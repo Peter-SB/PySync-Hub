@@ -89,7 +89,7 @@ class SpotifyService:
         """
         try:
             logger.info("Fetching tracks for playlist %s", url)
-            if "collection/tracks" or "liked-songs" in url:
+            if "collection/tracks" in url:
                 return SpotifyService._get_saved_tracks()
 
             playlist_id = SpotifyService._extract_playlist_id(url)
@@ -108,7 +108,7 @@ class SpotifyService:
                     if not track or track.get('id') is None:
                         return  # Skip items that aren't valid tracks (e.g., episodes, missing tracks)
 
-                    track_data = SpotifyService.fromat_track_data(track)
+                    track_data = SpotifyService._format_track_data(track)
                     tracks_data.append(track_data)
 
                 # Check if there are more pages to fetch. "URL to the next page of items. (null if none)"

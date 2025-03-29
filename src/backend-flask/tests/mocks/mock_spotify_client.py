@@ -26,7 +26,7 @@ class MockSpotifyClient:
         file_path = os.path.join(current_dir, "../mock_data", f"spotipy_playlist_{playlist_id}.json")
         if os.path.exists(file_path):
             print(f"Spotipy Playlist Response Mock Data Found:spotipy_playlist_{playlist_id}.json")
-            with open(file_path, 'r') as file:
+            with open(file_path, 'r', encoding='utf-8') as file:
                 return json.load(file)
 
         raise Exception(f"Mock data not found for playlist_id: {playlist_id}")

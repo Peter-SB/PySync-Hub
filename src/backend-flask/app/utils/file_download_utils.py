@@ -15,7 +15,7 @@ class FileDownloadUtils:
     def is_track_already_downloaded(track: Track) -> bool:
         """Check if the track is already downloaded and update the database accordingly."""
         if track.download_location and os.path.isfile(track.download_location):
-            logger.info("Track '%s' already downloaded, skipping.", track.name)
+
             #track.notes_errors = "Already Downloaded, Skipped"
             #db.session.add(track)
             #db.session.commit()

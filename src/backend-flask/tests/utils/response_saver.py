@@ -23,7 +23,7 @@ def _resolve_playlist_save_response(playlist_url: str, save_directory: str = "./
     file_path = os.path.join(save_directory, filename)
 
     try:
-        with open(file_path, 'w') as f:
+        with open(file_path, 'w', encoding='utf-8') as f:
             json.dump(playlist_response, f, indent=2)
         print("Saved response JSON to: %s", file_path)
     except Exception as e:
@@ -68,7 +68,7 @@ def _make_http_get_request_save_response(url: str, headers: dict,
     file_path = os.path.join(save_directory, filename)
 
     try:
-        with open(file_path, 'w') as f:
+        with open(file_path, 'w', encoding='utf-8') as f:
             json.dump(response_json, f, indent=2)
         print("Saved response JSON to: %s", file_path)
     except Exception as e:

@@ -69,6 +69,7 @@ class BaseDownloadService(ABC):
         db.session.commit()
 
         if FileDownloadUtils.is_track_already_downloaded(track):
+            logger.info("Track '%s' already downloaded, skipping.", track.name)
             return
 
         try:

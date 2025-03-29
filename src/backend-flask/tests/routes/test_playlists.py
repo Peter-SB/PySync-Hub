@@ -4,6 +4,7 @@ from spotipy import SpotifyException
 from app.models import Playlist
 from app.repositories.playlist_repository import PlaylistRepository
 
+
 @pytest.mark.usefixtures("client", "init_database")
 class TestGetPlaylists():
     """Tests for the GET /api/playlists endpoint."""
@@ -19,11 +20,13 @@ class TestGetPlaylists():
         from app.extensions import db
 
         playlists = [
-            Playlist(name="Chill Vibes", platform="spotify", external_id="12345", image_url="http://example.com/image1.jpg",
+            Playlist(name="Chill Vibes", platform="spotify", external_id="12345",
+                     image_url="http://example.com/image1.jpg",
                      track_count=10),
             Playlist(name="Workout Mix", platform="soundcloud", external_id="67890",
                      image_url="http://example.com/image2.jpg", track_count=15),
-            Playlist(name="Road Trip", platform="spotify", external_id="abcde", image_url="http://example.com/image3.jpg",
+            Playlist(name="Road Trip", platform="spotify", external_id="abcde",
+                     image_url="http://example.com/image3.jpg",
                      track_count=8)
         ]
 
@@ -51,13 +54,15 @@ class TestGetPlaylists():
         assert "error" in data
         assert "Simulated error" in data["error"]
 
+
 @pytest.mark.usefixtures("init_database")
 class TestAddPlaylist:
+    """
+    Tests for the POST /api/playlists endpoint.
 
-    """Tests for the POST /api/playlists endpoint.
-    Takes only spotify or soundcloud playlist URLs. no longer takes IDs
+    *Takes only spotify or soundcloud playlist URLs. no longer takes IDs
 
-    Test:
+    Tests Include:
     - Adding a playlist with a valid URL - spotify
     - Adding a playlist with a valid URL - soundcloud
     - When playlist is already added
@@ -65,17 +70,10 @@ class TestAddPlaylist:
     - Adding a playlist with an invalid URL
     - Adding a playlist id
     """
-    fake_soundcloud_playlist_data = {
-        "name": "Fake Soundcloud Playlist",
-        "external_id": "soundcloud123",
-        "image_url": "http://fake.image/soundcloud.jpg",
-        "track_count": 15,
-        "url": "https://soundcloud.com/fake_playlist",
-        "platform": "soundcloud"
-    }
 
     def test_add_playlist_valid_spotify(self, client, monkeypatch):
-        response = client.post('/api/playlists', json={"url_or_id": "https://open.spotify.com/playlist/3bL14BgPXekKHep3RRdwGZ"})
+        response = client.post('/api/playlists',
+                               json={"url_or_id": "https://open.spotify.com/playlist/3bL14BgPXekKHep3RRdwGZ"})
 
         assert response.status_code == 201
         playlists = response.get_json()
@@ -85,6 +83,8 @@ class TestAddPlaylist:
         assert added_playlist.name == "Test Playlist 1"
         assert added_playlist.track_count == 2
         assert added_playlist.platform == "spotify"
+
+        assert len(added_playlist.tracks) == 2
 
     def test_add_playlist_valid_soundcloud(self, client, monkeypatch):
         response = client.post('/api/playlists', json={"url_or_id": "https://soundcloud.com/schmoot-point/sets/omwhp"})
@@ -98,6 +98,8 @@ class TestAddPlaylist:
         assert added_playlist.track_count == 14
         assert added_playlist.platform == "soundcloud"
 
+        assert len(added_playlist.tracks) == 14
+
     def test_add_playlist_soundcloud_likes(self, client, monkeypatch):
         response = client.post('/api/playlists', json={"url_or_id": "https://soundcloud.com/subfocus/likes"})
 
@@ -106,15 +108,19 @@ class TestAddPlaylist:
 
         assert any(p["external_id"] == "2121716" for p in playlists)
         added_playlist = Playlist.query.filter_by(external_id="2121716").first()
-        assert added_playlist.name == "Sub Focus's Liked Tracks"
+        assert added_playlist.name == "Likes by Sub Focus"
         assert added_playlist.track_count == 49
         assert added_playlist.platform == "soundcloud"
 
+        assert len(added_playlist.tracks) == 10  # Only 10 tracks are added in test data
+
     def test_add_playlist_already_added_spotify(self, client, monkeypatch):
-        response1 = client.post('/api/playlists', json={"url_or_id": "https://open.spotify.com/playlist/3bL14BgPXekKHep3RRdwGZ"})
+        response1 = client.post('/api/playlists',
+                                json={"url_or_id": "https://open.spotify.com/playlist/3bL14BgPXekKHep3RRdwGZ"})
         assert response1.status_code == 201
 
-        response2 = client.post('/api/playlists', json={"url_or_id": "https://open.spotify.com/playlist/3bL14BgPXekKHep3RRdwGZ"})
+        response2 = client.post('/api/playlists',
+                                json={"url_or_id": "https://open.spotify.com/playlist/3bL14BgPXekKHep3RRdwGZ"})
         assert response2.status_code == 400
         error_message = response2.get_json().get("error")
         assert error_message == "Playlist Already Added"

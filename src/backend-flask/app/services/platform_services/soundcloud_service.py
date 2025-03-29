@@ -19,17 +19,24 @@ class PlaylistNotFoundException(Exception):
         super().__init__(message)
         self.status_code = status_code
 
+
 headers = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36"
 }
 
+
 class SoundcloudService:
     @staticmethod
-    def _make_http_get_request(url: str, headers: dict, query_params = None) -> dict:
+    def _make_http_get_request(url: str, headers: dict, query_params=None) -> dict:
         """
         Helper method for making HTTP GET requests with error handling.
         """
         logger.info("Making GET request to: %s", url)
+
+        client_id = Config.SOUNDCLOUD_CLIENT_ID
+        if not client_id:
+            raise ValueError("Missing SoundCloud client ID in environment variables.")
+
         response = requests.get(url, headers=headers, params=query_params)
         if response.status_code != 200:
             logger.error("HTTP GET error for URL %s: %s", url, response.text)
@@ -42,7 +49,7 @@ class SoundcloudService:
         return response.json()
 
     @staticmethod
-    def _make_html_get_request(url: str, headers: dict) -> str:
+    def _make_html_get_request(url: str, headers: dict, query_params=None) -> str:
         """
         Helper method for making HTTP GET requests with error handling.
         """
@@ -86,7 +93,7 @@ class SoundcloudService:
         Resolves a SoundCloud playlist URL using the SoundCloud API.
         Deprecated by SoundCloud api change.
         """
-        client_id = "akcDl6lB9RfwyhLSb2Xw2MwPR3Ow85Kr" # Config.SOUNDCLOUD_CLIENT_ID
+        client_id = "akcDl6lB9RfwyhLSb2Xw2MwPR3Ow85Kr"  # Config.SOUNDCLOUD_CLIENT_ID
         if not client_id:
             raise ValueError("Missing SoundCloud client ID in environment variables.")
 
@@ -175,7 +182,7 @@ class SoundcloudService:
             raise Exception("User data not found in hydration data")
 
         return {
-            'title': f"Likes by {user_data.get("first_name")}",
+            'title': f"Likes by {user_data.get('first_name')}",
             'id': user_data.get("id"),
             'artwork_url': user_data.get("avatar_url"),
             'track_count': user_data.get('likes_count'),
@@ -194,8 +201,6 @@ class SoundcloudService:
             raise Exception(f"Playlist not found in you database for url: {playlist_url}")
 
         client_id = Config.SOUNDCLOUD_CLIENT_ID
-        if not client_id:
-            raise ValueError("Missing SoundCloud client ID in environment variables.")
 
         limit = 25
         liked_tracks = []
@@ -214,7 +219,8 @@ class SoundcloudService:
                 break
             api_url = data.get("next_href")
             time.sleep(0.1)  # be nice to the API
-        liked_tracks_formatted = [SoundcloudService._parse_track(track.get("track")) for track in liked_tracks if track.get("track")]
+        liked_tracks_formatted = [SoundcloudService._parse_track(track.get("track")) for track in liked_tracks if
+                                  track.get("track")]
 
         return liked_tracks_formatted
 
@@ -321,5 +327,3 @@ class SoundcloudService:
         except Exception as e:
             logger.error("Error fetching SoundCloud playlist tracks: %s", e, exc_info=True)
             raise e
-
-
