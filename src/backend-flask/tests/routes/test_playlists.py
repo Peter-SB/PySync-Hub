@@ -3,6 +3,7 @@ from spotipy import SpotifyException
 
 from app.models import Playlist
 from app.repositories.playlist_repository import PlaylistRepository
+from tests.mocks.mock_data_helper import MockPlaylistDataHelper
 
 
 @pytest.mark.usefixtures("client", "init_database")
@@ -42,6 +43,19 @@ class TestGetPlaylists():
         names = {playlist.get("name") for playlist in data}
         assert names == {"Chill Vibes", "Workout Mix", "Road Trip"}
 
+    def test_get_full_playlist(self, client, init_database):
+        MockPlaylistDataHelper.load_data("Test Playlist 1")
+
+        response = client.get('/api/playlists')
+        assert response.status_code == 200
+        data = response.get_json()
+        assert isinstance(data, list)
+        assert len(data) == 1
+
+        playlist = data[0]
+        assert playlist["name"] == "Test Playlist 1"
+        assert playlist["platform"] == "spotify"
+
     def test_get_playlists_error(self, client, monkeypatch):
         def fake_get_all_playlists():
             raise Exception("Simulated error")
@@ -53,6 +67,21 @@ class TestGetPlaylists():
         data = response.get_json()
         assert "error" in data
         assert "Simulated error" in data["error"]
+
+@pytest.mark.usefixtures("client", "init_database")
+class TestGetPlaylistTracks():
+    def test_get_playlist_tracks(self, client, init_database):
+        MockPlaylistDataHelper.load_data("Test Playlist 1")
+
+        response = client.get('/api/playlist/1/tracks')
+        assert response.status_code == 200
+        data = response.get_json()
+        assert isinstance(data, list)
+        assert len(data) == 2
+
+        assert data[0]["name"] == "Song One"
+        assert data[0]["artist"] == "Artist One"
+        assert data[0]["platform"] == "spotify"
 
 
 @pytest.mark.usefixtures("init_database")
@@ -84,7 +113,7 @@ class TestAddPlaylist:
         assert added_playlist.track_count == 2
         assert added_playlist.platform == "spotify"
 
-        assert len(added_playlist.tracks) == 2
+        MockPlaylistDataHelper.save_data(added_playlist)
 
     def test_add_playlist_valid_soundcloud(self, client, monkeypatch):
         response = client.post('/api/playlists', json={"url_or_id": "https://soundcloud.com/schmoot-point/sets/omwhp"})

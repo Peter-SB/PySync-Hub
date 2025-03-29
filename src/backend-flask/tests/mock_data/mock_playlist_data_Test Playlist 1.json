@@ -1,0 +1,53 @@
+{
+    "playlist": {
+        "id": 1,
+        "name": "Test Playlist 1",
+        "platform": "spotify",
+        "external_id": "3bL14BgPXekKHep3RRdwGZ",
+        "last_synced": null,
+        "created_at": "2025-03-29T13:40:27.024008",
+        "image_url": "https://i.scdn.co/image/ab67616d00001e02aa22899360d8ba6704732dec",
+        "track_count": 2,
+        "url": "https://open.spotify.com/playlist/3bL14BgPXekKHep3RRdwGZ",
+        "downloaded_track_count": 0,
+        "download_status": "ready",
+        "disabled": false,
+        "download_progress": 0
+    },
+    "tracks": [
+        {
+            "id": 1,
+            "platform_id": "track1",
+            "platform": "spotify",
+            "name": "Song One",
+            "artist": "Artist One",
+            "album": "Album One",
+            "album_art_url": "http://example.com/album1.png",
+            "download_url": null,
+            "download_location": null,
+            "notes_errors": null
+        },
+        {
+            "id": 2,
+            "platform_id": "track2",
+            "platform": "spotify",
+            "name": "Song Two",
+            "artist": "Artist Two",
+            "album": "Album Two",
+            "album_art_url": "http://example.com/album2.png",
+            "download_url": null,
+            "download_location": null,
+            "notes_errors": null
+        }
+    ],
+    "playlist_tracks": [
+        {
+            "track_id": 1,
+            "track_order": 0
+        },
+        {
+            "track_id": 2,
+            "track_order": 1
+        }
+    ]
+}

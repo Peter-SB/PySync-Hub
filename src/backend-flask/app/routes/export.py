@@ -41,17 +41,4 @@ def get_tracks():
         return jsonify({'error': str(e)}), 500
 
 
-@api.route('/api/playlist/<int:playlist_id>/tracks', methods=['GET'])
-def get_playlist_tracks(playlist_id):
-    try:
-        playlist = PlaylistRepository.get_playlist(playlist_id)
-        if not playlist:
-            return jsonify({'error': 'Playlist not found'}), 404
-        # Return only tracks that exist
-        tracks_data = [pt.track.to_dict() for pt in playlist.tracks if pt.track]
-        return jsonify(tracks_data), 200
-    except Exception as e:
-        logger.error("Error fetching tracks for playlist %s: %s", playlist_id, e)
-        return jsonify({'error': str(e)}), 500
-
 

@@ -1,10 +1,10 @@
 name: Build Windows App
 
 on:
-  push:
-    branches: [master]
-  pull_request:
-    branches: [master]
+  workflow_run:
+    workflows: ["Run Backend PyTests"]
+    types:
+      - completed
 
 jobs:
   build:

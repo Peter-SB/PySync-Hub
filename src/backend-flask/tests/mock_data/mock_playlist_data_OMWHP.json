@@ -1,0 +1,245 @@
+{
+    "playlist": {
+        "id": 1,
+        "name": "OMWHP",
+        "platform": "soundcloud",
+        "external_id": "1890498842",
+        "last_synced": null,
+        "created_at": "2025-03-29T13:35:37.030043",
+        "image_url": "https://i1.sndcdn.com/artworks-RKnpHcDvtxBa-0-large.jpg",
+        "track_count": 14,
+        "url": "https://soundcloud.com/schmoot-point/sets/omwhp",
+        "downloaded_track_count": 0,
+        "download_status": "ready",
+        "disabled": false,
+        "download_progress": 0
+    },
+    "tracks": [
+        {
+            "id": 1,
+            "platform_id": "1928920556",
+            "platform": "soundcloud",
+            "name": "If I Stay (Higgo Remix)",
+            "artist": "DisciplesLDN",
+            "album": null,
+            "album_art_url": "https://i1.sndcdn.com/artworks-RKnpHcDvtxBa-0-large.jpg",
+            "download_url": "https://soundcloud.com/disciplesldn/if-i-stay-higgo-remix-1",
+            "download_location": null,
+            "notes_errors": null
+        },
+        {
+            "id": 2,
+            "platform_id": "1875575487",
+            "platform": "soundcloud",
+            "name": "FEEL LIKE ME",
+            "artist": "NOTION",
+            "album": null,
+            "album_art_url": "https://i1.sndcdn.com/artworks-miwbAK0eIIDCoOpG-qMWaCw-large.jpg",
+            "download_url": "https://soundcloud.com/notiondj/feel-like-me",
+            "download_location": null,
+            "notes_errors": null
+        },
+        {
+            "id": 3,
+            "platform_id": "1901398023",
+            "platform": "soundcloud",
+            "name": "Disco Lines - Baby Girl (Zero Bootleg)",
+            "artist": "Zero",
+            "album": null,
+            "album_art_url": "https://i1.sndcdn.com/artworks-uMkozJ8HTkxJhXd6-Wp7SVA-large.jpg",
+            "download_url": "https://soundcloud.com/zero_uk/baby-girl-zero-bootleg",
+            "download_location": null,
+            "notes_errors": null
+        },
+        {
+            "id": 4,
+            "platform_id": "1575595057",
+            "platform": "soundcloud",
+            "name": "KWENGFACE - FREEDOM 2 w/ Joy Orbinson, Overmono",
+            "artist": "Leksappeal",
+            "album": null,
+            "album_art_url": "https://i1.sndcdn.com/artworks-RBd6DAyKtWvCfIqn-ByJDew-large.jpg",
+            "download_url": "https://soundcloud.com/leksa-69726518/kwengface-freedom-2-w-joy-orbinson-overmono",
+            "download_location": null,
+            "notes_errors": null
+        },
+        {
+            "id": 5,
+            "platform_id": "1654511685",
+            "platform": "soundcloud",
+            "name": "If U Need It",
+            "artist": "Sammy Virji",
+            "album": null,
+            "album_art_url": "https://i1.sndcdn.com/artworks-KMU1JvWWKWon-0-large.jpg",
+            "download_url": "https://soundcloud.com/sammyvirji/if-u-need-it",
+            "download_location": null,
+            "notes_errors": null
+        },
+        {
+            "id": 6,
+            "platform_id": "1516261897",
+            "platform": "soundcloud",
+            "name": "Overmono - Everything U Need (Floz Edit)",
+            "artist": "Floz",
+            "album": null,
+            "album_art_url": "https://i1.sndcdn.com/artworks-ywrxO7nOIl5fu9gk-6h8JLQ-large.png",
+            "download_url": "https://soundcloud.com/flozbeats/overmono-everything-u-need-floz-edit",
+            "download_location": null,
+            "notes_errors": null
+        },
+        {
+            "id": 7,
+            "platform_id": "1874109135",
+            "platform": "soundcloud",
+            "name": "Pyrophobia",
+            "artist": "Megra",
+            "album": null,
+            "album_art_url": "https://i1.sndcdn.com/artworks-lTFTpPbraCiP5o7w-zKAzBA-large.jpg",
+            "download_url": "https://soundcloud.com/megraa/pyrophobia-2",
+            "download_location": null,
+            "notes_errors": null
+        },
+        {
+            "id": 8,
+            "platform_id": "1818021552",
+            "platform": "soundcloud",
+            "name": "Open Up The Door",
+            "artist": "Megra",
+            "album": null,
+            "album_art_url": "https://i1.sndcdn.com/artworks-aqb0106R04AcLI1t-xpwgKw-large.jpg",
+            "download_url": "https://soundcloud.com/megraa/open-up-the-door-4",
+            "download_location": null,
+            "notes_errors": null
+        },
+        {
+            "id": 9,
+            "platform_id": "1842111804",
+            "platform": "soundcloud",
+            "name": "Don't Risk It",
+            "artist": "Megra",
+            "album": null,
+            "album_art_url": "https://i1.sndcdn.com/artworks-aqb0106R04AcLI1t-xpwgKw-large.jpg",
+            "download_url": "https://soundcloud.com/megraa/megra-dont-risk-it",
+            "download_location": null,
+            "notes_errors": null
+        },
+        {
+            "id": 10,
+            "platform_id": "1670534433",
+            "platform": "soundcloud",
+            "name": "Awesome 3 - Don't Go (Sixten Edit)",
+            "artist": "Sixten",
+            "album": null,
+            "album_art_url": "https://i1.sndcdn.com/artworks-iQO07RF3QAaQkybJ-Tyxwnw-large.jpg",
+            "download_url": "https://soundcloud.com/sixten_music/dont-go-sixten",
+            "download_location": null,
+            "notes_errors": null
+        },
+        {
+            "id": 11,
+            "platform_id": "1918619513",
+            "platform": "soundcloud",
+            "name": "Kaillard - Heavy (Drinks On Me Dub)",
+            "artist": "Drinks On Me",
+            "album": null,
+            "album_art_url": "https://i1.sndcdn.com/artworks-hXhY1dWUSRw8IgzD-j56A3Q-large.jpg",
+            "download_url": "https://soundcloud.com/drinksonmemusic/heavydub",
+            "download_location": null,
+            "notes_errors": null
+        },
+        {
+            "id": 12,
+            "platform_id": "1915450070",
+            "platform": "soundcloud",
+            "name": "Left Right Left",
+            "artist": "eloquin",
+            "album": null,
+            "album_art_url": "https://i1.sndcdn.com/artworks-LqXiBSQJwToQ-0-large.png",
+            "download_url": "https://soundcloud.com/eloquinuk/left-right-left",
+            "download_location": null,
+            "notes_errors": null
+        },
+        {
+            "id": 13,
+            "platform_id": "1905896195",
+            "platform": "soundcloud",
+            "name": "DISCLOSURE - FIRE STARTS TO BURN X PULL UP (SENOR ROAR EDIT) [FREE DL]",
+            "artist": "Se\u00f1or Roar",
+            "album": null,
+            "album_art_url": "https://i1.sndcdn.com/artworks-z8kKcypSuYcf8omy-kUUJ5Q-large.jpg",
+            "download_url": "https://soundcloud.com/senorroar/disclosure-fire-starts-to-gurn-senor-roar-edit-free-dl",
+            "download_location": null,
+            "notes_errors": null
+        },
+        {
+            "id": 14,
+            "platform_id": "1871151879",
+            "platform": "soundcloud",
+            "name": "Disclosure & Chris Lake- In2minds",
+            "artist": "\u00a2",
+            "album": null,
+            "album_art_url": "https://i1.sndcdn.com/artworks-LXiUQZ2AonOTf2ZZ-DKIs3g-large.jpg",
+            "download_url": "https://soundcloud.com/user28741355/disclosure-in-two-minds",
+            "download_location": null,
+            "notes_errors": null
+        }
+    ],
+    "playlist_tracks": [
+        {
+            "track_id": 1,
+            "track_order": 0
+        },
+        {
+            "track_id": 2,
+            "track_order": 1
+        },
+        {
+            "track_id": 3,
+            "track_order": 2
+        },
+        {
+            "track_id": 4,
+            "track_order": 3
+        },
+        {
+            "track_id": 5,
+            "track_order": 4
+        },
+        {
+            "track_id": 6,
+            "track_order": 5
+        },
+        {
+            "track_id": 7,
+            "track_order": 6
+        },
+        {
+            "track_id": 8,
+            "track_order": 7
+        },
+        {
+            "track_id": 9,
+            "track_order": 8
+        },
+        {
+            "track_id": 10,
+            "track_order": 9
+        },
+        {
+            "track_id": 11,
+            "track_order": 10
+        },
+        {
+            "track_id": 12,
+            "track_order": 11
+        },
+        {
+            "track_id": 13,
+            "track_order": 12
+        },
+        {
+            "track_id": 14,
+            "track_order": 13
+        }
+    ]
+}

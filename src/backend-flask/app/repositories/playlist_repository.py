@@ -3,7 +3,7 @@ from datetime import datetime
 from typing import List
 
 from app.extensions import db, socketio
-from app.models import Playlist, PlaylistTrack
+from app.models import Playlist, PlaylistTrack, Track
 
 logger = logging.getLogger(__name__)
 
@@ -38,6 +38,12 @@ class PlaylistRepository:
     def get_playlist(playlist_id):
         logger.debug(f"Fetching playlist with ID: {playlist_id}")
         return db.session.get(Playlist, playlist_id)
+
+    @staticmethod
+    def get_playlist_tracks(playlist_id) -> List[Track]:
+        logger.debug("Fetching playlist tracks")
+        playlist = PlaylistRepository.get_playlist_by_id(playlist_id)
+        return [pt.track.to_dict() for pt in playlist.tracks if pt.track]
 
     @staticmethod
     def create_playlist(playlist_data):
