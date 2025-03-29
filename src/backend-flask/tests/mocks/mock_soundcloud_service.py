@@ -64,12 +64,12 @@ class MockSoundcloudService(SoundcloudService):
 
         if "sets" in url:
             user_name = url.rstrip("/").split("/")[-2]
-            file_path = os.path.join(current_dir, "../mock_data", f"soundcloud_user_{user_name}.json")
+            file_path = os.path.join(current_dir, "../mock_data", f"soundcloud_user_{user_name}.txt")
             return MockSoundcloudService.return_data_from_mock_file(file_path)
 
         # User profile
         user_name = url.rstrip("/").split("/")[-1]
-        file_path = os.path.join(current_dir, "../mock_data", f"soundcloud_user_{user_name}.json")
+        file_path = os.path.join(current_dir, "../mock_data", f"soundcloud_user_{user_name}.txt")
         return MockSoundcloudService.return_data_from_mock_file(file_path)
 
     # @staticmethod
