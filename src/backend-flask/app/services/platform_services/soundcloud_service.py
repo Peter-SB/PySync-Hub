@@ -84,6 +84,7 @@ class SoundcloudService:
             'album_art_url': track.get('artwork_url'),
             'download_url': permalink or None,
             'notes_errors': error,
+            'added_at': track.get("added_at", "2000-00-0T00:00:00Z"),  # When the track was added to the playlist
         }
 
     @staticmethod

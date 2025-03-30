@@ -42,6 +42,7 @@ class Playlist(db.Model):
             'last_synced': self.last_synced.isoformat() if self.last_synced else None,
             'created_at': self.created_at.isoformat(),
             'image_url': self.image_url,
+            'tracks': [pt.track.to_dict() for pt in self.tracks if pt.track],
             'track_count': self.track_count,
             'url': self.url,
             'downloaded_track_count': self.downloaded_track_count,
@@ -90,6 +91,7 @@ class PlaylistTrack(db.Model):
     playlist_id = db.Column(db.Integer, db.ForeignKey('playlists.id', ondelete="CASCADE"), nullable=False)
     track_id = db.Column(db.Integer, db.ForeignKey('tracks.id', ondelete="CASCADE"), nullable=False)
     track_order = db.Column(db.Integer, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     playlist = db.relationship('Playlist', back_populates='tracks')
     track = db.relationship('Track')

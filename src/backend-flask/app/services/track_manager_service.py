@@ -34,21 +34,22 @@ class TrackManagerService:
 
             # Apply date limit if set
             if playlist.date_limit:
-                tracks_data = [track for track in tracks_data if track.get('added_at') and 
-                             datetime.fromisoformat(track['added_at']) >= playlist.date_limit]
-                logger.info("After date limit filter: %d tracks", len(tracks_data))
+                # tracks_data = [track for track in tracks_data if track.get('added_at') and
+                #                datetime.fromisoformat(track.get('added_at',)) >= playlist.date_limit]
+                logger.info("After date limit filter: %d tracks, date limit: %s", len(tracks_data), playlist.date_limit)
 
             # Apply track limit if set
             if playlist.track_limit:
                 tracks_data = tracks_data[:playlist.track_limit]
-                logger.info("After track limit filter: %d tracks", len(tracks_data))
+                logger.info("After track limit filter: %d tracks, track_limit %d", len(tracks_data), playlist.track_limit)
 
             # Iterate over the fetched tracks; use the index to set the track order
             for index, track_data in enumerate(tracks_data):
                 # Check if the track already exists in the Track table based on the unique constraint
                 track = Track.query.filter_by(
                     platform=track_data['platform'],
-                    platform_id=track_data['platform_id']
+                    platform_id=track_data['platform_id'],
+                    created_at=track_data['created_at']
                 ).first()
 
                 # If the track is not found, create a new Track record

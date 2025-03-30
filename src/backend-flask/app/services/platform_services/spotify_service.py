@@ -96,7 +96,7 @@ class SpotifyService:
             client = SpotifyService.get_client()
 
             tracks_data = []
-            limit = 100
+            limit = 25
             offset = 0
 
             while True:
@@ -136,7 +136,7 @@ class SpotifyService:
 
         liked_playlist = PlaylistRepository.get_playlist_by_url("https://open.spotify.com/collection/tracks")
         track_limit = liked_playlist.to_dict().get('track_limit', None)
-        date_limit = liked_playlist.to_dict().get('date_limit', "01-01-24")
+        date_limit = liked_playlist.to_dict().get('date_limit', None)
 
         liked_songs = []
         try:
@@ -171,7 +171,7 @@ class SpotifyService:
         # If a date limit is specified, compare the track's added_at date.
         if date_limit is not None:
             try:
-                liked_songs_date_limit = datetime.strptime(date_limit, '%d-%m-%y').date()
+                liked_songs_date_limit = datetime.strptime(date_limit, '%Y-%m-%d').date()
                 track_added_date = datetime.fromisoformat(track["added_at"].replace('Z', '+00:00')).date()
                 if track_added_date < liked_songs_date_limit:
                     return False
@@ -202,5 +202,5 @@ class SpotifyService:
             'album_art_url': track['album']['images'][0]['url']
             if track.get('album') and track['album'].get('images') else None,
             'download_url': None,  # Can be populated later
-            'added_at': added_at,  # When the track was added to the playlist
+            'added_at': track.get("added_at", "2000-00-0T00:00:00Z"),  # When the track was added to the playlist
         }
