@@ -1,5 +1,7 @@
 import logging
 import os
+from datetime import datetime
+
 import yaml
 from flask import Blueprint, request, jsonify, current_app
 
@@ -126,5 +128,34 @@ def toggle_playlist():
     playlist.disabled = True if str(disabled_value).lower() == 'true' else False
     db.session.commit()
     return jsonify(playlist.to_dict()), 200
+
+
+@api.route('/api/playlists/<int:playlist_id>', methods=['PATCH'])
+def update_playlist(playlist_id):
+    data = request.get_json() or {}
+    
+    playlist = PlaylistRepository.get_playlist(playlist_id)
+    if not playlist:
+        return jsonify({'error': 'Playlist not found'}), 404
+
+    # Update date_limit if provided
+    if 'date_limit' in data and data['date_limit']:
+        try:
+            playlist.date_limit = datetime.strptime(data['date_limit'], '%Y-%m-%d')
+        except ValueError:
+            return jsonify({'error': 'Invalid date format. Use YYYY-MM-DD.'}), 400
+
+
+    # Update track_limit if provided
+    if 'track_limit' in data and data['track_limit']:
+        playlist.track_limit = data['track_limit']
+
+    try:
+        db.session.commit()
+        return jsonify(playlist.to_dict()), 200
+    except Exception as e:
+        db.session.rollback()
+        logger.error("Error updating playlist %s: %s", playlist_id, e)
+        return jsonify({'error': str(e)}), 500
 
 

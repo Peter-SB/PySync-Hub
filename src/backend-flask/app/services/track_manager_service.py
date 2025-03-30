@@ -2,6 +2,7 @@ from app.models import *
 from app.repositories.playlist_repository import PlaylistRepository
 from app.services.platform_services.soundcloud_service import SoundcloudService
 from app.services.platform_services.spotify_service import SpotifyService
+from datetime import datetime
 
 logger = logging.getLogger(__name__)
 
@@ -12,6 +13,7 @@ class TrackManagerService:
         """
         Syncs the tracks for a given playlist by fetching track data from Spotify
         and then updating the Track and PlaylistTrack tables.
+        Respects playlist date_limit and track_limit if set.
         """
         playlist = PlaylistRepository.get_playlist(playlist_id)
         if not playlist:
@@ -29,6 +31,17 @@ class TrackManagerService:
                 tracks_data = SoundcloudService.get_playlist_tracks(playlist.url)
 
             logger.info("Fetched %d tracks for playlist %s", len(tracks_data), playlist.name)
+
+            # Apply date limit if set
+            if playlist.date_limit:
+                tracks_data = [track for track in tracks_data if track.get('added_at') and 
+                             datetime.fromisoformat(track['added_at']) >= playlist.date_limit]
+                logger.info("After date limit filter: %d tracks", len(tracks_data))
+
+            # Apply track limit if set
+            if playlist.track_limit:
+                tracks_data = tracks_data[:playlist.track_limit]
+                logger.info("After track limit filter: %d tracks", len(tracks_data))
 
             # Iterate over the fetched tracks; use the index to set the track order
             for index, track_data in enumerate(tracks_data):

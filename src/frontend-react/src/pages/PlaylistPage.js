@@ -54,58 +54,119 @@ function PlaylistPage({ playlists }) {
         setTracks(tracks.map(t => (t.id === updatedTrack.id ? updatedTrack : t)));
     };
 
+    const handleUpdateLimits = async (dateLimit, trackLimit) => {
+        try {
+            const response = await fetch(`${backendUrl}/api/playlists/${playlistInfo.id}`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    date_limit: dateLimit,
+                    track_limit: trackLimit
+                }),
+            });
+            if (!response.ok) {
+                throw new Error('Failed to update playlist limits');
+            }
+            // Update the local playlist info
+            const updatedPlaylist = { ...playlistInfo, date_limit: dateLimit, track_limit: trackLimit };
+            playlists.forEach((p, i) => {
+                if (p.id === updatedPlaylist.id) {
+                    playlists[i] = updatedPlaylist;
+                }
+            });
+        } catch (error) {
+            console.error('Error updating playlist limits:', error);
+            setError('Failed to update playlist limits');
+        }
+    };
+
     return (
         <div id="playlist-page" className="flex flex-col h-screen p-4 pt-2">
             {/* Playlist Info Header box */}
-            <div id="header-box" className="bg-white p-5 rounded-lg mb-1 shadow flex items-center">
+            <div id="header-box" className="bg-white p-5 rounded-lg mb-1 shadow">
                 {playlistInfo ? (
-                    <div className="flex flex-col sm:flex-row justify-between items-center justify-end w-full">
-                        {/* Left section: image and info */}
-                        <div className="flex items-center">
-                            {playlistInfo.image_url && (
-                                <img
-                                    src={playlistInfo.image_url}
-                                    alt="Playlist cover"
-                                    className="w-24 h-24 rounded-md object-cover mr-4 border border-gray-400"
-                                />
-                            )}
-                            <div className="flex flex-col">
-                                <h1 className="text-3xl font-semibold text-gray-800 mb-1">
-                                    <a href={playlistInfo.url} target="_blank" rel="noreferrer" className="hover:underline">
-                                        {playlistInfo.name}
-                                    </a>
-                                    {playlistInfo.platform === "spotify" && (
-                                        <img
-                                            src="./icons/spotify.svg"
-                                            alt="Spotify"
-                                            className="w-8 h-8 ml-3 mb-1 inline"
-                                        />
-                                    )}
-                                    {playlistInfo.platform === "soundcloud" && (
-                                        <img
-                                            src="./icons/soundcloud.svg"
-                                            alt="SoundCloud"
-                                            className="w-7 h-7 p-0.5 ml-3 mb-1 inline"
-                                        />
-                                    )}
-                                </h1>
-                                <div className="text-sm text-gray-600">
-                                    {playlistInfo.last_synced
-                                        ? `Last synced: ${new Date(playlistInfo.last_synced).toLocaleString()}`
-                                        : 'Not synced'}
-                                </div>
-                                <div className="text-sm text-gray-600 mt-1">
-                                    {playlistInfo.downloaded_track_count} downloaded / {playlistInfo.track_count} total tracks
+                    <div className="flex flex-col space-y-4">
+                        {/* First row: Playlist info */}
+                        <div className="flex flex-col sm:flex-row justify-between items-center justify-end w-full">
+                            {/* Left section: image and info */}
+                            <div className="flex items-center">
+                                {playlistInfo.image_url && (
+                                    <img
+                                        src={playlistInfo.image_url}
+                                        alt="Playlist cover"
+                                        className="w-24 h-24 rounded-md object-cover mr-4 border border-gray-400"
+                                    />
+                                )}
+                                <div className="flex flex-col">
+                                    <h1 className="text-3xl font-semibold text-gray-800 mb-1">
+                                        <a href={playlistInfo.url} target="_blank" rel="noreferrer" className="hover:underline">
+                                            {playlistInfo.name}
+                                        </a>
+                                        {playlistInfo.platform === "spotify" && (
+                                            <img
+                                                src="./icons/spotify.svg"
+                                                alt="Spotify"
+                                                className="w-8 h-8 ml-3 mb-1 inline"
+                                            />
+                                        )}
+                                        {playlistInfo.platform === "soundcloud" && (
+                                            <img
+                                                src="./icons/soundcloud.svg"
+                                                alt="SoundCloud"
+                                                className="w-7 h-7 p-0.5 ml-3 mb-1 inline"
+                                            />
+                                        )}
+                                    </h1>
+                                    <div className="text-sm text-gray-600">
+                                        {playlistInfo.last_synced
+                                            ? `Last synced: ${new Date(playlistInfo.last_synced).toLocaleString()}`
+                                            : 'Not synced'}
+                                    </div>
+                                    <div className="text-sm text-gray-600 mt-1">
+                                        {playlistInfo.downloaded_track_count} downloaded / {playlistInfo.track_count} total tracks
+                                    </div>
                                 </div>
                             </div>
+                            {/* Right section: delete button */}
+                            <div className="flex items-center space-x-4 mt-4 sm:mt-0">
+                                <button onClick={handleDeleteClick} className="p-2 rounded bg-red-500 hover:bg-red-600 text-white">
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M1 7h22m-5-4h-8m8 0a1 1 0 00-1-1h-6a1 1 0 00-1 1m8 0H5" />
+                                    </svg>
+                                </button>
+                            </div>
                         </div>
-                        {/* Right section: delete button */}
-                        <div className="flex items-center space-x-4 mt-4 sm:mt-0">
-                            <button onClick={handleDeleteClick} className="p-2 rounded bg-red-500 hover:bg-red-600 text-white">
-                                <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M1 7h22m-5-4h-8m8 0a1 1 0 00-1-1h-6a1 1 0 00-1 1m8 0H5" />
-                                </svg>
-                            </button>
+                        
+                        {/* Second row: Sync Limits */}
+                        <div className="flex flex-col sm:flex-row items-center space-y-2 pt-3 sm:space-y-0 sm:space-x-4 border-t">
+                            <h3 className="text-lg  text-gray-700">Sync Limits:</h3>
+                            <div className="flex items-center space-x-2">
+                                <label className="text-sm text-gray-600">Date Limit:</label>
+                                <input
+                                    type="date"
+                                    className="border rounded px-2 py-1"
+                                    value={playlistInfo.date_limit ? playlistInfo.date_limit.split('T')[0] : ''}
+                                    onChange={(e) => handleUpdateLimits(e.target.value ? new Date(e.target.value).toISOString() : null, playlistInfo.track_limit)}
+                                />
+                            </div>
+                            <div className="flex items-center space-x-2">
+                                <label className="text-s text-gray-600">Track Limit:</label>
+                                <input
+                                    type="number"
+                                    min="0"
+                                    className="border rounded px-2 py-1 w-20"
+                                    value={playlistInfo.track_limit || ''}
+                                    onChange={(e) => handleUpdateLimits(playlistInfo.date_limit, e.target.value ? parseInt(e.target.value) : null)}
+                                    placeholder="No limit"
+                                />
+                            </div>
+                            <div className="text-sm text-gray-500">
+                                {(playlistInfo.date_limit || playlistInfo.track_limit) ? 
+                                    `Only syncing ${playlistInfo.track_limit ? `up to ${playlistInfo.track_limit} tracks` : 'all tracks'}${playlistInfo.date_limit ? ` added after ${new Date(playlistInfo.date_limit).toLocaleDateString()}` : ''}`
+                                    : 'No limits set - syncing all tracks'}
+                            </div>
                         </div>
                     </div>
                 ) : (

@@ -20,6 +20,8 @@ class Playlist(db.Model):
     download_status = db.Column(db.String(255))  # "ready", "queued", "downloading"
     disabled = db.Column(db.Boolean, default=False)
     download_progress = db.Column(db.Integer, default=0)
+    date_limit = db.Column(db.DateTime, nullable=True)  # Only sync/download tracks added after this date
+    track_limit = db.Column(db.Integer, nullable=True)  # Maximum number of tracks to sync/download
 
     tracks = db.relationship('PlaylistTrack',
                              back_populates='playlist',
@@ -46,6 +48,8 @@ class Playlist(db.Model):
             'download_status': self.download_status,
             'disabled': self.disabled,
             'download_progress': self.download_progress,
+            'date_limit': self.date_limit.isoformat() if self.date_limit else None,
+            'track_limit': self.track_limit,
         }
 
 
@@ -76,7 +80,7 @@ class Track(db.Model):
             'album_art_url': self.album_art_url,
             'download_url': self.download_url,
             'download_location': self.download_location,
-            'notes_errors': self.notes_errors
+            'notes_errors': self.notes_errors,
         }
 
 

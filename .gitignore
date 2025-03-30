@@ -37,3 +37,4 @@ ffmpeg/ffmpeg.exe
 /src/ffmpeg/ffmpeg.exe
 /src/ffmpeg/ffprobe
 /src/ffmpeg/ffprobe.exe
+/src/backend-flask/migrations/

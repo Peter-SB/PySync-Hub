@@ -98,7 +98,7 @@ function createWindow() {
     },
   });
 
-  const startURL = false
+  const startURL = true
     ? "http://localhost:3000"
     : `file://${path.join(__dirname, "frontend-react/build/index.html")}`;
 

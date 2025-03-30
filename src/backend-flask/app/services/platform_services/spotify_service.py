@@ -106,7 +106,7 @@ class SpotifyService:
                 for item in results.get('items', []):
                     track = item.get('track')
                     if not track or track.get('id') is None:
-                        return  # Skip items that aren't valid tracks (e.g., episodes, missing tracks)
+                        continue  # Skip items that aren't valid tracks (e.g. episodes, missing tracks)
 
                     track_data = SpotifyService._format_track_data(track)
                     tracks_data.append(track_data)
@@ -192,7 +192,7 @@ class SpotifyService:
         return playlist_id
 
     @classmethod
-    def _format_track_data(cls, track):
+    def _format_track_data(cls, track, added_at=None):
         return {
             'platform_id': track['id'],
             'platform': 'spotify',
@@ -202,4 +202,5 @@ class SpotifyService:
             'album_art_url': track['album']['images'][0]['url']
             if track.get('album') and track['album'].get('images') else None,
             'download_url': None,  # Can be populated later
+            'added_at': added_at,  # When the track was added to the playlist
         }

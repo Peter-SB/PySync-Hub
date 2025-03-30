@@ -137,10 +137,10 @@ function SettingsPage() {
         </div>
       </div>
       {/* Spotify Login */}
-      <div className="py-5 border-b-2 ">
+      <div className="py-3 border-b-2 ">
         <div className="mb-4 ">
           <div className="mb-4"></div>
-          <p className="mb-2"> <span className='font-medium'>Login with Spotify</span> to access your liked songs.</p>
+          <p className="mb-4"> <span className='font-medium'>Login with Spotify</span> to access your liked songs.</p>
           <button
             onClick={handleLoginClick}
             className="flex items-center px-3 py-2 rounded bg-green-500 text-white"

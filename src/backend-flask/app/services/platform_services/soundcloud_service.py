@@ -83,7 +83,7 @@ class SoundcloudService:
             'album': None,  # SoundCloud tracks typically do not have album info
             'album_art_url': track.get('artwork_url'),
             'download_url': permalink or None,
-            'notes_errors': error
+            'notes_errors': error,
         }
 
     @staticmethod

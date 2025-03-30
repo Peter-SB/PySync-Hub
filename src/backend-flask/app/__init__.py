@@ -4,6 +4,7 @@ import sys
 
 from flask import Flask
 from flask_cors import CORS
+from flask_migrate import upgrade, init, stamp
 
 from app.extensions import db, socketio, migrate
 from app.repositories.playlist_repository import PlaylistRepository
@@ -42,6 +43,9 @@ def create_app(app_config=Config):
     with app.app_context():
         from app.models import Playlist
         db.create_all()
+        # upgrade()
+    # with app.app_context():
+    #     _handle_database_migrations(app, logger)
 
     from app.routes import api
     app.register_blueprint(api)
@@ -49,12 +53,36 @@ def create_app(app_config=Config):
     if not app.config.get("TESTING"):
         os.makedirs(os.path.join(os.getcwd(), app.config.get("DOWNLOAD_FOLDER")), exist_ok=True)
 
-
     app.download_manager = DownloadManager(app)
 
     with app.app_context():
         PlaylistRepository.reset_download_statuses_to_ready()
 
     return app
+
+def _handle_database_migrations(app, logger):
+    try:
+        # Automatically run pending migrations
+        upgrade()
+    except Exception as e:
+        # Log the error, and as a fallback, create tables (useful for a fresh install)
+        logger.error("Auto migration failed: %s", e)
+        db.create_all()
+
+    # migrations_dir = os.path.join(os.path.dirname(__file__), 'migrations')
+    #
+    # if not os.path.exists(migrations_dir):
+    #     # Initialize migrations directory if missing
+    #     init()
+    #     stamp()  # Pretend the current DB state is the initial state
+    #     migrate(message="Initial migration")
+    #     upgrade()
+    # else:
+    #     try:
+    #         # Attempt to migrate and upgrade
+    #         migrate(message="Auto migration")
+    #     except Exception as e:
+    #         print(f"Migration error: {e}")
+    #     upgrade()
 
 # python -m flask run --debug
