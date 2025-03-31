@@ -39,6 +39,10 @@
 
 ## CI/CD
 - Remove make dir
-- Unit Tests
+- ✅ Unit Tests
 - Publish to Releases
 - enable warnings as errors
+
+## Unit Tests
+- TrackManager
+  - Test: Test for date limit and track limit for both spotify and soundcloud
