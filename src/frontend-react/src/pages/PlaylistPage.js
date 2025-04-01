@@ -13,18 +13,18 @@ function PlaylistPage({ playlists }) {
     const [dateLimit, setDateLimit] = useState('');
     const [savedTrackLimit, setSavedTrackLimit] = useState('');
     const [savedDateLimit, setSavedDateLimit] = useState('');
+    const [isLimitsOpen, setIsLimitsOpen] = useState(false);
+
     const navigate = useNavigate();
 
     const playlistInfo = playlists.find(pl => String(pl.id) === playlistId);
 
-    // Set default limits from playlistInfo when available
     useEffect(() => {
         if (playlistInfo) {
             const defaultTrack = playlistInfo.track_limit ? String(playlistInfo.track_limit) : '';
             setTrackLimit(defaultTrack);
             setSavedTrackLimit(defaultTrack);
 
-            // todo: extract to new to function
             if (playlistInfo.date_limit) {
                 const d = new Date(playlistInfo.date_limit);
                 const yyyy = d.getFullYear();
@@ -40,7 +40,6 @@ function PlaylistPage({ playlists }) {
         }
     }, [playlistInfo]);
 
-    // Fetch the playlist's tracks
     const fetchPlaylistTracks = async () => {
         try {
             const response = await fetch(`${backendUrl}/api/playlist/${playlistId}/tracks`);
@@ -60,7 +59,6 @@ function PlaylistPage({ playlists }) {
         fetchPlaylistTracks();
     }, [playlistId]);
 
-    // Save settings and refresh the track list
     const handleSaveSettings = async () => {
         const payload = {
             track_limit: trackLimit,
@@ -90,7 +88,6 @@ function PlaylistPage({ playlists }) {
                     setDateLimit('');
                     setSavedDateLimit('');
                 }
-                // After save, unsaved changes are gone.
                 await fetchPlaylistTracks();
             } else {
                 const errorData = await response.json();
@@ -102,7 +99,6 @@ function PlaylistPage({ playlists }) {
         }
     };
 
-    // Delete the playlist and navigate away
     const handleDeleteClick = async () => {
         if (!window.confirm('Are you sure you want to delete this playlist?')) return;
         try {
@@ -119,23 +115,19 @@ function PlaylistPage({ playlists }) {
         }
     };
 
-    // Update a track in state after a successful edit
     const handleUpdateTrack = (updatedTrack) => {
         setTracks(tracks.map(t => (t.id === updatedTrack.id ? updatedTrack : t)));
     };
 
-    // Check for unsaved changes by comparing current inputs with saved values
     const hasUnsavedChanges =
         savedTrackLimit !== trackLimit || savedDateLimit !== dateLimit;
 
     return (
         <div id="playlist-page" className="flex flex-col h-screen p-4 pt-2">
-            {/* Playlist Info Header with inline settings */}
             <div id="header-box" className="flex flex-col bg-white p-5 rounded-lg mb-1 shadow flex ">
                 {playlistInfo ? (
                     <div>
-                        <div className="flex flex-col sm:flex-row justify-between items-center justify-end w-full mb-6">
-                            {/* Left section: image and info */}
+                        <div className="flex flex-col sm:flex-row justify-between items-center w-full h-[100px]">
                             <div className="flex items-center">
                                 {playlistInfo.image_url && (
                                     <img
@@ -146,7 +138,12 @@ function PlaylistPage({ playlists }) {
                                 )}
                                 <div className="flex flex-col">
                                     <h1 className="text-3xl font-semibold text-gray-800 mb-1">
-                                        <a href={playlistInfo.url} target="_blank" rel="noreferrer" className="hover:underline">
+                                        <a
+                                            href={playlistInfo.url}
+                                            target="_blank"
+                                            rel="noreferrer"
+                                            className="hover:underline"
+                                        >
                                             {playlistInfo.name}
                                         </a>
                                         {playlistInfo.platform === "spotify" && (
@@ -171,69 +168,117 @@ function PlaylistPage({ playlists }) {
                                     </div>
                                     <div className="text-sm text-gray-600 mt-1">
                                         {playlistInfo.downloaded_track_count} downloaded / {playlistInfo.tracks.length} total tracks
-                                        {playlistInfo.tracks.length != playlistInfo.track_count ? (<a>, ({playlistInfo.track_count} total platform tracks)</a>) : (<a></a>)}
+                                        {playlistInfo.tracks.length !== playlistInfo.track_count ? (
+                                            <>, ({playlistInfo.track_count} total platform tracks)</>
+                                        ) : null}
                                     </div>
                                 </div>
                             </div>
-                            {/* Right section: delete button */}
-                            <div className="flex items-center space-x-4 mt-4 sm:mt-0">
-                                <button onClick={handleDeleteClick} className="p-2 rounded bg-red-500 hover:bg-red-600 text-white">
-                                    <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M1 7h22m-5-4h-8m8 0a1 1 0 00-1-1h-6a1 1 0 00-1 1m8 0H5" />
-                                    </svg>
-                                </button>
+                            <div className="flex flex-col justify-between h-full">
+                                <div className="flex-1 flex items-center justify-center space-x-4 mt-4 sm:mt-0">
+                                    <button
+                                        onClick={handleDeleteClick}
+                                        className="p-2 rounded bg-red-500 hover:bg-red-600 text-white"
+                                    >
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            className="w-6 h-6"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                            stroke="currentColor"
+                                        >
+                                            <path
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                                strokeWidth={2}
+                                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M1 7h22m-5-4h-8m8 0a1 1 0 00-1-1h-6a1 1 0 00-1 1m8 0H5"
+                                            />
+                                        </svg>
+                                    </button>
+                                </div>
+                                <div >
+                                    <button
+                                        className="flex items-center space-x-1"
+                                        onClick={() => setIsLimitsOpen(!isLimitsOpen)}
+                                    >
+                                        <span className="text-xs">Options</span>
+                                        <svg
+                                            className={`w-5 h-5 transform transition-transform ${!isLimitsOpen ? 'rotate-180' : 'rotate-0'
+                                                }`}
+                                            fill="none"
+                                            stroke="currentColor"
+                                            strokeWidth="2"
+                                            viewBox="0 0 24 24"
+                                        >
+                                            <path
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                                d="M5 15l7-7 7 7"
+                                            />
+                                        </svg>
+                                    </button>
+                                </div>
                             </div>
                         </div>
 
-                        <div id='limit-tracks-settings' className="flex items-center space-x-4 border-t pt-4 text-sm">
-                            {/* Track Limit Input */}
-                            <label htmlFor="trackLimit" className=" text-gray-700">Track Limit</label>
-                            <input
-                                type="number"
-                                id="trackLimit"
-                                placeholder="None"
-                                value={trackLimit}
-                                onChange={(e) => setTrackLimit(e.target.value)}
-                                onKeyDown={(e) => {
-                                    if (e.key === 'Escape') {
-                                        setTrackLimit(savedTrackLimit);
-                                    }
-                                }}
-                                className="mt-1 p-2 border rounded w-24 h-8"
-                            />
-                            {/* Date Limit Input */}
-                            {playlistInfo.platform === "spotify" && (
-                                <div>
-                                    <label htmlFor="dateLimit" className="text-sm text-gray-700">Date Limit ({dateLimit}))</label>
-                                    <input
-                                        type="date"
-                                        id="dateLimit"
-                                        value={dateLimit}
-                                        onChange={(e) => setDateLimit(e.target.value)}
-                                        onKeyDown={(e) => {
-                                            if (e.key === 'Escape') {
-                                                setDateLimit(savedDateLimit);
-                                            }
-                                        }}
-                                        className="mt-1 p-2 border rounded w-40 h-8"
-                                    />
-                                </div>
-                            )}
-                            {/* Save Button */}
-                            <button
-                                onClick={handleSaveSettings}
-                                className="mt-1 p-2 rounded bg-blue-500 hover:bg-blue-600 text-white h-8 flex items-center justify-center"
+                        {isLimitsOpen && (
+                            <div
+                                id="limit-tracks-settings"
+                                className="flex items-center justify-end space-x-4 border-t pt-4 text-xs mt-6"
                             >
-                                {hasUnsavedChanges ? 'Save to take effect' : 'Save'}
-                            </button>
-                        </div>
+                                <label htmlFor="trackLimit" className="text-gray-700">
+                                    Track Limit
+                                </label>
+                                <input
+                                    type="number"
+                                    id="trackLimit"
+                                    placeholder="None"
+                                    value={trackLimit}
+                                    onChange={(e) => setTrackLimit(e.target.value)}
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Escape') {
+                                            setTrackLimit(savedTrackLimit);
+                                        }
+                                    }}
+                                    className="mt-1 p-2 border rounded w-16 h-6"
+                                />
+
+                                {playlistInfo.platform === "spotify" && (
+                                    <div>
+                                        <label htmlFor="dateLimit" className="text-gray-700">
+                                            Date Limit{' '}
+                                        </label>
+                                        <input
+                                            type="date"
+                                            id="dateLimit"
+                                            value={dateLimit}
+                                            onChange={(e) => setDateLimit(e.target.value)}
+                                            onKeyDown={(e) => {
+                                                if (e.key === 'Escape') {
+                                                    setDateLimit(savedDateLimit);
+                                                }
+                                            }}
+                                            className="mt-1 p-2 border rounded w-30 h-6"
+                                        />
+                                    </div>
+                                )}
+
+                                <button
+                                    onClick={handleSaveSettings}
+                                    className="mt-1 p-2 rounded bg-blue-500 hover:bg-blue-600 text-white h-7 flex items-center justify-center"
+                                >
+                                    {hasUnsavedChanges ? 'Save to take effect' : 'Save'}
+                                </button>
+                            </div>
+                        )}
                     </div>
                 ) : (
-                    <h1 className="text-3xl font-semibold text-gray-700">Playlist ID: {playlistId}</h1>
+                    <h1 className="text-3xl font-semibold text-gray-700">
+                        Playlist ID: {playlistId}
+                    </h1>
                 )}
             </div>
 
-            {/* Main Tracks Area */}
             {error ? (
                 <div className="p-4 mb-4 text-sm text-red-700 bg-red-100 border border-red-400 rounded">
                     {error}
@@ -244,10 +289,6 @@ function PlaylistPage({ playlists }) {
                         {tracks.length > 0 ? (
                             <ul>
                                 {tracks.map((track, index) => {
-                                    // Grey out tracks that would be removed:
-                                    // - If track limit is set, tracks with an index >= limit are greyed out.
-                                    // - If date limit is set and track.date_added exists, tracks with a date before the limit are greyed.
-
                                     const isGreyedOut =
                                         (trackLimit && index >= Number(trackLimit)) ||
                                         (dateLimit && track.added_on && new Date(track.added_on) < new Date(dateLimit));
@@ -255,7 +296,8 @@ function PlaylistPage({ playlists }) {
                                     return (
                                         <li
                                             key={track.platform_id}
-                                            className={`flex px-4 py-1 border-y flex items-center cursor-pointer hover:bg-gray-50 ${isGreyedOut ? 'opacity-50' : ''}`}
+                                            className={`flex px-4 py-1 border-y flex items-center cursor-pointer hover:bg-gray-50 ${isGreyedOut ? 'opacity-50' : ''
+                                                }`}
                                             onClick={() => setSelectedTrack(track)}
                                         >
                                             <div className="text-l mr-3 w-7">{index + 1}.</div>
@@ -313,7 +355,6 @@ function PlaylistPage({ playlists }) {
                 </div>
             )}
 
-            {/* Track Modal */}
             {selectedTrack && (
                 <TrackModal
                     track={selectedTrack}
