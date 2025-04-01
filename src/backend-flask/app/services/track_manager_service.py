@@ -32,12 +32,6 @@ class TrackManagerService:
 
             logger.info("Fetched %d tracks for playlist %s", len(tracks_data), playlist.name)
 
-            # Apply date limit if set
-            if playlist.date_limit:
-                # tracks_data = [track for track in tracks_data if track.get('added_at') and
-                #                datetime.fromisoformat(track.get('added_at',)) >= playlist.date_limit]
-                logger.info("After date limit filter: %d tracks, date limit: %s", len(tracks_data), playlist.date_limit)
-
             # Apply track limit if set
             if playlist.track_limit:
                 tracks_data = tracks_data[:playlist.track_limit]
@@ -49,7 +43,6 @@ class TrackManagerService:
                 track = Track.query.filter_by(
                     platform=track_data['platform'],
                     platform_id=track_data['platform_id'],
-                    created_at=track_data['created_at']
                 ).first()
 
                 # If the track is not found, create a new Track record
@@ -74,11 +67,14 @@ class TrackManagerService:
                     playlist_id=playlist.id,
                     track_id=track.id
                 ).first()
+
+                logger.info("track added %s", track_data.get('added_on'))
                 if not existing_entry:
                     playlist_track = PlaylistTrack(
                         playlist_id=playlist.id,
                         track_id=track.id,
-                        track_order=index
+                        track_order=index,
+                        added_on=datetime.fromisoformat(track_data.get('added_on')) if track_data.get('added_on') else None
                     )
                     db.session.add(playlist_track)
                 else:

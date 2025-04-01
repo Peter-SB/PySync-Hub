@@ -13,7 +13,7 @@
 
 
 ## Downloading
-- Add Quick Sync (That will not check file locations, only download new tracks without a location)
+- Add Quick Sync (That will not check file locations, only download new tracks without a location, maybe also not check playlist if track count hasnt changed. Use a check sum)
 - Save a correct file type
 - Add metadata
 - - correct track artists
@@ -42,6 +42,7 @@
 - ✅ Unit Tests
 - Publish to Releases
 - enable warnings as errors
+- Version Number with Git link 
 
 ## Unit Tests
 - TrackManager

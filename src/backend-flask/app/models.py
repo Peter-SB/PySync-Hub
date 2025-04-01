@@ -91,7 +91,7 @@ class PlaylistTrack(db.Model):
     playlist_id = db.Column(db.Integer, db.ForeignKey('playlists.id', ondelete="CASCADE"), nullable=False)
     track_id = db.Column(db.Integer, db.ForeignKey('tracks.id', ondelete="CASCADE"), nullable=False)
     track_order = db.Column(db.Integer, nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    added_on = db.Column(db.DateTime, nullable=True)
 
     playlist = db.relationship('Playlist', back_populates='tracks')
     track = db.relationship('Track')

@@ -34,8 +34,11 @@ def get_playlist_tracks(playlist_id):
         playlist = PlaylistRepository.get_playlist(playlist_id)
         if not playlist:
             return jsonify({'error': 'Playlist not found'}), 404
-        # Return only tracks that exist
-        tracks_data = [pt.track.to_dict() for pt in playlist.tracks if pt.track]
+        # Return only tracks with added date
+        tracks_data = [
+            {**pt.track.to_dict(), "added_on": pt.added_on.isoformat() if pt.added_on else None}
+            for pt in playlist.tracks if pt.track
+        ]
         return jsonify(tracks_data), 200
     except Exception as e:
         logger.error("Error fetching tracks for playlist %s: %s", playlist_id, e)
@@ -154,15 +157,15 @@ def update_playlist(playlist_id):
             playlist.date_limit = datetime.strptime(data['date_limit'], '%Y-%m-%d').date()
         except ValueError:
             return jsonify({'error': 'Invalid date format. Use YYYY-MM-DD.'}), 400
+        TrackRepository.remove_tracks_before_date(playlist, playlist.date_limit)
         # todo: Remove tracks that are older than the new date_limit, needs playlist track added data metadata
     else:
         playlist.date_limit = None
 
     # Update track_limit if provided
     if 'track_limit' in data and data['track_limit']:
-        new_track_limit = int(data['track_limit'])
-        TrackRepository.remove_excess_tracks(playlist, new_track_limit)
-        playlist.track_limit = new_track_limit
+        playlist.track_limit = int(data['track_limit'])
+        TrackRepository.remove_excess_tracks(playlist, playlist.track_limit)
     else:
         playlist.track_limit = None
 

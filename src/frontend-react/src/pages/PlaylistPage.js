@@ -202,19 +202,23 @@ function PlaylistPage({ playlists }) {
                                 className="mt-1 p-2 border rounded w-24 h-8"
                             />
                             {/* Date Limit Input */}
-                            <label htmlFor="dateLimit" className="text-sm text-gray-700">Date Limit</label>
-                            <input
-                                type="date"
-                                id="dateLimit"
-                                value={dateLimit}
-                                onChange={(e) => setDateLimit(e.target.value)}
-                                onKeyDown={(e) => {
-                                    if (e.key === 'Escape') {
-                                        setDateLimit(savedDateLimit);
-                                    }
-                                }}
-                                className="mt-1 p-2 border rounded w-40 h-8"
-                            />
+                            {playlistInfo.platform === "spotify" && (
+                                <div>
+                                    <label htmlFor="dateLimit" className="text-sm text-gray-700">Date Limit ({dateLimit}))</label>
+                                    <input
+                                        type="date"
+                                        id="dateLimit"
+                                        value={dateLimit}
+                                        onChange={(e) => setDateLimit(e.target.value)}
+                                        onKeyDown={(e) => {
+                                            if (e.key === 'Escape') {
+                                                setDateLimit(savedDateLimit);
+                                            }
+                                        }}
+                                        className="mt-1 p-2 border rounded w-40 h-8"
+                                    />
+                                </div>
+                            )}
                             {/* Save Button */}
                             <button
                                 onClick={handleSaveSettings}
@@ -243,9 +247,10 @@ function PlaylistPage({ playlists }) {
                                     // Grey out tracks that would be removed:
                                     // - If track limit is set, tracks with an index >= limit are greyed out.
                                     // - If date limit is set and track.date_added exists, tracks with a date before the limit are greyed.
+
                                     const isGreyedOut =
                                         (trackLimit && index >= Number(trackLimit)) ||
-                                        (dateLimit && track.date_added && new Date(track.date_added) < new Date(dateLimit));
+                                        (dateLimit && track.added_on && new Date(track.added_on) < new Date(dateLimit));
 
                                     return (
                                         <li

@@ -98,16 +98,20 @@ function AddPlaylistForm({ onPlaylistAdded, setError }) {
                   className="mt-1 p-2 border rounded focus:outline-none focus:ring focus:border-blue-300 transition-colors w-24 h-8"
                 />
               </div>
-              <div className="flex flex-col">
-                <label htmlFor="dateLimit" className="text-sm">Date Limit</label>
-                <input
-                  type="date"
-                  id="dateLimit"
-                  value={dateLimit}
-                  onChange={(e) => setDateLimit(e.target.value)}
-                  className="mt-1 p-2 border rounded focus:outline-none focus:ring focus:border-blue-300 transition-colors w-40 h-8"
-                />
-              </div>
+              {playlistUrl.includes("spotify") && (
+                <div>
+                  <div className="flex flex-col">
+                    <label htmlFor="dateLimit" className="text-sm">Date Limit</label>
+                    <input
+                      type="date"
+                      id="dateLimit"
+                      value={dateLimit}
+                      onChange={(e) => setDateLimit(e.target.value)}
+                      className="mt-1 p-2 border rounded focus:outline-none focus:ring focus:border-blue-300 transition-colors w-40 h-8"
+                    />
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         )}

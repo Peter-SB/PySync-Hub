@@ -13,6 +13,7 @@ logger = logging.getLogger(__name__)
 
 SPOTIPY_CALLBACK_URL = f'http://localhost:{Config.SPOTIFY_PORT_NUMBER}/callback'
 
+
 class SpotifyService:
     @staticmethod
     def get_client():
@@ -35,6 +36,20 @@ class SpotifyService:
         if not token_info or auth_manager.is_token_expired(token_info):
             logger.warning("Authentication Error: Please login to Spotify (In Settings).")
         return Spotify(auth_manager=auth_manager)
+
+    @classmethod
+    def _format_track_data(cls, track, track_added_on=None):
+        return {
+            'platform_id': track['id'],
+            'platform': 'spotify',
+            'name': track['name'],
+            'artist': ", ".join([artist['name'] for artist in track['artists']]),
+            'album': track['album']['name'] if track.get('album') else None,
+            'album_art_url': track['album']['images'][0]['url']
+                if track.get('album') and track['album'].get('images') else None,
+            'download_url': None,  # Can be populated later
+            'added_on': track_added_on,  # When the track was added to the playlist
+        }
 
     @staticmethod
     def get_playlist_data(url: str):
@@ -80,7 +95,6 @@ class SpotifyService:
 
         return data
 
-
     @staticmethod
     def get_playlist_tracks(url):
         """
@@ -95,6 +109,10 @@ class SpotifyService:
             playlist_id = SpotifyService._extract_playlist_id(url)
             client = SpotifyService.get_client()
 
+            playlist = PlaylistRepository.get_playlist_by_url(url)
+            track_limit = playlist.to_dict().get('track_limit', None)
+            date_limit = playlist.to_dict().get('date_limit', None)
+
             tracks_data = []
             limit = 25
             offset = 0
@@ -104,11 +122,15 @@ class SpotifyService:
                 results = client.playlist_items(playlist_id, limit=limit, offset=offset)
 
                 for item in results.get('items', []):
+                    if not SpotifyService._is_track_within_date_and_track_limit(playlist, item, track_limit,
+                                                                                date_limit):
+                        return tracks_data[:track_limit]
+                    track_added_on = item.get('added_at', None)
                     track = item.get('track')
                     if not track or track.get('id') is None:
                         continue  # Skip items that aren't valid tracks (e.g. episodes, missing tracks)
 
-                    track_data = SpotifyService._format_track_data(track)
+                    track_data = SpotifyService._format_track_data(track, track_added_on)
                     tracks_data.append(track_data)
 
                 # Check if there are more pages to fetch. "URL to the next page of items. (null if none)"
@@ -144,7 +166,8 @@ class SpotifyService:
 
             while results:
                 for item in results["items"]:
-                    if not SpotifyService._is_track_within_date_and_track_limit(liked_songs, item, track_limit, date_limit):
+                    if not SpotifyService._is_track_within_date_and_track_limit(liked_songs, item, track_limit,
+                                                                                date_limit):
                         return liked_songs[:track_limit]
 
                     track = item.get('track')
@@ -190,17 +213,3 @@ class SpotifyService:
         else:
             playlist_id = url
         return playlist_id
-
-    @classmethod
-    def _format_track_data(cls, track, added_at=None):
-        return {
-            'platform_id': track['id'],
-            'platform': 'spotify',
-            'name': track['name'],
-            'artist': ", ".join([artist['name'] for artist in track['artists']]),
-            'album': track['album']['name'] if track.get('album') else None,
-            'album_art_url': track['album']['images'][0]['url']
-            if track.get('album') and track['album'].get('images') else None,
-            'download_url': None,  # Can be populated later
-            'added_at': track.get("added_at", "2000-00-0T00:00:00Z"),  # When the track was added to the playlist
-        }
