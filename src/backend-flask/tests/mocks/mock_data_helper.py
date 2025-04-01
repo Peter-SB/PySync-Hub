@@ -88,8 +88,7 @@ class MockPlaylistDataHelper:
             # Remove id from kwargs and set it manually.
             saved_track_id = track_data.pop("id", None)
             track = Track(**track_data)
-            if saved_track_id is not None:
-                track.id = saved_track_id
+
             db.session.add(track)
             # Build a mapping from saved id to the newly created track
             tracks_map[saved_track_id] = track

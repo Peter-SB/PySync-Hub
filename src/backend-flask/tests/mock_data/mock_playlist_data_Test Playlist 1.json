@@ -43,11 +43,13 @@
     "playlist_tracks": [
         {
             "track_id": 1,
-            "track_order": 0
+            "track_order": 0,
+            "added_on": "2025-03-29T13:40:27.024008"
         },
         {
             "track_id": 2,
-            "track_order": 1
+            "track_order": 1,
+            "added_on": "2025-03-27T13:40:27.024008"
         }
     ]
 }

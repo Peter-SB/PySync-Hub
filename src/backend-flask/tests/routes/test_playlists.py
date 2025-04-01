@@ -182,3 +182,121 @@ class TestAddPlaylist:
         assert response.status_code == 400
         error_message = response.get_json().get("error")
         assert error_message == "Error Adding Playlist: URL Doesnt Look Right. Please try again with a valid URL."
+
+@pytest.mark.usefixtures("client", "init_database")
+class TestUpdatePlaylist:
+    """
+    Tests for the PATCH /api/playlists/<playlist_id> endpoint.
+    
+    Tests Include:
+    - Updating a playlist's date limit
+    - Updating a playlist's track limit
+    - Updating both date and track limits
+    - Handling invalid date format
+    - Handling non-existent playlist
+    - Handling invalid track limit type
+    """
+
+    def test_update_playlist_date_limit(self, client, init_database):
+        # Load test playlist data
+        MockPlaylistDataHelper.load_data("Test Playlist 1")
+        
+        # Update playlist with date limit
+        response = client.patch('/api/playlists/1', 
+                              json={"date_limit": "2024-01-01"})
+        
+        assert response.status_code == 200
+        data = response.get_json()
+        assert data["date_limit"] == "2024-01-01T00:00:00"
+        
+        # Verify database update
+        playlist = Playlist.query.get(1)
+        assert playlist.date_limit.strftime("%Y-%m-%d") == "2024-01-01"
+
+    def test_update_playlist_track_limit_spotify(self, client, init_database):
+        # Load test playlist data
+        MockPlaylistDataHelper.load_data("Test Playlist 1")
+        
+        # Update playlist with track limit
+        response = client.patch('/api/playlists/1', 
+                              json={"track_limit": 1})
+        
+        assert response.status_code == 200
+        data = response.get_json()
+        assert data["track_limit"] == 1
+        
+        # Verify database update
+        playlist = Playlist.query.get(1)
+        assert playlist.track_limit == 1
+        assert len(playlist.tracks) == 1
+
+    def test_update_playlist_track_limit_soundcloud(self, client, init_database):
+        # Load test playlist data
+        MockPlaylistDataHelper.load_data("OMWHP")
+
+        # Update playlist with track limit
+        response = client.patch('/api/playlists/1',
+                                json={"track_limit": 10})
+
+        assert response.status_code == 200
+        data = response.get_json()
+        assert data["track_limit"] == 10
+
+        # Verify database update
+        playlist = Playlist.query.get(1)
+        assert playlist.track_limit == 10
+        assert len(playlist.tracks) == 10
+
+    def test_update_playlist_both_limits(self, client, init_database):
+        # Load test playlist data
+        MockPlaylistDataHelper.load_data("Test Playlist 1")
+        
+        # Update playlist with both limits
+        response = client.patch('/api/playlists/1', 
+                              json={
+                                  "date_limit": "2024-01-01",
+                                  "track_limit": 10
+                              })
+        
+        assert response.status_code == 200
+        data = response.get_json()
+        assert data["date_limit"] == "2024-01-01T00:00:00"
+        assert data["track_limit"] == 10
+        
+        # Verify database update
+        playlist = Playlist.query.get(1)
+        assert playlist.date_limit.strftime("%Y-%m-%d") == "2024-01-01"
+        assert playlist.track_limit == 10
+
+    def test_update_playlist_invalid_date(self, client, init_database):
+        # Load test playlist data
+        MockPlaylistDataHelper.load_data("Test Playlist 1")
+        
+        # Try to update with invalid date format
+        response = client.patch('/api/playlists/1', 
+                              json={"date_limit": "invalid-date"})
+        
+        assert response.status_code == 400
+        data = response.get_json()
+        assert "Invalid date format" in data["error"]
+
+    def test_update_playlist_nonexistent(self, client, init_database):
+        # Try to update non-existent playlist
+        response = client.patch('/api/playlists/999', 
+                              json={"track_limit": 10})
+        
+        assert response.status_code == 404
+        data = response.get_json()
+        assert "Playlist not found" in data["error"]
+
+    def test_update_playlist_invalid_track_limit(self, client, init_database):
+        # Load test playlist data
+        MockPlaylistDataHelper.load_data("Test Playlist 1")
+
+        # Try to update with invalid track limit type
+        response = client.patch('/api/playlists/1',
+                              json={"track_limit": "not-a-number"})
+
+        assert response.status_code == 400
+        data = response.get_json()
+        assert "error" in data

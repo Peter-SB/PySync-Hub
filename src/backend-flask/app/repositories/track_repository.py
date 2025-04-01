@@ -12,7 +12,7 @@ class TrackRepository:
     @staticmethod
     def remove_tracks_before_date(playlist, date_limit) -> List[Track]:
         if date_limit:
-            tracks_to_remove = [pt for pt in playlist.tracks if pt.track and pt.track.created_at < date_limit]
+            tracks_to_remove = [pt for pt in playlist.tracks if pt.track and pt.added_on and pt.added_on < date_limit]
             for pt in tracks_to_remove:
                 db.session.delete(pt)
             db.session.commit()
@@ -27,3 +27,10 @@ class TrackRepository:
                 db.session.delete(pt)
             db.session.commit()
         return [pt.track for pt in playlist.tracks]
+
+    @staticmethod
+    def get_track_added_on(playlist, track) -> datetime:
+        for pt in playlist.tracks:
+            if pt.track == track:
+                return pt.added_on
+        return None

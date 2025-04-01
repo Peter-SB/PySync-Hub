@@ -164,6 +164,8 @@ def update_playlist(playlist_id):
 
     # Update track_limit if provided
     if 'track_limit' in data and data['track_limit']:
+        if type(data['track_limit']) is not int:
+            return jsonify({'error': 'track_limit must be an integer'}), 400
         playlist.track_limit = int(data['track_limit'])
         TrackRepository.remove_excess_tracks(playlist, playlist.track_limit)
     else:

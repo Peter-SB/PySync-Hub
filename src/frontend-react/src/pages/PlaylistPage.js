@@ -174,8 +174,8 @@ function PlaylistPage({ playlists }) {
                                     </div>
                                 </div>
                             </div>
-                            <div className="flex flex-col justify-between h-full">
-                                <div className="flex-1 flex items-center justify-center space-x-4 mt-4 sm:mt-0">
+                            <div className="flex flex-col justify-between h-full justify-end">
+                                <div className="flex-1 flex items-center justify-end space-x-4 mt-4 sm:mt-0">
                                     <button
                                         onClick={handleDeleteClick}
                                         className="p-2 rounded bg-red-500 hover:bg-red-600 text-white"
@@ -198,7 +198,7 @@ function PlaylistPage({ playlists }) {
                                 </div>
                                 <div >
                                     <button
-                                        className="flex items-center space-x-1"
+                                        className="flex items-center space-x-1 opacity-50"
                                         onClick={() => setIsLimitsOpen(!isLimitsOpen)}
                                     >
                                         <span className="text-xs">Options</span>
