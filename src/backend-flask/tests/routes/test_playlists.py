@@ -113,8 +113,6 @@ class TestAddPlaylist:
         assert added_playlist.track_count == 2
         assert added_playlist.platform == "spotify"
 
-        MockPlaylistDataHelper.save_data(added_playlist)
-
     def test_add_playlist_valid_soundcloud(self, client, monkeypatch):
         response = client.post('/api/playlists', json={"url_or_id": "https://soundcloud.com/schmoot-point/sets/omwhp"})
 

@@ -74,6 +74,7 @@ class MockPlaylistDataHelper:
             playlist_data["created_at"] = datetime.fromisoformat(playlist_data["created_at"])
         # Extract and remove the id from the dict to set it manually.
         playlist_id = playlist_data.pop("id", None)
+        playlist_data.pop("tracks", None)  # remove tracks from the playlist data
         playlist = Playlist(**playlist_data)
         if playlist_id is not None:
             playlist.id = playlist_id
