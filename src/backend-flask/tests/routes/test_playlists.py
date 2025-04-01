@@ -188,7 +188,8 @@ class TestUpdatePlaylist:
     
     Tests Include:
     - Updating a playlist's date limit
-    - Updating a playlist's track limit
+    - Updating a playlist's track limit - Spotify
+    - Updating a playlist's track limit - SoundCloud
     - Updating both date and track limits
     - Handling invalid date format
     - Handling non-existent playlist
@@ -210,6 +211,7 @@ class TestUpdatePlaylist:
         # Verify database update
         playlist = Playlist.query.get(1)
         assert playlist.date_limit.strftime("%Y-%m-%d") == "2024-01-01"
+        assert len(playlist.tracks) == 1
 
     def test_update_playlist_track_limit_spotify(self, client, init_database):
         # Load test playlist data

@@ -43,6 +43,8 @@
 - Publish to Releases
 - enable warnings as errors
 - Version Number with Git link 
+- Fix Mac Build
+- Fix action triggers (specifically build)
 
 ## Unit Tests
 - TrackManager
