@@ -16,6 +16,7 @@ from app.routes import api
 
 logger = logging.getLogger(__name__)
 
+
 @api.route('/api/playlists', methods=['GET'])
 def get_playlists():
     try:
@@ -158,26 +159,36 @@ def update_playlist(playlist_id):
         except ValueError:
             return jsonify({'error': 'Invalid date format. Use YYYY-MM-DD.'}), 400
         TrackRepository.remove_tracks_before_date(playlist, playlist.date_limit)
-        # todo: Remove tracks that are older than the new date_limit, needs playlist track added data metadata
     else:
         playlist.date_limit = None
 
     # Update track_limit if provided
     if 'track_limit' in data and data['track_limit']:
-        if type(data['track_limit']) is not int:
-            return jsonify({'error': 'track_limit must be an integer'}), 400
-        playlist.track_limit = int(data['track_limit'])
+        try:
+            playlist.track_limit = int(data['track_limit'])
+        except ValueError:
+            return jsonify({'error': 'Invalid track. Must be an integer.'}), 400
         TrackRepository.remove_excess_tracks(playlist, playlist.track_limit)
     else:
         playlist.track_limit = None
 
+    return jsonify(playlist.to_dict()), 200
 
+@api.route('/api/playlists/<int:playlist_id>/refresh', methods=['POST'])
+def refresh_playlist(playlist_id):
     try:
-        db.session.commit()
+        playlist = PlaylistRepository.get_playlist(playlist_id)
+        if not playlist:
+            return jsonify({'error': 'Playlist not found'}), 404
+
+        # Sync playlist info and tracks without downloading
+        PlaylistManagerService.sync_playlists([playlist])
+        
         return jsonify(playlist.to_dict()), 200
     except Exception as e:
-        db.session.rollback()
-        logger.error("Error updating playlist %s: %s", playlist_id, e)
+        logger.error("Error refreshing playlist %s: %s", playlist_id, e)
         return jsonify({'error': str(e)}), 500
+
+
 
 

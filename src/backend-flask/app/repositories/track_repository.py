@@ -12,32 +12,29 @@ class TrackRepository:
     @staticmethod
     def remove_tracks_before_date(playlist, date_limit) -> List[Track]:
         if date_limit:
-            tracks_to_remove = []
-            for track in playlist.tracks:
-                if TrackRepository.get_track_added_on(playlist, track) < date_limit:
-                    tracks_to_remove.append(track)
-            for track in tracks_to_remove:
-                db.session.delete(track)
+            pts_to_remove = [
+                pt for pt in playlist.tracks
+                if pt.added_on and pt.added_on.date() < date_limit
+            ]
+            for pt in pts_to_remove:
+                playlist.tracks.remove(pt)
             db.session.commit()
         return [pt.track for pt in playlist.tracks]
 
     @staticmethod
     def remove_excess_tracks(playlist, new_track_limit) -> List[Track]:
         if new_track_limit < len(playlist.tracks):
-            # Remove excess tracks
-            excess_tracks = playlist.tracks[new_track_limit:]
-            for pt in excess_tracks:
-                db.session.delete(pt)
-            db.session.commit()
+            excess_pts = playlist.tracks[new_track_limit:]
+            for pt in excess_pts:
+                playlist.tracks.remove(pt)
         return [pt.track for pt in playlist.tracks]
 
     @staticmethod
-    def get_track_added_on(playlist: Playlist, track: Track) -> datetime:
-        playlist_track = PlaylistTrack.query.filter_by(playlist_id=playlist.id, track_id=track.id).first()
-        return playlist_track.added_on.date() if playlist_track else None
+    def get_track_added_on(playlist: 'Playlist', playlist_track: 'PlaylistTrack') -> Optional[datetime]:
+        return playlist_track.added_on.date() if playlist_track and playlist_track.added_on else None
 
     @staticmethod
-    def get_track_index(playlist: Playlist, track: Track) -> Optional[int]:
+    def get_track_index(playlist: 'Playlist', track: 'Track') -> Optional[int]:
         for index, playlist_track in enumerate(playlist.tracks):
             if playlist_track.track_id == track.id:
                 return index

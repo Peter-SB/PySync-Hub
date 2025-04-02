@@ -105,7 +105,7 @@ class MockPlaylistDataHelper:
                 playlist_id=playlist.id,
                 track_id=tracks_map[saved_track_id].id,
                 track_order=pt_data["track_order"],
-                added_on=datetime.fromisoformat(pt_data["added_on"])
+                added_on=datetime.fromisoformat(pt_data["added_on"]) if pt_data.get("added_on") else None
             )
             db.session.add(playlist_track)
         db.session.commit()

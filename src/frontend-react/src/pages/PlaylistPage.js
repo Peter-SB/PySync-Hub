@@ -40,6 +40,21 @@ function PlaylistPage({ playlists }) {
         }
     }, [playlistInfo]);
 
+    // Refresh playlist info and tracks without downloading
+    const handleRefreshClick = async () => {
+        try {
+            const response = await fetch(`${backendUrl}/api/playlists/${playlistId}/refresh`, {
+                method: 'POST',
+            });
+            if (!response.ok) {
+                console.error('Failed to refresh playlist');
+            }
+            fetchPlaylistTracks()
+        } catch (error) {
+            console.error('Error refreshing playlist', error);
+        }
+    };
+
     const fetchPlaylistTracks = async () => {
         try {
             const response = await fetch(`${backendUrl}/api/playlist/${playlistId}/tracks`);
@@ -88,14 +103,14 @@ function PlaylistPage({ playlists }) {
                     setDateLimit('');
                     setSavedDateLimit('');
                 }
-                await fetchPlaylistTracks();
             } else {
                 const errorData = await response.json();
                 setError(errorData.error || 'Failed to update settings');
             }
+            handleRefreshClick();
         } catch (err) {
             console.error(err);
-            setError('Error updating settings');
+            setError('Error updating settings and refreshing playlist');
         }
     };
 
@@ -175,10 +190,37 @@ function PlaylistPage({ playlists }) {
                                 </div>
                             </div>
                             <div className="flex flex-col justify-between h-full justify-end">
-                                <div className="flex-1 flex items-center justify-end space-x-4 mt-4 sm:mt-0">
+                                <div className="flex-1 flex items-center justify-end space-x-1 mt-0">
+                                    <button
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            handleRefreshClick();
+                                        }}
+                                        className="mr-1 p-2 rounded bg-gray-400 hover:bg-gray-500 text-white disabled:opacity-50 disabled:cursor-not-allowed"
+                                        title="Refresh playlist and tracks without downloading"
+                                    >
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            className="w-6 h-6"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                            stroke="currentColor"
+                                        >
+                                            <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                fill='white'
+                                                strokeWidth="0"
+                                                width="24"
+                                                height="24"
+                                                viewBox="0 0 24 24">
+                                                <path d="M9 12l-4.463 4.969-4.537-4.969h3c0-4.97 4.03-9 9-9 2.395 0 4.565.942 6.179 2.468l-2.004 2.231c-1.081-1.05-2.553-1.699-4.175-1.699-3.309 0-6 2.691-6 6h3zm10.463-4.969l-4.463 4.969h3c0 3.309-2.691 6-6 6-1.623 0-3.094-.65-4.175-1.699l-2.004 2.231c1.613 1.526 3.784 2.468 6.179 2.468 4.97 0 9-4.03 9-9h3l-4.537-4.969z" />
+                                            </svg>
+                                        </svg>
+                                    </button>
                                     <button
                                         onClick={handleDeleteClick}
                                         className="p-2 rounded bg-red-500 hover:bg-red-600 text-white"
+                                        title="Delete"
                                     >
                                         <svg
                                             xmlns="http://www.w3.org/2000/svg"
@@ -196,7 +238,7 @@ function PlaylistPage({ playlists }) {
                                         </svg>
                                     </button>
                                 </div>
-                                <div >
+                                <div className='flex justify-end'>
                                     <button
                                         className="flex items-center space-x-1 opacity-50"
                                         onClick={() => setIsLimitsOpen(!isLimitsOpen)}

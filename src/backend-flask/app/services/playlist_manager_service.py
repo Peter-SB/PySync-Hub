@@ -22,7 +22,7 @@ class PlaylistManagerService:
     @staticmethod
     def sync_playlists(playlists: list[Playlist]) -> List[Playlist]:
         """
-        Sync playlists from external platform (e.g. Spotify, Souncloud).
+        Sync (but not downloads) playlists from external platform (e.g. Spotify, Souncloud).
 
         If selected_ids is provided, only those playlists are synced.
         Otherwise, all playlists are synced.

@@ -3,6 +3,7 @@ from spotipy import SpotifyException
 
 from app.models import Playlist
 from app.repositories.playlist_repository import PlaylistRepository
+from app.services.playlist_manager_service import PlaylistManagerService
 from tests.mocks.mock_data_helper import MockPlaylistDataHelper
 
 
@@ -300,3 +301,75 @@ class TestUpdatePlaylist:
         assert response.status_code == 400
         data = response.get_json()
         assert "error" in data
+
+@pytest.mark.usefixtures("client", "init_database")
+class TestRefreshPlaylist:
+    """
+    Tests for the POST /api/playlists/<playlist_id>/refresh endpoint.
+    
+    Tests Include:
+    - Refreshing a playlist successfully
+    - Refreshing a non-existent playlist
+    - Refreshing a disabled playlist
+    - Handling errors during refresh
+    """
+
+    def test_refresh_playlist_success(self, client, init_database):
+        MockPlaylistDataHelper.load_data("Test Playlist 1")
+        
+        initial_response = client.get('/api/playlists')
+        initial_data = initial_response.get_json()
+        initial_playlist = initial_data[0]
+        
+        response = client.post(f'/api/playlists/{initial_playlist["id"]}/refresh')
+        assert response.status_code == 200
+        
+        updated_response = client.get('/api/playlists')
+        updated_data = updated_response.get_json()
+        updated_playlist = updated_data[0]
+        
+        assert updated_playlist["last_synced"] is not None
+        assert updated_playlist["name"] == "Test Playlist 1"
+        assert updated_playlist["platform"] == "spotify"
+        assert len(updated_playlist["tracks"]) > 0
+
+    def test_refresh_playlist_nonexistent(self, client, init_database):
+        response = client.post('/api/playlists/999/refresh')
+        assert response.status_code == 404
+        data = response.get_json()
+        assert "Playlist not found" in data["error"]
+
+    def test_refresh_playlist_disabled(self, client, init_database):
+        MockPlaylistDataHelper.load_data("Test Playlist 1")
+        
+        initial_response = client.get('/api/playlists')
+        initial_data = initial_response.get_json()
+        initial_playlist = initial_data[0]
+        
+        client.post('/api/playlists/toggle',
+                   json={"playlist_id": initial_playlist["id"], "disabled": True})
+        
+        response = client.post(f'/api/playlists/{initial_playlist["id"]}/refresh')
+        assert response.status_code == 200  # Should still work even if disabled
+        
+        updated_response = client.get('/api/playlists')
+        updated_data = updated_response.get_json()
+        updated_playlist = updated_data[0]
+        assert updated_playlist["last_synced"] is not None
+
+    def test_refresh_playlist_error(self, client, monkeypatch):
+        MockPlaylistDataHelper.load_data("Test Playlist 1")
+        
+        initial_response = client.get('/api/playlists')
+        initial_data = initial_response.get_json()
+        playlist_id = initial_data[0]["id"]
+        
+        def mock_sync_playlists(*args, **kwargs):
+            raise Exception("Simulated sync error")
+        
+        monkeypatch.setattr(PlaylistManagerService, "sync_playlists", mock_sync_playlists)
+        
+        response = client.post(f'/api/playlists/{playlist_id}/refresh')
+        assert response.status_code == 500
+        data = response.get_json()
+        assert "Simulated sync error" in data["error"]
