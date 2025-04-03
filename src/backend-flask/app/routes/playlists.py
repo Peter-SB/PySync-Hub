@@ -165,12 +165,16 @@ def update_playlist(playlist_id):
     # Update track_limit if provided
     if 'track_limit' in data and data['track_limit']:
         try:
+            logger.info("Updating track limit to %s", int(data['track_limit']))
             playlist.track_limit = int(data['track_limit'])
         except ValueError:
+            logger.error("Invalid track limit: %s", data['track_limit'])
             return jsonify({'error': 'Invalid track. Must be an integer.'}), 400
         TrackRepository.remove_excess_tracks(playlist, playlist.track_limit)
     else:
         playlist.track_limit = None
+
+    db.session.commit()
 
     return jsonify(playlist.to_dict()), 200
 

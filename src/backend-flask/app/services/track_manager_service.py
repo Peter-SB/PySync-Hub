@@ -68,7 +68,6 @@ class TrackManagerService:
                     track_id=track.id
                 ).first()
 
-                logger.info("track added %s", track_data.get('added_on'))
                 if not existing_entry:
                     playlist_track = PlaylistTrack(
                         playlist_id=playlist.id,

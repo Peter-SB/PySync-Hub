@@ -76,8 +76,8 @@ function PlaylistPage({ playlists }) {
 
     const handleSaveSettings = async () => {
         const payload = {
-            track_limit: trackLimit,
-            date_limit: dateLimit,
+            track_limit: trackLimit ? parseInt(trackLimit, 10) : null,
+            date_limit: dateLimit || null,
         };
 
         try {

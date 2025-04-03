@@ -2,6 +2,7 @@ import logging
 from datetime import datetime
 from urllib import request
 
+from dateutil.parser import isoparse, parse
 from flask import session, redirect, url_for
 from spotipy import Spotify
 from spotipy.oauth2 import SpotifyClientCredentials, SpotifyOAuth
@@ -166,15 +167,17 @@ class SpotifyService:
 
             while results:
                 for item in results["items"]:
+
                     if not SpotifyService._is_track_within_date_and_track_limit(liked_songs, item, track_limit,
                                                                                 date_limit):
                         return liked_songs[:track_limit]
 
                     track = item.get('track')
+                    track_added_on = item.get('added_at', None)
                     if not track or track.get('id') is None:
                         return  # Skip items that aren't valid tracks (e.g., episodes, missing tracks)
 
-                    track_data = SpotifyService._format_track_data(track)
+                    track_data = SpotifyService._format_track_data(track, track_added_on)
                     liked_songs.append(track_data)
 
                 results = client.next(results) if results.get('next') else None
@@ -194,8 +197,8 @@ class SpotifyService:
         # If a date limit is specified, compare the track's added_at date.
         if date_limit is not None:
             try:
-                liked_songs_date_limit = datetime.strptime(date_limit, '%Y-%m-%d').date()
-                track_added_date = datetime.fromisoformat(track["added_at"].replace('Z', '+00:00')).date()
+                liked_songs_date_limit = parse(date_limit).date()
+                track_added_date = isoparse(track["added_at"]).date()
                 if track_added_date < liked_songs_date_limit:
                     return False
             except Exception as e:

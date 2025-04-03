@@ -84,12 +84,12 @@ function AddPlaylistForm({ onPlaylistAdded, setError }) {
               {isSubmitting ? 'Adding...' : 'Add Playlist'}
             </button>
             <button
+              type="button"
               className=" bg-blue-600 text-white rounded-r hover:bg-blue-700 transition-colors w-9 items-center flex justify-center"
               onClick={() => setShowOptions((prev) => !prev)}
             >
               <svg
-                className={`w-5 h-5 transform transition-transform ${!showOptions ? 'rotate-180' : 'rotate-0'
-                  }`}
+                className={`w-5 h-5 transform transition-transform ${!showOptions ? 'rotate-180' : 'rotate-0'}`}
                 fill="none"
                 stroke="currentColor"
                 strokeWidth="2"
