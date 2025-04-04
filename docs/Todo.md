@@ -10,6 +10,7 @@
  - Improve ui updates
  - Repository Patter Use
  - Disable individual tracks
+ - Downloaded count (home screen) is not displaying correctly when 
 
 
 ## Downloading
