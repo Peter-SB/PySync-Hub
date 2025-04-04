@@ -115,12 +115,10 @@ class SoundcloudService:
         Resolves a SoundCloud playlist URL using the SoundCloud API.
         Playlist data is stored in a script tag in the HTML of the playlist page.
         """
-        response = requests.get(playlist_url, headers=headers)
-        if response.status_code != 200:
-            raise Exception("Failed to retrieve page")
+        response_html = SoundcloudService._make_html_get_request(playlist_url, headers)
 
         # Extract script containing window.__sc_hydration
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = BeautifulSoup(response_html, "html.parser")
         script_tags = soup.find_all("script")
 
         hydration_data = None
@@ -151,12 +149,10 @@ class SoundcloudService:
         Then get the tracks from api-v2.soundcloud.com/users/{user_id}/likes?client_id={}&limit=25&offset=0
         (if there is a "next_href" key in the response, continue loading are more tracks)
         """
-        response = requests.get(playlist_url, headers=headers)
-        if response.status_code != 200:
-            raise Exception(f"Failed to retrieve user page. Status code: {response.status_code}")
+        response_html = SoundcloudService._make_html_get_request(playlist_url, headers)
 
         # Extract script containing window.__sc_hydration
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = BeautifulSoup(response_html, "html.parser")
         script_tags = soup.find_all("script")
 
         hydration_data = None

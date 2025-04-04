@@ -15,12 +15,12 @@ class MockSoundcloudService(SoundcloudService):
     response objects for seamless unit testing. """
 
     @staticmethod
-    def return_data_from_mock_file(filename: str) -> dict:
+    def return_data_from_mock_file(filename: str):
         file_path = os.path.join(current_dir, "../mock_data", filename)
         if os.path.exists(file_path):
             print(f"Soundcloud Playlist Response Mock Data Found: {filename}")
             with open(file_path, 'r', encoding='utf-8') as file:
-                return json.load(file)
+                return str(file.read())
 
         raise Exception(f"Mock data file not found : {filename}")
 
@@ -41,17 +41,17 @@ class MockSoundcloudService(SoundcloudService):
         if "tracks?ids=" in url:
             url_hash = hashlib.md5(url.encode("utf-8")).hexdigest()  # Has the url for a short unique filename
             file_path = os.path.join(current_dir, "../mock_data", f"soundcloud_request_{url_hash}.json")
-            return MockSoundcloudService.return_data_from_mock_file(file_path)
+            return json.loads(MockSoundcloudService.return_data_from_mock_file(file_path))
 
         if "likes" in url:
             user_id = url.rstrip("/").split("/")[-2]
             file_path = os.path.join(current_dir, "../mock_data", f"soundcloud_likes_{user_id}.json")
-            return MockSoundcloudService.return_data_from_mock_file(file_path)
+            return json.loads(MockSoundcloudService.return_data_from_mock_file(file_path))
 
         raise Exception(f"Mock data not found for request: {url}")
 
     @staticmethod
-    def _make_html_get_request(url: str, headers: dict, query_params=None) -> dict:
+    def _make_html_get_request(url: str, headers: dict, query_params=None) -> str:
         """
         Dummy Soundcloud _resolve_playlist method
         If playlist_id is "error" raise PlaylistNotFoundException
@@ -63,12 +63,12 @@ class MockSoundcloudService(SoundcloudService):
             raise PlaylistNotFoundException("Playlist not found. Could it be private or deleted?", 404)
 
         if "sets" in url:
-            user_name = url.rstrip("/").split("/")[-2]
-            file_path = os.path.join(current_dir, "../mock_data", f"soundcloud_user_{user_name}.txt")
+            playlist_name = url.rstrip("/").split("/")[-1]
+            file_path = os.path.join(current_dir, "../mock_data", f"soundcloud_playlist_{playlist_name}.txt")
             return MockSoundcloudService.return_data_from_mock_file(file_path)
 
         # User profile
-        user_name = url.rstrip("/").split("/")[-1]
+        user_name = url.rstrip("/").split("/")[-2]
         file_path = os.path.join(current_dir, "../mock_data", f"soundcloud_user_{user_name}.txt")
         return MockSoundcloudService.return_data_from_mock_file(file_path)
 
