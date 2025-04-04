@@ -24,16 +24,16 @@ function App() {
       setPlaylists(prevPlaylists =>
         prevPlaylists.map(playlist =>
           playlist.id === data.id
-            ? { 
-                ...playlist, 
-                download_status: data.status, 
-                download_progress: data.progress !== undefined ? data.progress : playlist.download_progress,
-                downloaded_track_count: data.progress !== undefined ? Math.round((data.progress / 100) * playlist.track_count) : playlist.downloaded_track_count
-              }
+            ? {
+              ...playlist,
+              download_status: data.status,
+              download_progress: data.progress !== undefined ? data.progress : playlist.download_progress,
+              downloaded_track_count: data.progress !== undefined ? Math.round((data.progress / 100) * playlist.tracks.length) : playlist.downloaded_track_count
+            }
             : playlist
         )
       );
-    }); 
+    });
     return () => socket.disconnect();
   }, []);
 

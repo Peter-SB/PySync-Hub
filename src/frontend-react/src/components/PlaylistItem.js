@@ -60,17 +60,17 @@ function PlaylistItem({ playlist, fetchPlaylists, isSelected, onSelectChange }) 
     }
   };
 
-    // Navigate to the playlist tracks page
-    const handlePlaylistClick = () => {
-      navigate(`/playlist/${playlist.id}`);
-    };
+  // Navigate to the playlist tracks page
+  const handlePlaylistClick = () => {
+    navigate(`/playlist/${playlist.id}`);
+  };
 
   return (
     <div className="flex flex-row items-center pt-1 pb-0">
       <div
         className={`flex items-center p-2 rounded border shadow transition-shadow my-0.5 px-4 flex-1 cursor-pointer ${isDisabled ? 'bg-gray-200 hover:shadow-none' : 'bg-white hover:shadow-md'
           }`}
-          onClick={handlePlaylistClick}
+        onClick={handlePlaylistClick}
       >
         <input
           type="checkbox"
@@ -91,21 +91,21 @@ function PlaylistItem({ playlist, fetchPlaylists, isSelected, onSelectChange }) 
         )}
         <div className="flex-1">
           <h3 className="font-medium text-gray-900 flex items-center">
-            <a 
-              href={playlist.url} 
-              target="_blank" 
-              rel="noreferrer" 
+            <a
+              href={playlist.url}
+              target="_blank"
+              rel="noreferrer"
               className="hover:underline"
               onClick={(e) => e.stopPropagation()}
             >
               {playlist.name}
             </a>
             {playlist.platform === "spotify" && (
-            <img src="./icons/spotify.svg" alt="Spotify" className="w-5 h-5 ml-2" />
-          )}
-          {playlist.platform === "soundcloud" && (
-            <img src="./icons/soundcloud.svg" alt="SoundCloud" className="w-4 h-4 p-0.5 ml-2" />
-          )}
+              <img src="./icons/spotify.svg" alt="Spotify" className="w-5 h-5 ml-2" />
+            )}
+            {playlist.platform === "soundcloud" && (
+              <img src="./icons/soundcloud.svg" alt="SoundCloud" className="w-4 h-4 p-0.5 ml-2" />
+            )}
           </h3>
           <div className="text-sm text-gray-600">
             {playlist.last_synced
@@ -114,16 +114,16 @@ function PlaylistItem({ playlist, fetchPlaylists, isSelected, onSelectChange }) 
           </div>
         </div>
         <div className={`relative ml-auto p-2 text-sm ${playlist.disabled ? 'text-gray-500' : 'text-gray-600'} group`}>
-          {playlist.downloaded_track_count === playlist.track_count ? (
+          {playlist.downloaded_track_count === playlist.tracks.length ? (
             <>
-              <span>{playlist.track_count}</span>
+              <span>{playlist.tracks.length}</span>
               <span className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-1 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition duration-150 pointer-events-none whitespace-nowrap">
                 Downloaded Tracks
               </span>
             </>
           ) : (
             <>
-              <span>{playlist.downloaded_track_count} / {playlist.track_count}</span>
+              <span>{playlist.downloaded_track_count} / {playlist.tracks.length}</span>
               <span className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-1 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition duration-150 pointer-events-none whitespace-nowrap">
                 Downloaded / Total Tracks
               </span>

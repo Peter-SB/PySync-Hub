@@ -58,9 +58,9 @@ const TrackModal = ({ track, onClose, handleUpdateTrack }) => {
             if (!saveResponse.ok) {
                 const saveErrorData = await saveResponse.json();
                 setError(saveErrorData.error || 'Failed to save download URL');
-                return; 
+                return;
             }
-            
+
         } catch (err) {
             console.error(err);
             setError('Error saving download URL');
@@ -98,16 +98,8 @@ const TrackModal = ({ track, onClose, handleUpdateTrack }) => {
                 className="bg-white rounded-lg shadow-lg p-6 w-1/2 relative"
                 onClick={(e) => e.stopPropagation()}
             >
-                {/* <button
-                    onClick={onClose}
-                    className="absolute top-0 right-1 text-gray-600 hover:text-gray-800 text-2xl"
-                >
-                    &times;
-                </button> */}
                 <div className='flex'>
                     <div className="flex-1">
-
-                        {/* <h2 className="text-xl font-semibold mb-4">Edit Track Details</h2> */}
                         <div className="mb-4">
                             <label className="block text-gray-700">Name</label>
                             <p className="text-black tex text-lg font-medium">{track.name}</p>
@@ -120,6 +112,14 @@ const TrackModal = ({ track, onClose, handleUpdateTrack }) => {
                             <div className="mb-4">
                                 <label className="block text-gray-600">Album</label>
                                 <p className="text-gray-900 tex text-lg">{track.album}</p>
+                            </div>
+                        )}
+                        {track.added_on && (
+                            <div className="mb-4">
+                                <label className="block text-gray-600">Added On</label>
+                                <p className="text-gray-900 tex text-lg">
+                                    {new Date(track.added_on).toLocaleDateString()}
+                                </p>
                             </div>
                         )}
                     </div>
@@ -168,10 +168,10 @@ const TrackModal = ({ track, onClose, handleUpdateTrack }) => {
                 </div>
 
                 {track.notes_errors && (
-                        <div className="mb-4">
+                    <div className="mb-4">
                         <p className="text-red-500 tex text-lg">{track.notes_errors}</p>
                     </div>
-                    )}
+                )}
 
                 {error && (
                     <div className="mb-4 text-red-600">

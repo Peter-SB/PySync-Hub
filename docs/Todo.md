@@ -10,10 +10,11 @@
  - Improve ui updates
  - Repository Patter Use
  - Disable individual tracks
+ - Downloaded count (home screen) is not displaying correctly when 
 
 
 ## Downloading
-- Add Quick Sync (That will not check file locations, only download new tracks without a location)
+- Add Quick Sync (That will not check file locations, only download new tracks without a location, maybe also not check playlist if track count hasnt changed. Use a check sum)
 - Save a correct file type
 - Add metadata
 - - correct track artists
@@ -39,6 +40,13 @@
 
 ## CI/CD
 - Remove make dir
-- Unit Tests
+- ✅ Unit Tests
 - Publish to Releases
 - enable warnings as errors
+- Version Number with Git link 
+- Fix Mac Build
+- Fix action triggers (specifically build)
+
+## Unit Tests
+- TrackManager
+  - Test: Test for date limit and track limit for both spotify and soundcloud

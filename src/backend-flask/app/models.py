@@ -20,6 +20,8 @@ class Playlist(db.Model):
     download_status = db.Column(db.String(255))  # "ready", "queued", "downloading"
     disabled = db.Column(db.Boolean, default=False)
     download_progress = db.Column(db.Integer, default=0)
+    date_limit = db.Column(db.DateTime, nullable=True)  # Only sync/download tracks added after this date
+    track_limit = db.Column(db.Integer, nullable=True)  # Maximum number of tracks to sync/download
 
     tracks = db.relationship('PlaylistTrack',
                              back_populates='playlist',
@@ -40,12 +42,15 @@ class Playlist(db.Model):
             'last_synced': self.last_synced.isoformat() if self.last_synced else None,
             'created_at': self.created_at.isoformat(),
             'image_url': self.image_url,
+            'tracks': [pt.track.to_dict() for pt in self.tracks if pt.track],
             'track_count': self.track_count,
             'url': self.url,
             'downloaded_track_count': self.downloaded_track_count,
             'download_status': self.download_status,
             'disabled': self.disabled,
             'download_progress': self.download_progress,
+            'date_limit': self.date_limit.isoformat() if self.date_limit else None,
+            'track_limit': self.track_limit,
         }
 
 
@@ -76,7 +81,7 @@ class Track(db.Model):
             'album_art_url': self.album_art_url,
             'download_url': self.download_url,
             'download_location': self.download_location,
-            'notes_errors': self.notes_errors
+            'notes_errors': self.notes_errors,
         }
 
 
@@ -86,6 +91,7 @@ class PlaylistTrack(db.Model):
     playlist_id = db.Column(db.Integer, db.ForeignKey('playlists.id', ondelete="CASCADE"), nullable=False)
     track_id = db.Column(db.Integer, db.ForeignKey('tracks.id', ondelete="CASCADE"), nullable=False)
     track_order = db.Column(db.Integer, nullable=False)
+    added_on = db.Column(db.DateTime, nullable=True)
 
     playlist = db.relationship('Playlist', back_populates='tracks')
     track = db.relationship('Track')

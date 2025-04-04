@@ -36,7 +36,7 @@ class PlaylistRepository:
 
     @staticmethod
     def get_playlist(playlist_id):
-        logger.debug(f"Fetching playlist with ID: {playlist_id}")
+        logger.info(f"Fetching playlist with ID: {playlist_id}")
         return db.session.get(Playlist, playlist_id)
 
     @staticmethod

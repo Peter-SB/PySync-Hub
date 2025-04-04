@@ -22,7 +22,7 @@ class PlaylistManagerService:
     @staticmethod
     def sync_playlists(playlists: list[Playlist]) -> List[Playlist]:
         """
-        Sync playlists from external platform (e.g. Spotify, Souncloud).
+        Sync (but not downloads) playlists from external platform (e.g. Spotify, Souncloud).
 
         If selected_ids is provided, only those playlists are synced.
         Otherwise, all playlists are synced.
@@ -56,7 +56,7 @@ class PlaylistManagerService:
         return playlists
 
     @staticmethod
-    def add_playlists(playlist_url) -> Optional[str]:
+    def add_playlists(playlist_url: str, date_limit=None, track_limit=None) -> Optional[str]:
         """ Add a new playlist from a platform url.
         :return: Error sting or None if successful"""
 
@@ -87,8 +87,10 @@ class PlaylistManagerService:
             logger.info("Playlist already exists with external_id: %s", playlist_data['external_id'])
             return "Playlist Already Added"
 
-        else:
-            playlist = PlaylistRepository.create_playlist(playlist_data)
+        playlist = PlaylistRepository.create_playlist(playlist_data)
+        playlist.track_limit = int(track_limit) if track_limit else None
+        playlist.date_limit = datetime.strptime(date_limit, '%Y-%m-%d').date() if date_limit else None
+
         try:
             TrackManagerService.fetch_playlist_tracks(playlist.id)
         except Exception as e:
@@ -98,7 +100,7 @@ class PlaylistManagerService:
         return None
 
     @staticmethod
-    def delete_playlists(selected_ids):
+    def delete_playlists(selected_ids: List[int]) -> None:
         """ todo: Move to PlaylistRepository """
         logger.info("Deleting playlists with IDs: %s", selected_ids)
 

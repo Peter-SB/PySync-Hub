@@ -2,6 +2,7 @@ from app.models import *
 from app.repositories.playlist_repository import PlaylistRepository
 from app.services.platform_services.soundcloud_service import SoundcloudService
 from app.services.platform_services.spotify_service import SpotifyService
+from datetime import datetime
 
 logger = logging.getLogger(__name__)
 
@@ -12,6 +13,7 @@ class TrackManagerService:
         """
         Syncs the tracks for a given playlist by fetching track data from Spotify
         and then updating the Track and PlaylistTrack tables.
+        Respects playlist date_limit and track_limit if set.
         """
         playlist = PlaylistRepository.get_playlist(playlist_id)
         if not playlist:
@@ -30,12 +32,17 @@ class TrackManagerService:
 
             logger.info("Fetched %d tracks for playlist %s", len(tracks_data), playlist.name)
 
+            # Apply track limit if set
+            if playlist.track_limit:
+                tracks_data = tracks_data[:playlist.track_limit]
+                logger.info("After track limit filter: %d tracks, track_limit %d", len(tracks_data), playlist.track_limit)
+
             # Iterate over the fetched tracks; use the index to set the track order
             for index, track_data in enumerate(tracks_data):
                 # Check if the track already exists in the Track table based on the unique constraint
                 track = Track.query.filter_by(
                     platform=track_data['platform'],
-                    platform_id=track_data['platform_id']
+                    platform_id=track_data['platform_id'],
                 ).first()
 
                 # If the track is not found, create a new Track record
@@ -60,11 +67,13 @@ class TrackManagerService:
                     playlist_id=playlist.id,
                     track_id=track.id
                 ).first()
+
                 if not existing_entry:
                     playlist_track = PlaylistTrack(
                         playlist_id=playlist.id,
                         track_id=track.id,
-                        track_order=index
+                        track_order=index,
+                        added_on=datetime.fromisoformat(track_data.get('added_on')) if track_data.get('added_on') else None
                     )
                     db.session.add(playlist_track)
                 else:

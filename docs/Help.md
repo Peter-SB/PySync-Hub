@@ -51,6 +51,11 @@ Once the file is added, the PySync-Hub folder will be available in the library s
 
 Enjoy!
 
+
+# Tips and Hints
+### Track and Date Limits
+You can limit how many tracks are downloaded, this is paticularly useful for liked songs. You can set these limits as a date limit, tracks up to that date. Or track limit, the number of tracks to download. This can be accessed by the dropdown arrow when adding playlists or on the playlist page under options.
+
 # Troubleshooting 
 
 ## Troubleshooting Adding Playlists
@@ -60,7 +65,6 @@ Enjoy!
 2. Disconnect from any VPNs or proxies you may be using. 
 3. If you are downloading a private spotify playlist, make sure you have logged in.
 4. If you are downloading a soundcloud playlist, its possible that the app my need updating. Go to the [GitHub Page](https://github.com/Peter-SB/PySync-Hub)
-
 
 ## Troubleshooting Installing
 

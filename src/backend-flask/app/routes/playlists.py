@@ -1,17 +1,21 @@
 import logging
 import os
+from datetime import datetime
+
 import yaml
 from flask import Blueprint, request, jsonify, current_app
 
 from app.extensions import db, socketio
 from app.models import Track
 from app.repositories.playlist_repository import PlaylistRepository
+from app.repositories.track_repository import TrackRepository
 from app.services.export_services.export_itunesxml_service import ExportItunesXMLService
 from app.services.playlist_manager_service import PlaylistManagerService
 from config import Config
 from app.routes import api
 
 logger = logging.getLogger(__name__)
+
 
 @api.route('/api/playlists', methods=['GET'])
 def get_playlists():
@@ -31,8 +35,11 @@ def get_playlist_tracks(playlist_id):
         playlist = PlaylistRepository.get_playlist(playlist_id)
         if not playlist:
             return jsonify({'error': 'Playlist not found'}), 404
-        # Return only tracks that exist
-        tracks_data = [pt.track.to_dict() for pt in playlist.tracks if pt.track]
+        # Return only tracks with added date
+        tracks_data = [
+            {**pt.track.to_dict(), "added_on": pt.added_on.isoformat() if pt.added_on else None}
+            for pt in playlist.tracks if pt.track
+        ]
         return jsonify(tracks_data), 200
     except Exception as e:
         logger.error("Error fetching tracks for playlist %s: %s", playlist_id, e)
@@ -43,11 +50,13 @@ def get_playlist_tracks(playlist_id):
 def add_playlist():
     data = request.get_json() or {}
     url_or_id = data.get('url_or_id', '')
+    date_limit = data.get('date_limit', None)
+    track_limit = data.get('track_limit', None)
     if not url_or_id:
         return jsonify({'error': 'No URL or ID provided'}), 400
 
     logger.info(f"Adding playlist: {url_or_id}")
-    error = PlaylistManagerService.add_playlists(url_or_id)
+    error = PlaylistManagerService.add_playlists(url_or_id, date_limit, track_limit)
     if error:
         return jsonify({'error': error}), 400
 
@@ -98,6 +107,13 @@ def delete_playlists():
     playlists_data = [p.to_dict() for p in playlists]
     return jsonify(playlists_data), 200
 
+@api.route('/api/playlists/<int:playlist_id>', methods=['DELETE'])
+def delete_single_playlist(playlist_id):
+    PlaylistManagerService.delete_playlists([playlist_id])
+    playlists = PlaylistRepository.get_all_playlists()
+    playlists_data = [p.to_dict() for p in playlists]
+    return jsonify(playlists_data), 200
+
 
 @api.route("/api/download/<int:playlist_id>/cancel", methods=["DELETE"])
 def cancel_download(playlist_id):
@@ -126,5 +142,57 @@ def toggle_playlist():
     playlist.disabled = True if str(disabled_value).lower() == 'true' else False
     db.session.commit()
     return jsonify(playlist.to_dict()), 200
+
+
+@api.route('/api/playlists/<int:playlist_id>', methods=['PATCH'])
+def update_playlist(playlist_id):
+    data = request.get_json() or {}
+    
+    playlist = PlaylistRepository.get_playlist(playlist_id)
+    if not playlist:
+        return jsonify({'error': 'Playlist not found'}), 404
+
+    # Update date_limit if provided
+    if 'date_limit' in data and data['date_limit']:
+        try:
+            playlist.date_limit = datetime.strptime(data['date_limit'], '%Y-%m-%d').date()
+        except ValueError:
+            return jsonify({'error': 'Invalid date format. Use YYYY-MM-DD.'}), 400
+        TrackRepository.remove_tracks_before_date(playlist, playlist.date_limit)
+    else:
+        playlist.date_limit = None
+
+    # Update track_limit if provided
+    if 'track_limit' in data and data['track_limit']:
+        try:
+            logger.info("Updating track limit to %s", int(data['track_limit']))
+            playlist.track_limit = int(data['track_limit'])
+        except ValueError:
+            logger.error("Invalid track limit: %s", data['track_limit'])
+            return jsonify({'error': 'Invalid track. Must be an integer.'}), 400
+        TrackRepository.remove_excess_tracks(playlist, playlist.track_limit)
+    else:
+        playlist.track_limit = None
+
+    db.session.commit()
+
+    return jsonify(playlist.to_dict()), 200
+
+@api.route('/api/playlists/<int:playlist_id>/refresh', methods=['POST'])
+def refresh_playlist(playlist_id):
+    try:
+        playlist = PlaylistRepository.get_playlist(playlist_id)
+        if not playlist:
+            return jsonify({'error': 'Playlist not found'}), 404
+
+        # Sync playlist info and tracks without downloading
+        PlaylistManagerService.sync_playlists([playlist])
+        
+        return jsonify(playlist.to_dict()), 200
+    except Exception as e:
+        logger.error("Error refreshing playlist %s: %s", playlist_id, e)
+        return jsonify({'error': str(e)}), 500
+
+
 
 

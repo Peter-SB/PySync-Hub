@@ -74,6 +74,7 @@ class MockPlaylistDataHelper:
             playlist_data["created_at"] = datetime.fromisoformat(playlist_data["created_at"])
         # Extract and remove the id from the dict to set it manually.
         playlist_id = playlist_data.pop("id", None)
+        playlist_data.pop("tracks", None)  # remove tracks from the playlist data
         playlist = Playlist(**playlist_data)
         if playlist_id is not None:
             playlist.id = playlist_id
@@ -88,8 +89,7 @@ class MockPlaylistDataHelper:
             # Remove id from kwargs and set it manually.
             saved_track_id = track_data.pop("id", None)
             track = Track(**track_data)
-            if saved_track_id is not None:
-                track.id = saved_track_id
+
             db.session.add(track)
             # Build a mapping from saved id to the newly created track
             tracks_map[saved_track_id] = track
@@ -104,7 +104,8 @@ class MockPlaylistDataHelper:
             playlist_track = PlaylistTrack(
                 playlist_id=playlist.id,
                 track_id=tracks_map[saved_track_id].id,
-                track_order=pt_data["track_order"]
+                track_order=pt_data["track_order"],
+                added_on=datetime.fromisoformat(pt_data["added_on"]) if pt_data.get("added_on") else None
             )
             db.session.add(playlist_track)
         db.session.commit()
