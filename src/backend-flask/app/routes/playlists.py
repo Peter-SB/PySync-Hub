@@ -107,6 +107,7 @@ def delete_playlists():
     playlists_data = [p.to_dict() for p in playlists]
     return jsonify(playlists_data), 200
 
+
 @api.route('/api/playlists/<int:playlist_id>', methods=['DELETE'])
 def delete_single_playlist(playlist_id):
     PlaylistManagerService.delete_playlists([playlist_id])
@@ -147,7 +148,7 @@ def toggle_playlist():
 @api.route('/api/playlists/<int:playlist_id>', methods=['PATCH'])
 def update_playlist(playlist_id):
     data = request.get_json() or {}
-    
+
     playlist = PlaylistRepository.get_playlist(playlist_id)
     if not playlist:
         return jsonify({'error': 'Playlist not found'}), 404
@@ -178,6 +179,7 @@ def update_playlist(playlist_id):
 
     return jsonify(playlist.to_dict()), 200
 
+
 @api.route('/api/playlists/<int:playlist_id>/refresh', methods=['POST'])
 def refresh_playlist(playlist_id):
     try:
@@ -187,12 +189,8 @@ def refresh_playlist(playlist_id):
 
         # Sync playlist info and tracks without downloading
         PlaylistManagerService.sync_playlists([playlist])
-        
+
         return jsonify(playlist.to_dict()), 200
     except Exception as e:
         logger.error("Error refreshing playlist %s: %s", playlist_id, e)
         return jsonify({'error': str(e)}), 500
-
-
-
-

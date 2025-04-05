@@ -24,11 +24,11 @@ class SpotifyService:
         ))
 
     @staticmethod
-    def get_auth_client():
+    def get_auth_client(redirect_uri=None) -> Spotify:
         auth_manager = SpotifyOAuth(
             client_id=Config.SPOTIFY_CLIENT_ID,
             client_secret=Config.SPOTIFY_CLIENT_SECRET,
-            redirect_uri=SPOTIPY_CALLBACK_URL,
+            redirect_uri=redirect_uri or SPOTIPY_CALLBACK_URL,
             scope=Config.SPOTIFY_OAUTH_SCOPE,
             cache_path=Config.SPOTIFY_TOKEN_CACHE
         )

@@ -78,21 +78,15 @@ def spotify_callback():
 
 @api.route('/api/spotify_auth/login')
 def spotify_login():
-    # auth_manager = SpotifyOAuth(
-    #     client_id=Config.SPOTIFY_CLIENT_ID,
-    #     client_secret=Config.SPOTIFY_CLIENT_SECRET,
-    #     redirect_uri=Config.SPOTIFY_REDIRECT_URI,
-    #     scope=Config.SPOTIFY_OAUTH_SCOPE
-    # )
-    client = SpotifyService.get_auth_client()
-    auth_url = client.get_authorize_url()
+    auth_client = SpotifyService.get_auth_client(Config.SPOTIFY_REDIRECT_URI).auth_manager
+    auth_url = auth_client.get_authorize_url()
     logger.info("Logging in to Spotify")
     return redirect(auth_url)
 
 
 @api.route('/api/spotify_auth/logout')
 def spotify_logout():
-    client = SpotifyService.get_auth_client()
-    client.cache_handler.delete_cached_token()
+    auth_client = SpotifyService.get_auth_client().auth_manager
+    auth_client.cache_handler.delete_cached_token()
     logger.info("Logging out of Spotify")
     return jsonify({'message': 'Logged out of Spotify'}), 200

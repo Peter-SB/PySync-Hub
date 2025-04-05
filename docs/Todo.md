@@ -27,7 +27,7 @@
 - Tool Bar
 - Tray Icons
 - Investigate: Can you use the bundled FFMPEG that comes with electron/chromium?
-- Proper Backend shutdown. I think downloader thread is still running.
+- Proper Shutdown Backend.
 
 ## Docker
 - Fix. Broken during electron refactor.
@@ -39,7 +39,7 @@
 - Dont override other settings when saving
 
 ## CI/CD
-- Remove make dir
+- ✅ Remove make dir
 - ✅ Unit Tests
 - Publish to Releases
 - enable warnings as errors

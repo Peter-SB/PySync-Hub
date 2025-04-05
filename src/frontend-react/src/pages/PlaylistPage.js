@@ -122,6 +122,7 @@ function PlaylistPage({ playlists }) {
             });
             if (response.ok) {
                 navigate('/');
+                //setPlaylists(playlists.filter(pl => pl.id !== playlistInfo.id));
             } else {
                 console.error('Failed to delete playlist');
             }
