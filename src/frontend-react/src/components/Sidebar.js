@@ -19,7 +19,7 @@ export default function Sidebar({ onExport }) {
         const [latestMajor, latestMinor] = latestVersion.split('.').map(Number);
 
         console.log(latestMajor)
-        if (currentMajor < 2 + latestMajor) {
+        if (currentMajor < latestMajor) {
 
           setVersionStatus('major');
         } else if (currentMinor < latestMinor) {
@@ -113,7 +113,7 @@ export default function Sidebar({ onExport }) {
         </nav>
         <div className="">
           <a
-            href="https://github.com/Peter-SB/PySync-Hub"
+            href="https://github.com/Peter-SB/PySync-Hub/releases"
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center space-x-3 p-3 rounded hover:bg-gray-700 hover:text-white"

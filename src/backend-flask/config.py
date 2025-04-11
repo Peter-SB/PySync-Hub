@@ -16,6 +16,7 @@ class Config:
     SETTINGS_PATH = os.path.join(BASE_PATH, "settings.yml")
     DOWNLOAD_FOLDER = os.path.join(BASE_PATH, 'music_downloads')
     EXPORT_FOLDER = os.path.join(BASE_PATH, 'rekordbox_library_exports')
+    EXPORT_FILENAME = 'rekordbox.xml'
     FFMPEG_FOLDER = os.path.join(get_base_path(), '../ffmpeg')
 
     # Database
@@ -26,7 +27,7 @@ class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'your-secret-key'
     FLASK_APP = "app.py"
     FLASK_ENV = "development"
-    DEBUG = True  # Enables auto-reload
+    DEBUG = False  # Enables auto-reload
     TESTING = False
 
     SPOTIFY_CLIENT_ID = None

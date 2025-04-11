@@ -15,6 +15,16 @@ from config import Config
 
 logger = logging.getLogger(__name__)
 
+@api.route('/api/tracks', methods=['GET'])
+def get_tracks():
+    try:
+        tracks = Track.query.all()
+        tracks_data = [t.to_dict() for t in tracks]
+        return jsonify(tracks_data), 200
+    except Exception as e:
+        logger.error("Error fetching tracks: %s", e)
+        return jsonify({'error': str(e)}), 500
+
 @api.route('/api/tracks/<int:track_id>', methods=['GET'])
 def get_track(track_id):
     try:

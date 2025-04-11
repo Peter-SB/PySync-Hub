@@ -2,7 +2,7 @@ import logging
 import os
 import sys
 
-from flask import Flask
+from flask import Flask, send_from_directory
 from flask_cors import CORS
 from flask_migrate import upgrade, init, stamp
 
@@ -13,12 +13,21 @@ from app.workers.download_worker import DownloadManager
 from config import Config
 
 def create_app(app_config=Config):
-    app = Flask(__name__)
+    app = Flask(__name__, static_folder='../build', static_url_path='')
     app.config.from_object(app_config)
     CORS(app, 
         resources={r"/*": {"origins": "*", 
                             "allow_headers": ["Content-Type", "Authorization"],
                             "methods": ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]}})
+
+    # Serve React App
+    @app.route('/', defaults={'path': ''})
+    @app.route('/<path:path>')
+    def serve(path):
+        if path != "" and os.path.exists(os.path.join(app.static_folder, path)):
+            return send_from_directory(app.static_folder, path)
+        else:
+            return send_from_directory(app.static_folder, 'index.html')
 
     db.init_app(app)
     migrate.init_app(app, db)  # Initialize Flask-Migrate

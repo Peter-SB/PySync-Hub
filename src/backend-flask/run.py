@@ -1,6 +1,9 @@
 import sys
 import os
 import importlib
+import threading
+import webbrowser
+
 
 def print_debug_info():
     """ Test function for debugging purposes """
@@ -33,6 +36,14 @@ def check_module(module_name):
         print(f"\nError checking module {module_name}: {e}")
 
 
+def open_browser():
+    is_frozen = getattr(sys, 'frozen', False)
+    is_lite = is_frozen and sys.argv[0].endswith("pysync-hub-lite.exe")
+    is_reloader = os.environ.get('WERKZEUG_RUN_MAIN') == 'true'
+    
+    if is_lite and not is_reloader:
+        threading.Timer(1.0, lambda: webbrowser.open("http://127.0.0.1:5000/")).start()
+
 from app.extensions import socketio
 from app import create_app
 from config import Config
@@ -42,8 +53,13 @@ app = create_app(Config)
 if __name__ == '__main__':
     print("starting server")
     print_debug_info()
-    socketio.run(app, debug=True)
+
+    open_browser()
+
+    socketio.run(app, debug=False)
 
 # python -m flask run --debug
 # pyinstaller --console --name pysync-hub-backend run.py
 # pyinstaller pysync-hub-backend.spec
+
+

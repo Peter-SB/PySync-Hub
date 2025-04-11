@@ -9,7 +9,7 @@ const { dialog } = require("electron");
 
 let mainWindow;
 let flaskProcess = null;
-const basePath =   path.join(__dirname, "../../../../");
+const basePath = path.join(__dirname, "../../../../");
 const flaskExePath = getFlaskExePath();
 
 function getFlaskExePath() {
@@ -85,7 +85,6 @@ function stopFlask() {
 }
 
 function createWindow() {
-  
   mainWindow = new BrowserWindow({
     width: settings.width,
     height: settings.height,
@@ -98,9 +97,7 @@ function createWindow() {
     },
   });
 
-  const startURL = false
-    ? "http://localhost:3000"
-    : `file://${path.join(__dirname, "frontend-react/build/index.html")}`;
+  const startURL = "http://127.0.0.1:5000";
 
   if (settings.fullscreen) {
     mainWindow.maximize();

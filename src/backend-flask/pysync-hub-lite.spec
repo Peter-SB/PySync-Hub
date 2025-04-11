@@ -8,7 +8,7 @@ a = Analysis(
     pathex=['./app'],
     binaries=[],
     datas=[
-        ("app", "app"),
+        ("app", "app"), 
         ("config.py", "."),
         ("build", "build")
     ],
@@ -40,7 +40,7 @@ exe = EXE(
     a.scripts,
     [],
     exclude_binaries=True,
-    name='pysync-hub-backend',
+    name='pysync-hub-lite',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
@@ -60,5 +60,5 @@ coll = COLLECT(
     strip=False,
     upx=True,
     upx_exclude=[],
-    name='pysync-hub-backend',
+    name='pysync-hub-lite',
 )

@@ -10,7 +10,7 @@
  - Improve ui updates
  - Repository Patter Use
  - Disable individual tracks
- - Downloaded count (home screen) is not displaying correctly when 
+ - ✅ Downloaded count (home screen) is not displaying correctly when finished downloading
 
 
 ## Downloading
@@ -43,7 +43,7 @@
 - ✅ Unit Tests
 - Publish to Releases
 - enable warnings as errors
-- Version Number with Git link 
+- ✅ Version Number with Git link 
 - Fix Mac Build
 - Fix action triggers (specifically build)
 
