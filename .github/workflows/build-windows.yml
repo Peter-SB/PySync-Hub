@@ -1,23 +1,26 @@
-name: Build Windows App
+name: Build Windows Desktop App
 
 on:
-  workflow_run:
-    workflows: ["Run Backend PyTests"]
-    types:
-      - completed
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Branch to build'
+        required: false
+        default: 'master'
 
 jobs:
   build:
-    if: ${{ github.event.workflow_run.head_branch == 'master' }}
     runs-on: windows-latest
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.inputs.branch }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: "16"
+          node-version: '16'
 
       - name: Install Node Dependencies
         run: |
@@ -29,7 +32,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
-          python-version: "3.11"
+          python-version: '3.11'
 
       - name: Install Python Dependencies
         run: |
