@@ -1,7 +1,7 @@
 // src/components/PlaylistList.js
 import React from 'react';
 import PlaylistItem from './PlaylistItem';
-import './PlaylistList.css'; 
+import './CustomScrollbar.css';
 import { Link } from 'react-router-dom';
 
 function PlaylistList({ playlists, fetchPlaylists, selectedPlaylists, onSelectChange }) {
