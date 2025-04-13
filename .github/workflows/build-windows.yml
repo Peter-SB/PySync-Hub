@@ -47,6 +47,11 @@ jobs:
           npm run build
           cd ../..
 
+      - name: Copy React Build to Backend
+        run: |
+          mkdir -p src/backend-flask/build
+          cp -r src/frontend-react/build/* src/backend-flask/build/
+
       - name: Package Electron App
         run: |
           cd src
