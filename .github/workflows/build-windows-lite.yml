@@ -1,4 +1,4 @@
-name: Build Windows Lite App (Web)
+name: Build Windows Lite App
 
 on:
   workflow_dispatch:

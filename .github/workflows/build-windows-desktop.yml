@@ -1,4 +1,4 @@
-name: Build Windows Desktop App (Electron)
+name: Build Windows Desktop App
 
 on:
   workflow_dispatch:
