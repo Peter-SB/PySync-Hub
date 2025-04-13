@@ -48,15 +48,10 @@ jobs:
           npm run build
           cd ../..
 
-      - name: Remove Old Backend Build Directory
+      - name: Copy React Build to Backend
         run: |
-          rmdir /S /Q src\backend-flask\build
-        shell: cmd
-
-      - name: Copy React Build to Python Backend Build Directory
-        run: |
-          xcopy src\frontend-react\build src\backend-flask\build /E /I /Y
-        shell: cmd
+          mkdir -p src/backend-flask/build
+          cp -r src/frontend-react/build/* src/backend-flask/build/
 
       - name: Build Python Lite Backend with PyInstaller
         run: |
