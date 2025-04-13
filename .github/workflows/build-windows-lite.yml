@@ -1,0 +1,103 @@
+name: Build Windows Lite App (Web)
+
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Branch to build'
+        required: false
+        default: 'master'
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.inputs.branch }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+
+      - name: Install Node Dependencies
+        run: |
+          cd src
+          npm install
+          cd frontend-react && npm install
+          cd ../..
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install Python Dependencies
+        run: |
+          cd src/backend-flask
+          pip install pyinstaller
+          pip install -r requirements.txt
+          cd ../..
+
+      - name: Build React Frontend
+        run: |
+          cd src/frontend-react
+          $env:CI = "false"
+          npm run build
+          cd ../..
+
+      - name: Remove Old Backend Build Directory
+        run: |
+          rmdir /S /Q src\backend-flask\build
+        shell: cmd
+
+      - name: Copy React Build to Python Backend Build Directory
+        run: |
+          xcopy src\frontend-react\build src\backend-flask\build /E /I /Y
+        shell: cmd
+
+      - name: Build Python Lite Backend with PyInstaller
+        run: |
+          cd src/backend-flask
+          pyinstaller pysync-hub-lite.spec
+          cd ../..
+
+      - name: Download and Unzip FFMPEG/FFPROBE
+        run: |
+          Invoke-WebRequest -Uri "https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-essentials.zip" -OutFile "ffmpeg.zip"
+          Expand-Archive -Path "ffmpeg.zip" -DestinationPath "ffmpeg"
+        working-directory: ${{ github.workspace }}
+
+      - name: Copy FFMPEG/FFPROBE to dist and Cleanup
+        run: |
+          New-Item -ItemType Directory -Path dist/ffmpeg -Force
+
+          Copy-Item -Path ffmpeg\ffmpeg-*\bin\ffmpeg.exe -Destination dist/ffmpeg
+          Copy-Item -Path ffmpeg\ffmpeg-*\bin\ffprobe.exe -Destination dist/ffmpeg
+
+          Remove-Item -Path ffmpeg.zip -Force
+          Remove-Item -Path ffmpeg -Recurse -Force
+
+          Get-ChildItem -Path dist/ffmpeg
+          Get-ChildItem -Path dist
+        working-directory: ${{ github.workspace }}
+
+      - name: Prepare Artifact Directory
+        run: |
+          mkdir -p artifact/dir
+          mv dist artifact
+
+      - name: Create Shortcut to PySync Hub EXE
+        run: |
+          $ws = New-Object -ComObject WScript.Shell
+          $shortcut = $ws.CreateShortcut("${{ github.workspace }}\\artifact\\PySync Hub.lnk")
+          $shortcut.TargetPath = "${{ github.workspace }}\\artifact\\dist\\pysync-hub-lite\\pysync-hub-lite.exe"
+          $shortcut.Save()
+
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: PySync-Hub-windows
+          path: artifact/

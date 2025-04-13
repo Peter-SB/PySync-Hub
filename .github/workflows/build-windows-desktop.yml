@@ -1,4 +1,4 @@
-name: Build Windows Desktop App
+name: Build Windows Desktop App (Electron)
 
 on:
   workflow_dispatch:
@@ -47,10 +47,15 @@ jobs:
           npm run build
           cd ../..
 
-      - name: Copy React Build to Backend
+      - name: Remove Old Backend Build Directory
         run: |
-          mkdir -p src/backend-flask/build
-          cp -r src/frontend-react/build/* src/backend-flask/build/
+          rmdir /S /Q src\backend-flask\build
+        shell: cmd
+
+      - name: Copy React Build to Python Backend Build Directory
+        run: |
+          xcopy src\frontend-react\build src\backend-flask\build /E /I /Y
+        shell: cmd
 
       - name: Package Electron App
         run: |
@@ -101,7 +106,6 @@ jobs:
           $ws = New-Object -ComObject WScript.Shell
           $shortcut = $ws.CreateShortcut("${{ github.workspace }}\\artifact\\PySync Hub.lnk")
           $shortcut.TargetPath = "${{ github.workspace }}\\artifact\\dist\\PySync-Hub-win32-x64\\PySync-Hub.exe"
-          $shortcut.WorkingDirectory = "${{ github.workspace }}\\artifact\\dist\\backend-flask"
           $shortcut.Save()
 
       - name: Upload Build Artifacts
