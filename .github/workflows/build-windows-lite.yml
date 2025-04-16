@@ -87,12 +87,12 @@ jobs:
       - name: Create Shortcut to PySync Hub EXE
         run: |
           $ws = New-Object -ComObject WScript.Shell
-          $shortcut = $ws.CreateShortcut("${{ github.workspace }}\\artifact\\PySync Hub.lnk")
+          $shortcut = $ws.CreateShortcut("${{ github.workspace }}\\artifact\\PySync Hub Lite.lnk")
           $shortcut.TargetPath = "${{ github.workspace }}\\artifact\\dist\\pysync-hub-lite\\pysync-hub-lite.exe"
           $shortcut.Save()
 
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: PySync-Hub-windows
+          name: PySync-Hub-windows-lite
           path: artifact/
