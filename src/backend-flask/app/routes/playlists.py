@@ -194,3 +194,55 @@ def refresh_playlist(playlist_id):
     except Exception as e:
         logger.error("Error refreshing playlist %s: %s", playlist_id, e)
         return jsonify({'error': str(e)}), 500
+
+
+@api.route('/api/playlists/move', methods=['POST'])
+def move_playlist():
+    """Move a playlist to a different folder and/or position."""
+    try:
+        data = request.json
+        playlist_id = data.get('id')
+        new_folder_id = data.get('parent_id')  # can be None (root level)
+        position = data.get('position', 0)
+        
+        playlist = PlaylistRepository.get_playlist(playlist_id)
+        if not playlist:
+            return jsonify({'error': 'Playlist not found'}), 404
+        
+        # If folder specified, verify it exists
+        if new_folder_id is not None:
+            folder = db.session.query(db.models.Folder).get(new_folder_id)
+            if not folder:
+                return jsonify({'error': 'Folder not found'}), 404
+        
+        # Get all sibling playlists at the target level
+        siblings = db.session.query(db.models.Playlist).filter_by(
+            folder_id=new_folder_id
+        ).order_by(db.models.Playlist.custom_order).all()
+        
+        # Remove the playlist from its current position if it's among the siblings
+        if playlist.folder_id == new_folder_id:
+            siblings = [s for s in siblings if s.id != playlist_id]
+        
+        # Insert the playlist at the specified position
+        siblings.insert(min(position, len(siblings)), playlist)
+        
+        # Update custom_order for all siblings
+        for i, sibling in enumerate(siblings):
+            sibling.custom_order = i
+            db.session.add(sibling)
+        
+        # Update the folder_id
+        playlist.folder_id = new_folder_id
+        
+        db.session.commit()
+        
+        return jsonify({
+            'message': 'Playlist moved successfully',
+            'playlist': playlist.to_dict()
+        }), 200
+        
+    except Exception as e:
+        db.session.rollback()
+        logger.error(f"Error moving playlist: {str(e)}")
+        return jsonify({'error': 'Failed to move playlist'}), 500

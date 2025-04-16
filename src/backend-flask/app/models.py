@@ -6,6 +6,31 @@ from app.extensions import db
 
 logger = logging.getLogger(__name__)
 
+class Folder(db.Model):
+    __tablename__ = 'folders'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(255), nullable=False)
+    parent_id = db.Column(db.Integer, db.ForeignKey('folders.id'), nullable=True)
+    custom_order = db.Column(db.Integer, nullable=False, default=0)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    # Relationship to allow nesting folders (subfolders)
+    subfolders = db.relationship(
+        'Folder',
+        backref=db.backref('parent', remote_side=[id]),
+        cascade="all, delete-orphan"
+    )
+
+    # Relationship: playlists assigned directly to this folder
+    playlists = db.relationship(
+        'Playlist',
+        backref='folder',
+        cascade="all"
+    )
+
+    def __repr__(self):
+        return f'<Folder {self.name}>'
+
 class Playlist(db.Model):
     __tablename__ = 'playlists'
     id = db.Column(db.Integer, primary_key=True)
@@ -22,6 +47,10 @@ class Playlist(db.Model):
     download_progress = db.Column(db.Integer, default=0)
     date_limit = db.Column(db.DateTime, nullable=True)  # Only sync/download tracks added after this date
     track_limit = db.Column(db.Integer, nullable=True)  # Maximum number of tracks to sync/download
+    
+    # New fields for folder organization
+    folder_id = db.Column(db.Integer, db.ForeignKey('folders.id'), nullable=True)
+    custom_order = db.Column(db.Integer, nullable=False, default=0)
 
     tracks = db.relationship('PlaylistTrack',
                              back_populates='playlist',
@@ -51,6 +80,8 @@ class Playlist(db.Model):
             'download_progress': self.download_progress,
             'date_limit': self.date_limit.isoformat() if self.date_limit else None,
             'track_limit': self.track_limit,
+            'folder_id': self.folder_id,
+            'custom_order': self.custom_order,
         }
 
 
