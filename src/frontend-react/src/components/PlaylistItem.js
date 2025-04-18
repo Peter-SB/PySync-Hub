@@ -1,11 +1,19 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useDraggable } from '@dnd-kit/core';
+import { CSS } from '@dnd-kit/utilities';
 import DownloadStatus from './DownloadStatus.js';
 import { backendUrl } from '../config';
 
-function PlaylistItem({ playlist, fetchPlaylists, isSelected, onSelectChange }) {
+function PlaylistItem({ playlist, fetchPlaylists, isSelected, onSelectChange, level = 0 }) {
   const [isDisabled, setIsDisabled] = useState(playlist.disabled);
   const navigate = useNavigate();
+
+  // Set up draggable functionality
+  const { attributes, listeners, setNodeRef, transform } = useDraggable({
+    id: `playlist-${playlist.id}`,
+    data: { type: 'playlist', playlist }
+  });
 
   // Trigger a sync for this playlist only
   const handleSyncClick = async () => {
@@ -65,13 +73,29 @@ function PlaylistItem({ playlist, fetchPlaylists, isSelected, onSelectChange }) 
     navigate(`/playlist/${playlist.id}`);
   };
 
+  // Apply indentation based on the nesting level
+  const style = {
+    transform: CSS.Translate.toString(transform),
+    marginLeft: `${level * 20}px`,
+  };
+
   return (
-    <div className="flex flex-row items-center pt-1 pb-0">
+    <div className="flex flex-row items-center pt-1 pb-0" style={style}>
       <div
         className={`flex items-center p-2 rounded border shadow transition-shadow my-0.5 px-4 flex-1 cursor-pointer ${isDisabled ? 'bg-gray-200 hover:shadow-none' : 'bg-white hover:shadow-md'
           }`}
         onClick={handlePlaylistClick}
       >
+        <div
+          ref={setNodeRef}
+          {...listeners}
+          {...attributes}
+          className="w-5 h-5 mr-3 cursor-move flex items-center justify-center border border-gray-300 rounded"
+          onClick={(e) => e.stopPropagation()}
+        >
+          ≡
+        </div>
+
         <input
           type="checkbox"
           name="playlist_ids"
@@ -82,6 +106,7 @@ function PlaylistItem({ playlist, fetchPlaylists, isSelected, onSelectChange }) 
           onClick={(e) => e.stopPropagation()}
           onChange={(e) => onSelectChange(playlist.id, e.target.checked)}
         />
+
         {playlist.image_url && (
           <img
             src={playlist.image_url}
