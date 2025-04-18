@@ -5,6 +5,7 @@ from sqlalchemy import desc
 from app.extensions import db
 from app.models import Folder, Playlist
 
+# todo: Move other routes to separate blueprints
 bp = Blueprint('folders', __name__, url_prefix='/api/folders')
 logger = logging.getLogger(__name__)
 
@@ -29,7 +30,7 @@ def get_folders():
         logger.error(f"Error retrieving folders: {str(e)}")
         return jsonify({'error': 'Failed to retrieve folders'}), 500
 
-@bp.route('', methods=['POST'])
+@bp.route('', methods=['POST'])  # todo: make this /create, remember to correct frontend
 def create_folder():
     """Create a new folder."""
     try:
@@ -46,12 +47,13 @@ def create_folder():
             if not parent:
                 return jsonify({'error': 'Parent folder not found'}), 404
         
-        # Get the maximum custom_order + 1 to place the new folder at the end
+        # Place the new folder at the end
         max_order = db.session.query(db.func.max(Folder.custom_order)).filter(
             Folder.parent_id == parent_id
         ).scalar() or 0
         
         # Create the new folder
+        # todo: add to a folder repository
         folder = Folder(
             name=name,
             parent_id=parent_id,
@@ -75,7 +77,7 @@ def create_folder():
         logger.error(f"Error creating folder: {str(e)}")
         return jsonify({'error': 'Failed to create folder'}), 500
 
-@bp.route('/<int:folder_id>', methods=['DELETE'])
+@bp.route('/<int:folder_id>', methods=['DELETE']) 
 def delete_folder(folder_id):
     """Delete a folder and optionally its contents."""
     try:
@@ -118,7 +120,7 @@ def delete_folder(folder_id):
         logger.error(f"Error deleting folder: {str(e)}")
         return jsonify({'error': 'Failed to delete folder'}), 500
 
-@bp.route('/<int:folder_id>', methods=['PUT'])
+@bp.route('/<int:folder_id>', methods=['PUT']) 
 def update_folder(folder_id):
     """Update folder name or parent."""
     try:
