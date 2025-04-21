@@ -100,17 +100,16 @@ function PlaylistList({ playlists, fetchPlaylists, selectedPlaylists, onSelectCh
     }
   };
 
-  // When drag ends, if the drop target is an insertion zone, remove and reinsert at the specified index
+  // When drag ends, if the drop target is an insertion zone, remove and reinsert dropped item at the specified index
   const handleDragEnd = async (event) => {
     const { active, over } = event;
 
-    if (over && over.id && over.id.includes('-insertion-')) {
+    if (over && over.id && over.id.includes('-insertion-')) { // means its a insertion zone
       const [parentId, indexStr] = over.id.split('-insertion-');
       const index = parseInt(indexStr, 10);
 
       // Check for invalid drops (folder onto itself or its descendant)
       const activeItem = findItemById(treeData, active.id);
-
       if (activeItem && activeItem.type === 'folder') {
         if (active.id === parentId || isDescendant(activeItem, parentId)) {
           setActiveDropTarget(null);
@@ -123,63 +122,23 @@ function PlaylistList({ playlists, fetchPlaylists, selectedPlaylists, onSelectCh
       const { newTree, removed } = removeItem(treeData, active.id);
 
       if (removed) {
-        // Prepare the parent ID for the backend
-        let backendParentId = null;
-        if (parentId !== 'root') {
-          // Extract the numerical ID from the parent folder ID (e.g., "folder-123" -> 123)
-          backendParentId = parseInt(parentId.replace('folder-', ''), 10);
-        }
-
         // Update the UI optimistically
         const updatedTree = insertItemAt(newTree, parentId, index, removed);
         setTreeData(updatedTree);
 
         try {
-          // Determine if we're moving a folder or a playlist
-          const itemId = parseInt(removed.originalId, 10);
-          const isFolder = removed.type === 'folder';
+          // Send the frontend tree structure directly to the reorder endpoint
+          const response = await fetch(`${backendUrl}/api/folders/reorder`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ items: updatedTree })
+          });
 
-          // Call the appropriate endpoint to update the backend
-          if (isFolder) {
-            const response = await fetch(`${backendUrl}/api/folders/move`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                id: itemId,
-                parent_id: backendParentId,
-                position: index
-              })
-            });
-
-            if (!response.ok) {
-              throw new Error('Failed to move folder');
-            }
-          } else {
-            // Update playlist's folder
-            const response = await fetch(`${backendUrl}/api/playlists/move`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                id: itemId,
-                parent_id: backendParentId,
-                position: index
-              })
-            });
-
-            if (!response.ok) {
-              throw new Error('Failed to move playlist');
-            }
+          if (!response.ok) {
+            throw new Error('Failed to reorder items');
           }
-
-          // Fetch both playlists and folders to ensure we have the latest state
-          const foldersResponse = await fetch(`${backendUrl}/api/folders`);
-          const foldersData = await foldersResponse.json();
-          if (foldersResponse.ok) {
-            setFolders(foldersData.folders || []);
-          }
-          fetchPlaylists();
         } catch (err) {
-          console.error('Error moving item:', err);
+          console.error('Error reordering items:', err);
           setError('Failed to update item position');
           fetchPlaylists(); // Refresh to get the server's current state
         }

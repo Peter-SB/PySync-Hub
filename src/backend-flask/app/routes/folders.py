@@ -231,3 +231,87 @@ def move_folder():
         db.session.rollback()
         logger.error(f"Error moving folder: {str(e)}")
         return jsonify({'error': 'Failed to move folder'}), 500
+
+@bp.route('/reorder', methods=['POST'])
+def reorder_tree():
+    """
+    Reorder the entire folder and playlist custom_order structure from tree.
+    
+    Accepts frontend tree format:
+    {
+        "items": [
+            {
+                "id": "folder-123", 
+                "type": "folder", 
+                "originalId": "123",
+                "children": [...]
+            },
+            {
+                "id": "playlist-456", 
+                "type": "playlist", 
+                "originalId": "456",
+                "playlist": {...}
+            },
+            ...
+        ]
+    }
+    """
+    try:
+        data = request.json
+        if not data or 'items' not in data:
+            return jsonify({'error': 'Invalid data format, "items" array is required'}), 400
+            
+        # Begin transaction
+        db.session.begin_nested()
+        
+        # Process the tree structure starting at root level
+        process_tree_items(data['items'], parent_id=None)
+        
+        db.session.commit()
+        return jsonify({'message': 'Organization structure updated successfully'}), 200
+        
+    except Exception as e:
+        db.session.rollback()
+        logger.error(f"Error reorganizing structure: {str(e)}")
+        return jsonify({'error': 'Failed to reorganize structure'}), 500
+
+def process_tree_items(items, parent_id=None):
+    """
+    Recursively process items in the tree, updating their custom_order values.
+    
+    :param items: List of items (folders/playlists) to process
+    :param parent_id: ID of the parent folder, or None for root level
+    """
+    for i, item in enumerate(items):
+        item_type = item.get('type')
+        
+        if not item_type:
+            continue
+            
+        if item_type == 'folder':
+            # Extract the numeric ID from the frontend format (e.g., "folder-123" -> 123)
+            item_id = int(item.get('originalId'))
+            
+            # Update folder's custom_order and parent
+            folder = Folder.query.get(item_id)
+            if folder:
+                folder.custom_order = i
+                folder.parent_id = parent_id
+                db.session.add(folder)
+                
+                # Process children if any
+                if 'children' in item and isinstance(item['children'], list):
+                    process_tree_items(item['children'], parent_id=item_id)
+                    
+        elif item_type == 'playlist':
+            # Extract the numeric ID from the frontend format (e.g., "playlist-456" -> 456)
+            item_id = int(item.get('originalId'))
+            
+            # Update playlist's custom_order and folder
+            playlist = Playlist.query.get(item_id)
+            if playlist:
+                playlist.custom_order = i
+                playlist.folder_id = parent_id
+                db.session.add(playlist)
+                
+    db.session.flush()
