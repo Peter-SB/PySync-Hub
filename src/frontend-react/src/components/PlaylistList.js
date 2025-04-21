@@ -223,12 +223,27 @@ function PlaylistList({ playlists, fetchPlaylists, selectedPlaylists, onSelectCh
     );
   };
 
+  // Add folder function
+  const addFolder = async () => {
+    try {
+      const response = await fetch(`${backendUrl}/api/folders`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: `Folder ${folders.length + 1}` })
+      });
+      if (response.ok) {
+        handleFolderAdded();
+      } else {
+        setError('Failed to create folder');
+      }
+    } catch (err) {
+      console.error('Error creating folder:', err);
+      setError('Error creating folder');
+    }
+  };
+
   return (
     <div className="flex-1 min-h-0 overflow-y-auto custom-scrollbar">
-      <div className="mb-2 p-2 bg-white rounded shadow">
-        <AddFolderForm onFolderAdded={handleFolderAdded} setError={setError} />
-      </div>
-
       {error && (
         <div className="p-4 mb-4 text-sm text-red-700 bg-red-100 border border-red-300 rounded">
           {error}
@@ -251,9 +266,16 @@ function PlaylistList({ playlists, fetchPlaylists, selectedPlaylists, onSelectCh
           )}
         </div>
       </DndContext>
-
+      <div className="flex justify-center mt-4 mb-6">
+        <button
+          onClick={addFolder}
+          className="p-2 rounded-full bg-white border hover:bg-gray-100 text-white shadow-lg"
+        >
+          <img src="./icons/add-folder.png" alt="Add Folder" className="w-8 h-8" />
+        </button>
+      </div>
       <div className="absolute bottom-0 left-0 right-0 h-2 bg-gradient-to-t from-gray-100 to-transparent pointer-events-none"></div>
-    </div>
+    </div >
   );
 }
 
