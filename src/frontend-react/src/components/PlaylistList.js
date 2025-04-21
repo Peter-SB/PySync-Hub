@@ -7,6 +7,7 @@ import {
   useSensors,
   PointerSensor
 } from '@dnd-kit/core';
+import { motion, AnimatePresence } from 'framer-motion';
 import './PlaylistList.css';
 import FolderItem from './FolderItem';
 import PlaylistItem from './PlaylistItem';
@@ -28,7 +29,6 @@ function PlaylistList({ playlists, fetchPlaylists, selectedPlaylists, onSelectCh
   const [activeId, setActiveId] = useState(null);
   const [activeDropTarget, setActiveDropTarget] = useState(null);
 
-  // Use pointer sensor with a higher activation constraint to avoid accidental drags
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
@@ -171,7 +171,7 @@ function PlaylistList({ playlists, fetchPlaylists, selectedPlaylists, onSelectCh
     if (!items || !items.length) return null;
 
     return (
-      <>
+      <AnimatePresence>
         {items.map((item, index) => (
           <React.Fragment key={item.id}>
             {/* Insertion zone before each item */}
@@ -182,26 +182,31 @@ function PlaylistList({ playlists, fetchPlaylists, selectedPlaylists, onSelectCh
               indent={level}
             />
 
-            {item.type === 'folder' ? (
-              <FolderItem
-                item={item}
-                level={level}
-                activeDropTarget={activeDropTarget}
-                activeItem={activeItem}
-                fetchPlaylists={fetchPlaylists}
-                selectedPlaylists={selectedPlaylists}
-                onSelectChange={onSelectChange}
-              />
-            ) : (
-              <PlaylistItem
-                playlist={item.playlist}
-                fetchPlaylists={fetchPlaylists}
-                isSelected={selectedPlaylists.includes(item.playlist.id)}
-                onSelectChange={onSelectChange}
-                draggable={true}
-                id={item.id}
-              />
-            )}
+            <motion.div
+              layout
+              transition={{ type: "spring", bounce: 0.25 }}
+            >
+              {item.type === 'folder' ? (
+                <FolderItem
+                  item={item}
+                  level={level}
+                  activeDropTarget={activeDropTarget}
+                  activeItem={activeItem}
+                  fetchPlaylists={fetchPlaylists}
+                  selectedPlaylists={selectedPlaylists}
+                  onSelectChange={onSelectChange}
+                />
+              ) : (
+                <PlaylistItem
+                  playlist={item.playlist}
+                  fetchPlaylists={fetchPlaylists}
+                  isSelected={selectedPlaylists.includes(item.playlist.id)}
+                  onSelectChange={onSelectChange}
+                  draggable={true}
+                  id={item.id}
+                />
+              )}
+            </motion.div>
 
             {/* Add an insertion zone after the last item */}
             {index === items.length - 1 && (
@@ -214,7 +219,7 @@ function PlaylistList({ playlists, fetchPlaylists, selectedPlaylists, onSelectCh
             )}
           </React.Fragment>
         ))}
-      </>
+      </AnimatePresence>
     );
   };
 
