@@ -1,0 +1,33 @@
+/* PlaylistList.css */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(156, 163, 175, 0.5) transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: rgba(156, 163, 175, 0.5);
+  border-radius: 20px;
+  border: 2px solid transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(107, 114, 128, 0.7);
+}
+
+/* Specific styles for drag and drop interactions */
+/* [data-insertion-zone] {
+  min-height: 4px;
+  transition: all 0.2s ease;
+}
+
+[data-insertion-zone]:hover {
+  min-height: 8px;
+} */

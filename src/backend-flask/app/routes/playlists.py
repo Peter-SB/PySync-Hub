@@ -6,7 +6,8 @@ import yaml
 from flask import Blueprint, request, jsonify, current_app
 
 from app.extensions import db, socketio
-from app.models import Track
+from app.models import Track, Playlist
+from app.repositories.folder_repository import FolderRepository
 from app.repositories.playlist_repository import PlaylistRepository
 from app.repositories.track_repository import TrackRepository
 from app.services.export_services.export_itunesxml_service import ExportItunesXMLService
@@ -204,26 +205,26 @@ def move_playlist():
         playlist_id = data.get('id')
         new_folder_id = data.get('parent_id')  # can be None (root level)
         position = data.get('position', 0)
-        
+
         playlist = PlaylistRepository.get_playlist(playlist_id)
         if not playlist:
             return jsonify({'error': 'Playlist not found'}), 404
         
         # If folder specified, verify it exists
         if new_folder_id is not None:
-            folder = db.session.query(db.models.Folder).get(new_folder_id)
+            folder = FolderRepository.get_folder_by_id(new_folder_id)
             if not folder:
                 return jsonify({'error': 'Folder not found'}), 404
-        
+
         # Get all sibling playlists at the target level
-        siblings = db.session.query(db.models.Playlist).filter_by(
+        siblings = db.session.query(Playlist).filter_by(
             folder_id=new_folder_id
-        ).order_by(db.models.Playlist.custom_order).all()
-        
+        ).order_by(Playlist.custom_order).all()
+
         # Remove the playlist from its current position if it's among the siblings
         if playlist.folder_id == new_folder_id:
             siblings = [s for s in siblings if s.id != playlist_id]
-        
+
         # Insert the playlist at the specified position
         siblings.insert(min(position, len(siblings)), playlist)
         

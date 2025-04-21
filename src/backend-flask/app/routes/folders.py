@@ -214,6 +214,7 @@ def move_folder():
         # Insert the folder at the specified position
         siblings.insert(min(position, len(siblings)), folder)
         
+        # todo: move to folder repository
         # Update custom_order for all siblings
         for i, sibling in enumerate(siblings):
             sibling.custom_order = i

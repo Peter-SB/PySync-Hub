@@ -1,19 +1,27 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useDraggable } from '@dnd-kit/core';
-import { CSS } from '@dnd-kit/utilities';
 import DownloadStatus from './DownloadStatus.js';
 import { backendUrl } from '../config';
+import { useDraggable } from '@dnd-kit/core';
 
-function PlaylistItem({ playlist, fetchPlaylists, isSelected, onSelectChange, level = 0 }) {
+function PlaylistItem({ playlist, fetchPlaylists, isSelected, onSelectChange, style, draggable = false, id }) {
   const [isDisabled, setIsDisabled] = useState(playlist.disabled);
   const navigate = useNavigate();
 
-  // Set up draggable functionality
-  const { attributes, listeners, setNodeRef, transform } = useDraggable({
-    id: `playlist-${playlist.id}`,
-    data: { type: 'playlist', playlist }
+  // Set up draggable functionality with dnd-kit
+  const { attributes, listeners, setNodeRef, transform, transition } = useDraggable({
+    id: id || `playlist-${playlist.id}`,
+    disabled: !draggable
   });
+
+  // Compute combined styles for dragging
+  const draggableStyles = transform
+    ? {
+      transform: `translate(${transform.x}px, ${transform.y}px)`,
+      transition,
+      ...style
+    }
+    : style;
 
   // Trigger a sync for this playlist only
   const handleSyncClick = async () => {
@@ -73,28 +81,29 @@ function PlaylistItem({ playlist, fetchPlaylists, isSelected, onSelectChange, le
     navigate(`/playlist/${playlist.id}`);
   };
 
-  // Apply indentation based on the nesting level
-  const style = {
-    transform: CSS.Translate.toString(transform),
-    marginLeft: `${level * 20}px`,
-  };
-
   return (
-    <div className="flex flex-row items-center pt-1 pb-0" style={style}>
+    <div
+      className="flex flex-row items-center py-0"
+      style={draggableStyles}
+      ref={draggable ? setNodeRef : undefined}
+    >
       <div
         className={`flex items-center p-2 rounded border shadow transition-shadow my-0.5 px-4 flex-1 cursor-pointer ${isDisabled ? 'bg-gray-200 hover:shadow-none' : 'bg-white hover:shadow-md'
           }`}
         onClick={handlePlaylistClick}
       >
-        <div
-          ref={setNodeRef}
-          {...listeners}
-          {...attributes}
-          className="w-5 h-5 mr-3 cursor-move flex items-center justify-center border border-gray-300 rounded"
-          onClick={(e) => e.stopPropagation()}
-        >
-          ≡
-        </div>
+        {draggable && (
+          <div
+            {...listeners}
+            {...attributes}
+            className="flex items-center cursor-grab p-1 mr-2"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8h16M4 16h16" />
+            </svg>
+          </div>
+        )}
 
         <input
           type="checkbox"
@@ -106,7 +115,6 @@ function PlaylistItem({ playlist, fetchPlaylists, isSelected, onSelectChange, le
           onClick={(e) => e.stopPropagation()}
           onChange={(e) => onSelectChange(playlist.id, e.target.checked)}
         />
-
         {playlist.image_url && (
           <img
             src={playlist.image_url}

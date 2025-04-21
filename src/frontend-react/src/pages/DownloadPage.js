@@ -1,7 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import AddPlaylistForm from '../components/AddPlaylistForm';
-import FolderManager from '../components/FolderManager';
-import FolderActions from '../components/FolderActions';
+import PlaylistList from '../components/PlaylistList';
 import PlaylistSortOrder from '../components/PlaylistSortOrder';
 import { backendUrl } from '../config';
 
@@ -12,7 +11,6 @@ function DownloadPage({ playlists, fetchPlaylists, errorMessage, setErrorMessage
   const [sortOrder, setSortOrder] = useState("dec"); // ascending order by default
 
   // Sort playlists based on the selected sort criterion and order.
-  // This is only applied at the UI level for viewing, not for the folder structure
   const sortedPlaylists = useMemo(() => {
     return playlists.slice().sort((a, b) => {
       let aVal = a[sortBy];
@@ -106,10 +104,7 @@ function DownloadPage({ playlists, fetchPlaylists, errorMessage, setErrorMessage
       <div id="header-box" className="bg-white p-4 rounded-lg mb-1 shadow">
         <h1 className="text-3xl font-semibold text-gray-800 mb-7">Playlist Downloads</h1>
         <AddPlaylistForm onPlaylistAdded={fetchPlaylists} setError={setErrorMessage} />
-        
-        <div className="flex flex-col md:flex-row md:items-start gap-4 justify-between mb-4">
-          <FolderActions fetchPlaylists={fetchPlaylists} setErrorMessage={setErrorMessage} />
-          
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div className="flex items-center gap-2">
             <button
               onClick={handleExport}
@@ -122,9 +117,6 @@ function DownloadPage({ playlists, fetchPlaylists, errorMessage, setErrorMessage
               </div>
             </button>
           </div>
-        </div>
-        
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div className="flex items-center gap-2 ml-auto">
             <PlaylistSortOrder sortBy={sortBy} setSortBy={setSortBy} sortOrder={sortOrder} setSortOrder={setSortOrder} />
             {selectedPlaylists.length > 0 && (
@@ -153,14 +145,12 @@ function DownloadPage({ playlists, fetchPlaylists, errorMessage, setErrorMessage
         </div>
       )}
 
-      <div className="flex-1 min-h-0 overflow-y-auto custom-scrollbar">
-        <FolderManager 
-          playlists={playlists}
-          fetchPlaylists={fetchPlaylists}
-          selectedPlaylists={selectedPlaylists}
-          onSelectChange={handleCheckboxChange}
-        />
-      </div>
+      <PlaylistList
+        playlists={sortedPlaylists}
+        fetchPlaylists={fetchPlaylists}
+        selectedPlaylists={selectedPlaylists}
+        onSelectChange={handleCheckboxChange}
+      />
 
       {exportStatus && (
         <div className="fixed bottom-5 left-1/2 transform -translate-x-1/2 z-50 bg-green-500 text-white text-center py-3 px-6 rounded max-w-4xl w-full md:w-3/4 lg:w-1/2 shadow-lg">
