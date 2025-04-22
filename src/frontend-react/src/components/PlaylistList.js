@@ -11,7 +11,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import './PlaylistList.css';
 import FolderItem from './FolderItem';
 import PlaylistItem from './PlaylistItem';
-import AddFolderForm from './AddFolderForm';
 import InsertionZone from './InsertionZone';
 import { backendUrl } from '../config';
 import {
@@ -19,7 +18,8 @@ import {
   removeItem,
   insertItemAt,
   findItemById,
-  isDescendant
+  isDescendant,
+  findParentAndIndex
 } from '../utils/folderUtils';
 
 function PlaylistList({ playlists, fetchPlaylists, selectedPlaylists, onSelectChange }) {
@@ -133,12 +133,18 @@ function PlaylistList({ playlists, fetchPlaylists, selectedPlaylists, onSelectCh
         }
       }
 
+      // Determine original position to adjust index if moving within same parent to avoid index shift bug
+      const origin = findParentAndIndex(treeData, active.id);
+      let adjustedIndex = index;
+      if (origin && origin.parentId === parentId && origin.index < index) {
+        adjustedIndex = index - 1;
+      }
       // Remove the item from its current position
       const { newTree, removed } = removeItem(treeData, active.id);
 
       if (removed) {
-        // Update the UI optimistically
-        const updatedTree = insertItemAt(newTree, parentId, index, removed);
+        // Update the UI optimistically at adjusted index
+        const updatedTree = insertItemAt(newTree, parentId, adjustedIndex, removed);
         setTreeData(updatedTree);
 
         try {

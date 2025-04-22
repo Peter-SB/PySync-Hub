@@ -164,6 +164,28 @@ export function findItemById(items, id) {
 }
 
 /**
+ * Find the parent ID and index of an item in the tree
+ * 
+ * @param {Array} items - Tree or subtree to search
+ * @param {String} id - ID of the item to find
+ * @param {String} parentId - ID of the current parent (defaults to 'root')
+ * @returns {Object|null} - { parentId, index } if found, otherwise null
+ */
+export function findParentAndIndex(items, id, parentId = 'root') {
+    for (let i = 0; i < items.length; i++) {
+        const item = items[i];
+        if (item.id === id) {
+            return { parentId, index: i };
+        }
+        if (item.children) {
+            const result = findParentAndIndex(item.children, id, item.id);
+            if (result) return result;
+        }
+    }
+    return null;
+}
+
+/**
  * Check if a folder has a certain descendant
  * 
  * @param {Object} folder - Folder to check

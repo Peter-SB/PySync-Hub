@@ -369,7 +369,7 @@ function FolderItem({ item, level, activeDropTarget, activeItem, fetchPlaylists,
                                     layout: {
                                         type: "tween",
                                     },
-                                    opacity: { duration: 0.5 }
+                                    opacity: { duration: 0.2 }
                                 }}
                                 className="item-container"
                             >
