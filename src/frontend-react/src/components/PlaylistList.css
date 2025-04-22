@@ -31,3 +31,24 @@
 [data-insertion-zone]:hover {
   min-height: 8px;
 } */
+
+/* Ensure consistent heights during animations */
+.playlist-item,
+.folder-item {
+  min-height: 48px; /* Set a fixed minimum height for all items */
+  height: auto;
+  overflow: hidden;
+  will-change: transform;
+}
+
+/* Ensure child content doesn't affect parent height during animation */
+.playlist-item-content,
+.folder-item-content {
+  position: relative;
+  z-index: 1;
+}
+
+.item-container {
+  will-change: transform, opacity;
+  transform-origin: top center;
+}

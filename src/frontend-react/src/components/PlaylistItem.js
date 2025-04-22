@@ -1,12 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import DownloadStatus from './DownloadStatus.js';
 import { backendUrl } from '../config';
 import { useDraggable } from '@dnd-kit/core';
 
-function PlaylistItem({ playlist, fetchPlaylists, isSelected, onSelectChange, style, draggable = false, id }) {
+function PlaylistItem({ playlist, fetchPlaylists, isSelected, onSelectChange, style, draggable = false, id, onPlaylistUpdate }) {
   const [isDisabled, setIsDisabled] = useState(playlist.disabled);
   const navigate = useNavigate();
+
+  // Update isDisabled when playlist.disabled changes
+  useEffect(() => {
+    setIsDisabled(playlist.disabled);
+  }, [playlist.disabled]);
 
   // Set up draggable functionality with dnd-kit
   const { attributes, listeners, setNodeRef, transform, transition } = useDraggable({
@@ -59,6 +64,15 @@ function PlaylistItem({ playlist, fetchPlaylists, isSelected, onSelectChange, st
     // Optimistically update the UI
     setIsDisabled(newState);
 
+    // Immediately update the playlist data in the parent component
+    if (onPlaylistUpdate) {
+      const updatedPlaylist = {
+        ...playlist,
+        disabled: newState
+      };
+      onPlaylistUpdate(updatedPlaylist);
+    }
+
     try {
       const response = await fetch(`${backendUrl}/api/playlists/toggle`, {
         method: 'POST',
@@ -68,11 +82,21 @@ function PlaylistItem({ playlist, fetchPlaylists, isSelected, onSelectChange, st
       if (!response.ok) {
         throw new Error('Failed to toggle playlist state');
       }
+      // Still fetch the playlists in the background to ensure data consistency
       fetchPlaylists();
     } catch (error) {
       console.error('Error toggling playlist state', error);
       // Revert the UI update if there was an error
       setIsDisabled(!newState);
+
+      // Also revert the parent component's data
+      if (onPlaylistUpdate) {
+        const revertedPlaylist = {
+          ...playlist,
+          disabled: !newState
+        };
+        onPlaylistUpdate(revertedPlaylist);
+      }
     }
   };
 

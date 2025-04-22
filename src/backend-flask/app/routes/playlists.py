@@ -146,6 +146,36 @@ def toggle_playlist():
     return jsonify(playlist.to_dict()), 200
 
 
+@api.route('/api/playlists/toggle-multiple', methods=['POST'])
+def toggle_multiple_playlists():
+    data = request.get_json() or {}
+    playlist_ids = data.get('playlist_ids', [])
+    disabled_value = data.get('disabled')
+    
+    if not playlist_ids or disabled_value is None:
+        return jsonify({'error': 'Missing parameters'}), 400
+
+    # Convert the disabled value to a boolean
+    disabled = True if str(disabled_value).lower() == 'true' else False
+    
+    try:
+        # Get all playlists by IDs
+        playlists = PlaylistRepository.get_playlists_by_ids(playlist_ids)
+        updated_playlists = []
+        
+        # Update each playlist's disabled status
+        for playlist in playlists:
+            playlist.disabled = disabled
+            updated_playlists.append(playlist.to_dict())
+        
+        db.session.commit()
+        return jsonify(updated_playlists), 200
+    except Exception as e:
+        logger.error(f"Error toggling multiple playlists: {str(e)}")
+        db.session.rollback()
+        return jsonify({'error': 'Failed to toggle playlists'}), 500
+
+
 @api.route('/api/playlists/<int:playlist_id>', methods=['PATCH'])
 def update_playlist(playlist_id):
     data = request.get_json() or {}

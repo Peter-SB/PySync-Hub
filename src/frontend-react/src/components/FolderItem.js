@@ -7,11 +7,41 @@ import PlaylistItem from './PlaylistItem';
 import { backendUrl } from '../config';
 
 // FolderItem: renders a folder with its label and its children along with insertion zones.
-function FolderItem({ item, level, activeDropTarget, activeItem, fetchPlaylists, selectedPlaylists, onSelectChange }) {
+function FolderItem({ item, level, activeDropTarget, activeItem, fetchPlaylists, selectedPlaylists, onSelectChange, onPlaylistUpdate }) {
     const [isEditing, setIsEditing] = useState(false);
     const [folderName, setFolderName] = useState(item.title);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isSyncing, setIsSyncing] = useState(false);
     const inputRef = useRef(null);
+
+    // Calculate if folder is disabled based on all child playlists being disabled
+    const isFolderDisabled = () => {
+        if (!item.children || item.children.length === 0) return true;
+
+        // Check if all children are disabled
+        return item.children.every(child => {
+            if (child.type === 'folder') {
+                // For folder children, we'd need their state but we don't have it directly
+                // For simplicity, let's consider an empty folder as disabled
+                return !child.children || child.children.length === 0;
+            } else {
+                // For playlist children, check if they're disabled
+                return child.playlist.disabled;
+            }
+        });
+    };
+
+    const [isDisabled, setIsDisabled] = useState(isFolderDisabled());
+
+    // Update disabled state when children change or when item.children changes
+    useEffect(() => {
+        setIsDisabled(isFolderDisabled());
+    }, [item.children]);
+
+    // Force refresh of the disabled state when any child playlist is toggled
+    const forceRefreshDisabledState = () => {
+        setIsDisabled(isFolderDisabled());
+    };
 
     const { attributes, listeners, setNodeRef: setDraggableRef, transform, transition } =
         useDraggable({ id: item.id });
@@ -29,6 +59,134 @@ function FolderItem({ item, level, activeDropTarget, activeItem, fetchPlaylists,
             inputRef.current.select();
         }
     }, [isEditing]);
+
+    // Recursively collect all playlist IDs from this folder and its subfolders
+    const collectPlaylistIds = (folderItem) => {
+        let playlistIds = [];
+
+        if (folderItem.children) {
+            folderItem.children.forEach(child => {
+                if (child.type === 'folder') {
+                    // Recursively collect IDs from subfolders
+                    playlistIds = [...playlistIds, ...collectPlaylistIds(child)];
+                } else if (child.playlist && !child.playlist.disabled) {
+                    // Add this playlist's ID if it's not disabled
+                    playlistIds.push(child.playlist.id);
+                }
+            });
+        }
+
+        return playlistIds;
+    };
+
+    // Recursively collect ALL playlist IDs from this folder and its subfolders (including disabled ones)
+    const collectAllPlaylistIds = (folderItem) => {
+        let playlistIds = [];
+
+        if (folderItem.children) {
+            folderItem.children.forEach(child => {
+                if (child.type === 'folder') {
+                    // Recursively collect IDs from subfolders
+                    playlistIds = [...playlistIds, ...collectAllPlaylistIds(child)];
+                } else if (child.playlist) {
+                    // Add this playlist's ID regardless of disabled status
+                    playlistIds.push(child.playlist.id);
+                }
+            });
+        }
+
+        return playlistIds;
+    };
+
+    // Update playlists recursively in the local state
+    const updatePlaylistsInFolder = (folderItem, disabled) => {
+        if (folderItem.children) {
+            folderItem.children.forEach(child => {
+                if (child.type === 'folder') {
+                    // Recursively update playlists in subfolders
+                    updatePlaylistsInFolder(child, disabled);
+                } else if (child.playlist && onPlaylistUpdate) {
+                    // Update this playlist in the parent component's state
+                    onPlaylistUpdate({
+                        ...child.playlist,
+                        disabled: disabled
+                    });
+                }
+            });
+        }
+    };
+
+    // Handle toggle for all playlists in this folder
+    const handleToggleClick = async (newState) => {
+        // Optimistically update the UI
+        setIsDisabled(newState);
+
+        // Immediately update the playlist data in the parent component
+        if (onPlaylistUpdate) {
+            updatePlaylistsInFolder(item, newState);
+        }
+
+        const playlistIds = collectAllPlaylistIds(item);
+
+        if (playlistIds.length === 0) {
+            return; // No playlists to toggle
+        }
+
+        try {
+            // Call the toggle API for all playlists
+            const response = await fetch(`${backendUrl}/api/playlists/toggle-multiple`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ playlist_ids: playlistIds, disabled: newState }),
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to toggle folder playlists');
+            }
+
+            fetchPlaylists();
+        } catch (error) {
+            console.error('Error toggling folder playlists:', error);
+            // Revert the UI update if there was an error
+            setIsDisabled(!newState);
+
+            // Revert the parent component's data
+            if (onPlaylistUpdate) {
+                updatePlaylistsInFolder(item, !newState);
+            }
+        } finally {
+            forceRefreshDisabledState();
+        }
+    };
+
+    // Handle sync for all playlists in this folder
+    const handleFolderSync = async (e) => {
+        e.stopPropagation();
+        const playlistIds = collectPlaylistIds(item);
+
+        if (playlistIds.length === 0) {
+            return; // No playlists to sync
+        }
+
+        setIsSyncing(true);
+        try {
+            const response = await fetch(`${backendUrl}/api/playlists/sync`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ playlist_ids: playlistIds }),
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to sync folder playlists');
+            }
+
+            fetchPlaylists();
+        } catch (error) {
+            console.error('Error syncing folder playlists:', error);
+        } finally {
+            setIsSyncing(false);
+        }
+    };
 
     // Handle starting the rename process
     const handleStartRename = (e) => {
@@ -86,19 +244,19 @@ function FolderItem({ item, level, activeDropTarget, activeItem, fetchPlaylists,
             <div
                 ref={setDraggableRef}
                 style={{ ...indentStyle, ...draggableStyle }}
+                className="flex flex-row items-center py-0"
             >
-                <div className="flex items-center p-2 my-1 bg-white rounded border shadow hover:shadow-md">
+                <div className={`flex items-center p-2 my-1 rounded border shadow hover:shadow-md flex-1 ${isDisabled ? 'bg-gray-200' : 'bg-white'}`}>
                     <div
                         {...listeners}
                         {...attributes}
                         className="flex items-center cursor-grab pl-2 pr-4"
                     >
-
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
                         </svg>
-
                     </div>
+
                     {isEditing ? (
                         <div className="flex items-center">
                             <input
@@ -107,7 +265,7 @@ function FolderItem({ item, level, activeDropTarget, activeItem, fetchPlaylists,
                                 value={folderName}
                                 onChange={(e) => setFolderName(e.target.value)}
                                 onKeyDown={handleKeyDown}
-                                onBlur={handleCancelRename}
+                                // onBlur={handleCancelRename}
                                 className="px-2 py-1 border rounded focus:outline-none focus:ring focus:border-blue-300"
                                 disabled={isSubmitting}
                             />
@@ -133,16 +291,59 @@ function FolderItem({ item, level, activeDropTarget, activeItem, fetchPlaylists,
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                                 </svg>
                             </button>
+                            <button
+                                onClick={async (e) => {
+                                    e.stopPropagation();
+                                    try {
+                                        const response = await fetch(`${backendUrl}/api/folders/${item.originalId}`, {
+                                            method: 'DELETE',
+                                        });
+                                        if (!response.ok) throw new Error('Failed to delete folder');
+                                        fetchPlaylists();
+                                    } catch (error) {
+                                        console.error('Error deleting folder:', error);
+                                    }
+                                }}
+                                className="ml-1 text-red-600 hover:text-red-800"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m4-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                </svg>
+                            </button>
                         </div>
                     ) : (
-                        <span
-                            className="font-medium text-gray-700 cursor-pointer hover:text-blue-600"
-                            onClick={handleStartRename}
-                        >
-                            {item.title}
-                        </span>
+                        <>
+                            <span
+                                className={`font-medium cursor-pointer hover:text-blue-600 flex-grow ${isDisabled ? 'text-gray-500' : 'text-gray-700'}`}
+                                onClick={handleStartRename}
+                            >
+                                {item.title}
+                            </span>
+                            <button
+                                onMouseDown={(e) => e.stopPropagation()}
+                                onClick={handleFolderSync}
+                                disabled={isSyncing || isDisabled}
+                                className={`ml-2 px-3 py-1 text-sm bg-gray-100 rounded-lg ${(isSyncing || isDisabled) ? 'opacity-50' : 'hover:bg-gray-200'}`}
+                            >
+                                {isSyncing ? 'Syncing...' : 'Sync'}
+                            </button>
+                        </>
                     )}
                 </div>
+                <label htmlFor={`toggle-folder-${item.id}`} className="relative inline-flex items-center cursor-pointer ml-2 mr-10">
+                    <input
+                        type="checkbox"
+                        id={`toggle-folder-${item.id}`}
+                        onChange={() => handleToggleClick(!isDisabled)}
+                        checked={isDisabled}
+                        className="sr-only peer"
+                    />
+                    <div className="relative w-[35px] h-[21px] bg-gray-400 border border-gray-300 rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:ring-gray-600 disabled:opacity-50 disabled:pointer-events-none
+                            peer-checked:bg-gray-100
+                            before:inline-block before:w-4 before:h-4 before:bg-white before:rounded-full before:shadow before:transition-all before:ease-in-out before:duration-200
+                            before:translate-x-[17px] before:translate-y-[-0.5px] peer-checked:before:translate-x-0">
+                    </div>
+                </label>
             </div>
 
             {/* Render children and insertion zones */}
@@ -160,7 +361,17 @@ function FolderItem({ item, level, activeDropTarget, activeItem, fetchPlaylists,
                         <React.Fragment key={child.id}>
                             <motion.div
                                 layout
-                                transition={{ type: "spring", bounce: 0.25 }}
+                                //layoutId={`item-${item.id}`}
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                transition={{
+                                    layout: {
+                                        type: "tween",
+                                    },
+                                    opacity: { duration: 0.2 }
+                                }}
+                                className="item-container"
                             >
                                 {child.type === 'folder' ? (
                                     <FolderItem
@@ -171,6 +382,7 @@ function FolderItem({ item, level, activeDropTarget, activeItem, fetchPlaylists,
                                         fetchPlaylists={fetchPlaylists}
                                         selectedPlaylists={selectedPlaylists}
                                         onSelectChange={onSelectChange}
+                                        onPlaylistUpdate={onPlaylistUpdate}
                                     />
                                 ) : (
                                     <PlaylistItem
@@ -187,6 +399,7 @@ function FolderItem({ item, level, activeDropTarget, activeItem, fetchPlaylists,
                                         }}
                                         draggable={true}
                                         id={child.id}
+                                        onPlaylistUpdate={onPlaylistUpdate}
                                     />
                                 )}
                             </motion.div>

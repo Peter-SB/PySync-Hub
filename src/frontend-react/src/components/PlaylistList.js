@@ -28,6 +28,12 @@ function PlaylistList({ playlists, fetchPlaylists, selectedPlaylists, onSelectCh
   const [treeData, setTreeData] = useState([]);
   const [activeId, setActiveId] = useState(null);
   const [activeDropTarget, setActiveDropTarget] = useState(null);
+  const [localPlaylists, setLocalPlaylists] = useState(playlists);
+
+  // Update localPlaylists when props change
+  useEffect(() => {
+    setLocalPlaylists(playlists);
+  }, [playlists]);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -58,14 +64,23 @@ function PlaylistList({ playlists, fetchPlaylists, selectedPlaylists, onSelectCh
     fetchFolders();
   }, []);
 
-  // Build tree whenever folders or playlists change
+  // Build tree whenever folders or local playlists change
   useEffect(() => {
-    if (folders && playlists) {
-      const tree = buildTree(folders, playlists);
+    if (folders && localPlaylists) {
+      const tree = buildTree(folders, localPlaylists);
       console.log('Tree data:', tree); // Debugging line to check the tree structure
       setTreeData(tree);
     }
-  }, [folders, playlists]);
+  }, [folders, localPlaylists]);
+
+  // Handle playlist update (for immediate UI updates)
+  const handlePlaylistUpdate = (updatedPlaylist) => {
+    setLocalPlaylists(prevPlaylists =>
+      prevPlaylists.map(playlist =>
+        playlist.id === updatedPlaylist.id ? updatedPlaylist : playlist
+      )
+    );
+  };
 
   // When drag starts, keep track of the active id
   const handleDragStart = (event) => {
@@ -183,8 +198,20 @@ function PlaylistList({ playlists, fetchPlaylists, selectedPlaylists, onSelectCh
             />
 
             <motion.div
-              layout
-              transition={{ type: "spring", bounce: 0.25 }}
+              layoutId={`item-${item.id}`}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{
+                layout: {
+                  type: "tween",
+                  stiffness: 300,
+                  damping: 30
+                },
+                opacity: { duration: 0.2 }
+              }}
+              style={{ height: activeId === item.id ? 0 : 'auto' }}
+              className="item-container"
             >
               {item.type === 'folder' ? (
                 <FolderItem
@@ -195,6 +222,7 @@ function PlaylistList({ playlists, fetchPlaylists, selectedPlaylists, onSelectCh
                   fetchPlaylists={fetchPlaylists}
                   selectedPlaylists={selectedPlaylists}
                   onSelectChange={onSelectChange}
+                  onPlaylistUpdate={handlePlaylistUpdate}
                 />
               ) : (
                 <PlaylistItem
@@ -204,6 +232,7 @@ function PlaylistList({ playlists, fetchPlaylists, selectedPlaylists, onSelectCh
                   onSelectChange={onSelectChange}
                   draggable={true}
                   id={item.id}
+                  onPlaylistUpdate={handlePlaylistUpdate}
                 />
               )}
             </motion.div>
