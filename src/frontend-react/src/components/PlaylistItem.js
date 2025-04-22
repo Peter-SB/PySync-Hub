@@ -1,11 +1,32 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import DownloadStatus from './DownloadStatus.js';
 import { backendUrl } from '../config';
+import { useDraggable } from '@dnd-kit/core';
 
-function PlaylistItem({ playlist, fetchPlaylists, isSelected, onSelectChange }) {
+function PlaylistItem({ playlist, fetchPlaylists, isSelected, onSelectChange, style, draggable = false, id, onPlaylistUpdate }) {
   const [isDisabled, setIsDisabled] = useState(playlist.disabled);
   const navigate = useNavigate();
+
+  // Update isDisabled when playlist.disabled changes
+  useEffect(() => {
+    setIsDisabled(playlist.disabled);
+  }, [playlist.disabled]);
+
+  // Set up draggable functionality with dnd-kit
+  const { attributes, listeners, setNodeRef, transform, transition } = useDraggable({
+    id: id || `playlist-${playlist.id}`,
+    disabled: !draggable
+  });
+
+  // Compute combined styles for dragging
+  const draggableStyles = transform
+    ? {
+      transform: `translate(${transform.x}px, ${transform.y}px)`,
+      transition,
+      ...style
+    }
+    : style;
 
   // Trigger a sync for this playlist only
   const handleSyncClick = async () => {
@@ -43,6 +64,15 @@ function PlaylistItem({ playlist, fetchPlaylists, isSelected, onSelectChange }) 
     // Optimistically update the UI
     setIsDisabled(newState);
 
+    // Immediately update the playlist data in the parent component
+    if (onPlaylistUpdate) {
+      const updatedPlaylist = {
+        ...playlist,
+        disabled: newState
+      };
+      onPlaylistUpdate(updatedPlaylist);
+    }
+
     try {
       const response = await fetch(`${backendUrl}/api/playlists/toggle`, {
         method: 'POST',
@@ -52,11 +82,21 @@ function PlaylistItem({ playlist, fetchPlaylists, isSelected, onSelectChange }) 
       if (!response.ok) {
         throw new Error('Failed to toggle playlist state');
       }
+      // Still fetch the playlists in the background to ensure data consistency
       fetchPlaylists();
     } catch (error) {
       console.error('Error toggling playlist state', error);
       // Revert the UI update if there was an error
       setIsDisabled(!newState);
+
+      // Also revert the parent component's data
+      if (onPlaylistUpdate) {
+        const revertedPlaylist = {
+          ...playlist,
+          disabled: !newState
+        };
+        onPlaylistUpdate(revertedPlaylist);
+      }
     }
   };
 
@@ -66,12 +106,29 @@ function PlaylistItem({ playlist, fetchPlaylists, isSelected, onSelectChange }) 
   };
 
   return (
-    <div className="flex flex-row items-center pt-1 pb-0">
+    <div
+      className="flex flex-row items-center py-0"
+      style={draggableStyles}
+      ref={draggable ? setNodeRef : undefined}
+    >
       <div
         className={`flex items-center p-2 rounded border shadow transition-shadow my-0.5 px-4 flex-1 cursor-pointer ${isDisabled ? 'bg-gray-200 hover:shadow-none' : 'bg-white hover:shadow-md'
           }`}
         onClick={handlePlaylistClick}
       >
+        {draggable && (
+          <div
+            {...listeners}
+            {...attributes}
+            className="flex items-center cursor-grab p-1 mr-2"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8h16M4 16h16" />
+            </svg>
+          </div>
+        )}
+
         <input
           type="checkbox"
           name="playlist_ids"

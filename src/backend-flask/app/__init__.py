@@ -10,6 +10,7 @@ from app.extensions import db, socketio, migrate
 from app.repositories.playlist_repository import PlaylistRepository
 from app.services.platform_services.spotify_service import SpotifyService
 from app.workers.download_worker import DownloadManager
+from app.database_migrator import DatabaseMigrator
 from config import Config
 
 def create_app(app_config=Config):
@@ -48,16 +49,27 @@ def create_app(app_config=Config):
     logger.info(f"Settings Path={os.path.normpath(Config.SETTINGS_PATH)}")
     logger.info("Flask application initialized")
 
+    # todo: refactor to setup_database function
+    # Run database migrations
+    db_path = app_config.SQLALCHEMY_DATABASE_URI.replace('sqlite:///', '')
+    if os.path.exists(db_path):
+        logger.info(f"Running database migrations on {db_path}")
+        DatabaseMigrator.run_migrations(db_path)
+    
     # Initialize database
     with app.app_context():
-        from app.models import Playlist
+        from app.models import Playlist, Folder
         db.create_all()
         # upgrade()
     # with app.app_context():
     #     _handle_database_migrations(app, logger)
 
+    # Register folder routes
+    # todo: refactor to function, make new blueprints for other routes
     from app.routes import api
+    from app.routes.folders import bp as folders_bp
     app.register_blueprint(api)
+    app.register_blueprint(folders_bp)
 
     if not app.config.get("TESTING"):
         os.makedirs(os.path.join(os.getcwd(), app.config.get("DOWNLOAD_FOLDER")), exist_ok=True)

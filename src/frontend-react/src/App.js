@@ -48,6 +48,8 @@ function App() {
     }
   }, []);
 
+  // folderReactor-todo: Getting Folder logging here?
+
   useEffect(() => {
     fetchPlaylists();
   }, [fetchPlaylists]);

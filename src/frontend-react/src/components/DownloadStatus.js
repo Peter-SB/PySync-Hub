@@ -38,7 +38,7 @@ function DownloadStatus({ playlist, handleSyncClick, handleCancelClick }) {
                             e.stopPropagation();
                             handleSyncClick();
                         }}
-                        className="px-3 py-1 text-sm bg-gray-100 rounded-lg hover:bg-gray-200"
+                        className="px-3 py-1 text-sm bg-gray-100 rounded-lg hover:bg-gray-200 opacity-70"
                     >
                         Sync
                     </button>

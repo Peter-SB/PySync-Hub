@@ -6,7 +6,8 @@ import yaml
 from flask import Blueprint, request, jsonify, current_app
 
 from app.extensions import db, socketio
-from app.models import Track
+from app.models import Track, Playlist
+from app.repositories.folder_repository import FolderRepository
 from app.repositories.playlist_repository import PlaylistRepository
 from app.repositories.track_repository import TrackRepository
 from app.services.export_services.export_itunesxml_service import ExportItunesXMLService
@@ -145,6 +146,36 @@ def toggle_playlist():
     return jsonify(playlist.to_dict()), 200
 
 
+@api.route('/api/playlists/toggle-multiple', methods=['POST'])
+def toggle_multiple_playlists():
+    data = request.get_json() or {}
+    playlist_ids = data.get('playlist_ids', [])
+    disabled_value = data.get('disabled')
+    
+    if not playlist_ids or disabled_value is None:
+        return jsonify({'error': 'Missing parameters'}), 400
+
+    # Convert the disabled value to a boolean
+    disabled = True if str(disabled_value).lower() == 'true' else False
+    
+    try:
+        # Get all playlists by IDs
+        playlists = PlaylistRepository.get_playlists_by_ids(playlist_ids)
+        updated_playlists = []
+        
+        # Update each playlist's disabled status
+        for playlist in playlists:
+            playlist.disabled = disabled
+            updated_playlists.append(playlist.to_dict())
+        
+        db.session.commit()
+        return jsonify(updated_playlists), 200
+    except Exception as e:
+        logger.error(f"Error toggling multiple playlists: {str(e)}")
+        db.session.rollback()
+        return jsonify({'error': 'Failed to toggle playlists'}), 500
+
+
 @api.route('/api/playlists/<int:playlist_id>', methods=['PATCH'])
 def update_playlist(playlist_id):
     data = request.get_json() or {}
@@ -194,3 +225,55 @@ def refresh_playlist(playlist_id):
     except Exception as e:
         logger.error("Error refreshing playlist %s: %s", playlist_id, e)
         return jsonify({'error': str(e)}), 500
+
+
+@api.route('/api/playlists/move', methods=['POST'])
+def move_playlist():
+    """Move a playlist to a different folder and/or position."""
+    try:
+        data = request.json
+        playlist_id = data.get('id')
+        new_folder_id = data.get('parent_id')  # can be None (root level)
+        position = data.get('position', 0)
+
+        playlist = PlaylistRepository.get_playlist(playlist_id)
+        if not playlist:
+            return jsonify({'error': 'Playlist not found'}), 404
+        
+        # If folder specified, verify it exists
+        if new_folder_id is not None:
+            folder = FolderRepository.get_folder_by_id(new_folder_id)
+            if not folder:
+                return jsonify({'error': 'Folder not found'}), 404
+
+        # Get all sibling playlists at the target level
+        siblings = db.session.query(Playlist).filter_by(
+            folder_id=new_folder_id
+        ).order_by(Playlist.custom_order).all()
+
+        # Remove the playlist from its current position if it's among the siblings
+        if playlist.folder_id == new_folder_id:
+            siblings = [s for s in siblings if s.id != playlist_id]
+
+        # Insert the playlist at the specified position
+        siblings.insert(min(position, len(siblings)), playlist)
+        
+        # Update custom_order for all siblings
+        for i, sibling in enumerate(siblings):
+            sibling.custom_order = i
+            db.session.add(sibling)
+        
+        # Update the folder_id
+        playlist.folder_id = new_folder_id
+        
+        db.session.commit()
+        
+        return jsonify({
+            'message': 'Playlist moved successfully',
+            'playlist': playlist.to_dict()
+        }), 200
+        
+    except Exception as e:
+        db.session.rollback()
+        logger.error(f"Error moving playlist: {str(e)}")
+        return jsonify({'error': 'Failed to move playlist'}), 500

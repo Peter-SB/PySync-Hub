@@ -1,0 +1,54 @@
+/* PlaylistList.css */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(156, 163, 175, 0.5) transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: rgba(156, 163, 175, 0.5);
+  border-radius: 20px;
+  border: 2px solid transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(107, 114, 128, 0.7);
+}
+
+/* Specific styles for drag and drop interactions */
+/* [data-insertion-zone] {
+  min-height: 4px;
+  transition: all 0.2s ease;
+}
+
+[data-insertion-zone]:hover {
+  min-height: 8px;
+} */
+
+/* Ensure consistent heights during animations */
+.playlist-item,
+.folder-item {
+  min-height: 48px; /* Set a fixed minimum height for all items */
+  height: auto;
+  overflow: hidden;
+  will-change: transform;
+}
+
+/* Ensure child content doesn't affect parent height during animation */
+.playlist-item-content,
+.folder-item-content {
+  position: relative;
+  z-index: 1;
+}
+
+.item-container {
+  will-change: transform, opacity;
+  transform-origin: top center;
+}
