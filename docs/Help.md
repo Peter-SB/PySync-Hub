@@ -37,14 +37,21 @@ Playlist are saved to a `/music_downloads` folder in the root of the program. **
 
 ## 3. Exporting To Rekordbox:
 
-When exporting to Rekordbox, the program will generate a `rekordbox.xml` file in the `rekordbox_library_exports` folder. 
+Click the export button to export your library to Rekordbox and wait for a green confirmation notification. This will export all the playlists you have added to the program. 
+
+<div align="center">
+    <img src="./images/Export-Button.png" alt="Export Button" style="width:80%; height:auto;">
+</div>
+
+Once finished exporting to Rekordbox, the program will generate a `rekordbox.xml` file in the `rekordbox_library_exports` folder. 
 This file is imported to Rekordbox in Rekordbox Advanced Settings.
 
 <div align="center">
     <img src="./images/Rekordbox-Import-Settings.png" alt="PySync Hub" style="width:80%; height:auto;">
 </div>
 
-Once the file is added, the PySync-Hub folder will be available in the library section under iTunes. From there PySync Hub can be imported into your own library
+Once the file is added, the PySync-Hub folder will be available in the library section under iTunes. From there PySync Hub can be imported into your own library.
+
 <div align="center">
     <img src="./images/Rekordbox-Import-Library.png" alt="PySync Hub" style="width:30%; height:auto;">
 </div>

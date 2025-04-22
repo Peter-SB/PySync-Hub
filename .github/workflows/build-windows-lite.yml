@@ -1,4 +1,4 @@
-name: Build Windows Desktop App
+name: Build Windows Lite App
 
 on:
   workflow_dispatch:
@@ -39,6 +39,7 @@ jobs:
           cd src/backend-flask
           pip install pyinstaller
           pip install -r requirements.txt
+          cd ../..
 
       - name: Build React Frontend
         run: |
@@ -52,24 +53,11 @@ jobs:
           mkdir -p src/backend-flask/build
           cp -r src/frontend-react/build/* src/backend-flask/build/
 
-      - name: Package Electron App
+      - name: Build Python Lite Backend with PyInstaller
         run: |
-          cd src
-          npm run make
-          cd ..
-
-      - name: Build Python Backend with PyInstaller
-        run: |
-          cd src/backend-flask/
-          pyinstaller pysync-hub-backend.spec
+          cd src/backend-flask
+          pyinstaller pysync-hub-lite.spec
           cd ../..
-
-      - name: Remove dist/make Directory
-        run: |
-          if (Test-Path -Path dist/make) {
-            Remove-Item -Path dist/make -Recurse -Force
-          }
-        working-directory: ${{ github.workspace }}
 
       - name: Download and Unzip FFMPEG/FFPROBE
         run: |
@@ -99,12 +87,12 @@ jobs:
       - name: Create Shortcut to PySync Hub EXE
         run: |
           $ws = New-Object -ComObject WScript.Shell
-          $shortcut = $ws.CreateShortcut("${{ github.workspace }}\\artifact\\PySync Hub.lnk")
-          $shortcut.TargetPath = "${{ github.workspace }}\\artifact\\dist\\PySync-Hub-win32-x64\\PySync-Hub.exe"
+          $shortcut = $ws.CreateShortcut("${{ github.workspace }}\\artifact\\PySync Hub Lite.lnk")
+          $shortcut.TargetPath = "${{ github.workspace }}\\artifact\\dist\\pysync-hub-lite\\pysync-hub-lite.exe"
           $shortcut.Save()
 
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: PySync-Hub-windows
+          name: PySync-Hub-windows-lite
           path: artifact/

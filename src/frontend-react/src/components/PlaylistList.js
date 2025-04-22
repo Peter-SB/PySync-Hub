@@ -9,8 +9,9 @@ import {
 } from '@dnd-kit/core';
 import { motion, AnimatePresence } from 'framer-motion';
 import './PlaylistList.css';
-import FolderItem from './FolderItem';
-import PlaylistItem from './PlaylistItem';
+import FolderItem from './FolderItem'; import PlaylistItem from './PlaylistItem';
+import './CustomScrollbar.css';
+import './PlaylistList.css';
 import InsertionZone from './InsertionZone';
 import { backendUrl } from '../config';
 import {
