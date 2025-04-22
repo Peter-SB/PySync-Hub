@@ -246,7 +246,7 @@ function FolderItem({ item, level, activeDropTarget, activeItem, fetchPlaylists,
                 style={{ ...indentStyle, ...draggableStyle }}
                 className="flex flex-row items-center py-0"
             >
-                <div className={`flex items-center p-2 my-1 rounded border shadow hover:shadow-md flex-1 ${isDisabled ? 'bg-gray-200' : 'bg-white'}`}>
+                <div className={`flex items-center p-2 pr-4 my-1 rounded border shadow hover:shadow-md flex-1 ${isDisabled ? 'bg-gray-200' : 'bg-white'}`}>
                     <div
                         {...listeners}
                         {...attributes}
@@ -323,7 +323,7 @@ function FolderItem({ item, level, activeDropTarget, activeItem, fetchPlaylists,
                                 onMouseDown={(e) => e.stopPropagation()}
                                 onClick={handleFolderSync}
                                 disabled={isSyncing || isDisabled}
-                                className={`ml-2 px-3 py-1 text-sm bg-gray-100 rounded-lg ${(isSyncing || isDisabled) ? 'opacity-50' : 'hover:bg-gray-200'}`}
+                                className={`ml-2 px-3 py-1 font-medium text-sm bg-gray-100 rounded-lg ${(isSyncing || isDisabled) ? 'opacity-50' : 'hover:bg-gray-200'}`}
                             >
                                 {isSyncing ? 'Syncing...' : 'Sync'}
                             </button>
@@ -361,15 +361,15 @@ function FolderItem({ item, level, activeDropTarget, activeItem, fetchPlaylists,
                         <React.Fragment key={child.id}>
                             <motion.div
                                 layout
-                                //layoutId={`item-${item.id}`}
+                                // layoutId={`item-${item.id}`}
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
-                                exit={{ opacity: 0 }}
+                                exit={{ opacity: 1 }}
                                 transition={{
                                     layout: {
                                         type: "tween",
                                     },
-                                    opacity: { duration: 0.2 }
+                                    opacity: { duration: 0.5 }
                                 }}
                                 className="item-container"
                             >

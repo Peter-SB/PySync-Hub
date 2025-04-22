@@ -198,19 +198,18 @@ function PlaylistList({ playlists, fetchPlaylists, selectedPlaylists, onSelectCh
             />
 
             <motion.div
-              layoutId={`item-${item.id}`}
+              layout
+              //layoutId={`item-${item.id}`}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
+              exit={{ opacity: 1 }}
               transition={{
                 layout: {
                   type: "tween",
-                  stiffness: 300,
-                  damping: 30
                 },
                 opacity: { duration: 0.2 }
               }}
-              style={{ height: activeId === item.id ? 0 : 'auto' }}
+              // style={{ height: activeId === item.id ? 0 : 'auto' }}
               className="item-container"
             >
               {item.type === 'folder' ? (
@@ -272,7 +271,7 @@ function PlaylistList({ playlists, fetchPlaylists, selectedPlaylists, onSelectCh
   };
 
   return (
-    <div className="flex-1 min-h-0 overflow-y-auto custom-scrollbar">
+    <div id="playlist-list" className="flex-1 min-h-0 overflow-y-auto custom-scrollbar">
       {error && (
         <div className="p-4 mb-4 text-sm text-red-700 bg-red-100 border border-red-300 rounded">
           {error}
@@ -285,15 +284,13 @@ function PlaylistList({ playlists, fetchPlaylists, selectedPlaylists, onSelectCh
         onDragOver={handleDragOver}
         onDragEnd={handleDragEnd}
       >
-        <div id="playlist-list">
-          {treeData.length ? (
-            renderTree(treeData)
-          ) : (
-            <div className="p-4 text-center text-gray-500 bg-white rounded">
-              No playlists added yet. If this is your first time using the app, make sure to read the Help page and set your <Link to="/settings" className="text-blue-500 hover:underline">Settings</Link>.
-            </div>
-          )}
-        </div>
+        {treeData.length ? (
+          renderTree(treeData)
+        ) : (
+          <div className="p-4 text-center text-gray-500 bg-white rounded">
+            No playlists added yet. If this is your first time using the app, make sure to read the Help page and set your <Link to="/settings" className="text-blue-500 hover:underline">Settings</Link>.
+          </div>
+        )}
       </DndContext>
       <div className="flex justify-center mt-4 mb-6">
         <button
