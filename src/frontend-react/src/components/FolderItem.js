@@ -319,14 +319,14 @@ function FolderItem({ item, level, activeDropTarget, activeItem, fetchPlaylists,
                             >
                                 {item.title}
                             </span>
-                            <button
+                            {/* <button
                                 onMouseDown={(e) => e.stopPropagation()}
                                 onClick={handleFolderSync}
                                 disabled={isSyncing || isDisabled}
                                 className={`ml-2 px-3 py-1 font-medium text-sm bg-gray-100 rounded-lg ${(isSyncing || isDisabled) ? 'opacity-50' : 'hover:bg-gray-200'}`}
                             >
                                 {isSyncing ? 'Syncing...' : 'Sync'}
-                            </button>
+                            </button> */}
                         </>
                     )}
                 </div>

@@ -74,6 +74,19 @@ function PlaylistList({ playlists, fetchPlaylists, selectedPlaylists, onSelectCh
     }
   }, [folders, localPlaylists]);
 
+  // const treeData = useMemo(
+  //   () => buildTree(folders, playlists),
+  //   [ 
+  //     // only re‑run when folder membership or order changes
+  //     JSON.stringify(
+  //       folders.map(f => [f.id, f.parent_id, f.custom_order])
+  //     ),
+  //     JSON.stringify(
+  //       playlists.map(p => [p.id, p.folder_id, p.custom_order])
+  //     )
+  //   ]
+  // );
+
   // Handle playlist update (for immediate UI updates)
   const handlePlaylistUpdate = (updatedPlaylist) => {
     setLocalPlaylists(prevPlaylists =>

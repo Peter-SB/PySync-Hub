@@ -48,7 +48,6 @@ class Playlist(db.Model):
     date_limit = db.Column(db.DateTime, nullable=True)  # Only sync/download tracks added after this date
     track_limit = db.Column(db.Integer, nullable=True)  # Maximum number of tracks to sync/download
     
-    # New fields for folder organization
     folder_id = db.Column(db.Integer, db.ForeignKey('folders.id'), nullable=True)
     custom_order = db.Column(db.Integer, nullable=False, default=0)
 
