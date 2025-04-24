@@ -1,13 +1,16 @@
 import { request } from './client';
 
 export function fetchFolders() {
-    return request('/api/folders');
+    console.log('fetching folders...');
+    return request('/api/folders', {
+        method: 'GET',
+    });
 }
 
-export function createFolder(name, parentId = null) {
+export function createFolder(name) {
     return request('/api/folders', {
         method: 'POST',
-        body: { name, parentId },
+        body: { name },
     });
 }
 

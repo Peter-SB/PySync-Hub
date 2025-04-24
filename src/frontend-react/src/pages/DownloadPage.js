@@ -3,6 +3,7 @@ import AddPlaylistForm from '../components/AddPlaylistForm';
 import PlaylistList from '../components/PlaylistList';
 import PlaylistSortOrder from '../components/PlaylistSortOrder';
 import { backendUrl } from '../config';
+import { QueryErrorMessage } from '../components/QueryErrorMessage';
 
 function DownloadPage({ playlists, fetchPlaylists, errorMessage, setErrorMessage }) {
   const [exportStatus, setExportStatus] = useState('');
@@ -144,6 +145,7 @@ function DownloadPage({ playlists, fetchPlaylists, errorMessage, setErrorMessage
           {errorMessage}
         </div>
       )}
+      <QueryErrorMessage />
 
       <PlaylistList
         playlists={sortedPlaylists}

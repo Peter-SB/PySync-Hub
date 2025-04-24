@@ -5,14 +5,24 @@ import { motion, AnimatePresence } from 'framer-motion';
 import InsertionZone from './InsertionZone';
 import PlaylistItem from './PlaylistItem';
 import { backendUrl } from '../config';
+import { useDeleteFolder, useRenameFolder } from '../hooks/useFolderMutations';
+import { useFolders } from '../hooks/useFolders';
 
 // FolderItem: renders a folder with its label and its children along with insertion zones.
 function FolderItem({ item, level, activeDropTarget, activeItem, fetchPlaylists, selectedPlaylists, onSelectChange, onPlaylistUpdate }) {
     const [isEditing, setIsEditing] = useState(false);
     const [folderName, setFolderName] = useState(item.title);
-    const [isSubmitting, setIsSubmitting] = useState(false);
     const [isSyncing, setIsSyncing] = useState(false);
     const inputRef = useRef(null);
+    const deleteFolderMutation = useDeleteFolder();
+    const renameFolderMutation = useRenameFolder();
+    const { data: folders = [], isLoading, error } = useFolders();
+    const folder = folders.find(f => parseInt(f.id) === parseInt(item.id.replace('folder-', '')));
+
+    const deleteFolder = async (e) => {
+        e.stopPropagation();
+        deleteFolderMutation.mutateAsync(item.originalId);
+    };
 
     // Calculate if folder is disabled based on all child playlists being disabled
     const isFolderDisabled = () => {
@@ -202,26 +212,8 @@ function FolderItem({ item, level, activeDropTarget, activeItem, fetchPlaylists,
             return;
         }
 
-        setIsSubmitting(true);
-        try {
-            const response = await fetch(`${backendUrl}/api/folders/${item.originalId}`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name: folderName }),
-            });
-
-            if (!response.ok) {
-                throw new Error('Failed to rename folder');
-            }
-
-            item.title = folderName; // Update the folder title on the frontend
-        } catch (error) {
-            console.error('Error renaming folder:', error);
-            setFolderName(item.title); // Revert on error
-        } finally {
-            setIsSubmitting(false);
-            setIsEditing(false);
-        }
+        setIsEditing(false);
+        renameFolderMutation.mutateAsync({ folderId: item.originalId, newName: folderName });
     };
 
     // Handle cancelling the rename
@@ -267,7 +259,6 @@ function FolderItem({ item, level, activeDropTarget, activeItem, fetchPlaylists,
                                 onKeyDown={handleKeyDown}
                                 // onBlur={handleCancelRename}
                                 className="px-2 py-1 border rounded focus:outline-none focus:ring focus:border-blue-300"
-                                disabled={isSubmitting}
                             />
                             <button
                                 onClick={(e) => {
@@ -292,18 +283,7 @@ function FolderItem({ item, level, activeDropTarget, activeItem, fetchPlaylists,
                                 </svg>
                             </button>
                             <button
-                                onClick={async (e) => {
-                                    e.stopPropagation();
-                                    try {
-                                        const response = await fetch(`${backendUrl}/api/folders/${item.originalId}`, {
-                                            method: 'DELETE',
-                                        });
-                                        if (!response.ok) throw new Error('Failed to delete folder');
-                                        fetchPlaylists();
-                                    } catch (error) {
-                                        console.error('Error deleting folder:', error);
-                                    }
-                                }}
+                                onClick={deleteFolder}
                                 className="ml-1 text-red-600 hover:text-red-800"
                             >
                                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -317,7 +297,7 @@ function FolderItem({ item, level, activeDropTarget, activeItem, fetchPlaylists,
                                 className={`font-medium cursor-pointer hover:text-blue-600 flex-grow ${isDisabled ? 'text-gray-500' : 'text-gray-700'}`}
                                 onClick={handleStartRename}
                             >
-                                {item.title}
+                                {folder.name}
                             </span>
                             {/* <button
                                 onMouseDown={(e) => e.stopPropagation()}

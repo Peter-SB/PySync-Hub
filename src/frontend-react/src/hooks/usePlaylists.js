@@ -4,7 +4,7 @@ import { fetchPlaylists } from '../api/playlists'
 export function usePlaylists() {
     return useQuery(
         ['playlists'],
-        () => fetchPlaylists(),
+        fetchPlaylists,
         {
             refetchOnWindowFocus: false,
         }

@@ -1,5 +1,5 @@
 // src/components/PlaylistList.js
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import {
   DndContext,
@@ -8,7 +8,6 @@ import {
   PointerSensor
 } from '@dnd-kit/core';
 import { motion, AnimatePresence } from 'framer-motion';
-import './PlaylistList.css';
 import FolderItem from './FolderItem'; import PlaylistItem from './PlaylistItem';
 import './CustomScrollbar.css';
 import './PlaylistList.css';
@@ -22,19 +21,19 @@ import {
   isDescendant,
   findParentAndIndex
 } from '../utils/folderUtils';
+import { useFolders } from '../hooks/useFolders';
+import { useCreateFolder } from '../hooks/useFolderMutations';
 
 function PlaylistList({ playlists, fetchPlaylists, selectedPlaylists, onSelectChange }) {
-  const [folders, setFolders] = useState([]);
-  const [error, setError] = useState('');
-  const [treeData, setTreeData] = useState([]);
   const [activeId, setActiveId] = useState(null);
   const [activeDropTarget, setActiveDropTarget] = useState(null);
-  const [localPlaylists, setLocalPlaylists] = useState(playlists);
+  const { data: folders = [], isLoading, error } = useFolders();
+  const createFolderMutation = useCreateFolder();
 
-  // Update localPlaylists when props change
-  useEffect(() => {
-    setLocalPlaylists(playlists);
-  }, [playlists]);
+  // Add folder function
+  const addFolder = () => {
+    createFolderMutation.mutateAsync({ name: `Folder ${folders.length + 1}` })
+  };
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -44,62 +43,29 @@ function PlaylistList({ playlists, fetchPlaylists, selectedPlaylists, onSelectCh
     })
   );
 
-  // Fetch folders when component mounts
-  useEffect(() => {
-    const fetchFolders = async () => {
-      try {
-        const response = await fetch(`${backendUrl}/api/folders`);
-        const data = await response.json();
+  // Memoize the folder and playlist. 
+  // Using just keys and order to avoid unnecessary tree structure re-renders when only data (e.g playlist progress) changes   
+  const folderKeys = JSON.stringify(
+    folders.map(f => [f.id, f.parent_id, f.custom_order])
+  );
+  const playlistKeys = JSON.stringify(
+    playlists.map(p => [p.id, p.folder_id, p.custom_order])
+  );
 
-        if (response.ok) {
-          setFolders(data.folders || []);
-        } else {
-          setError(data.error || 'Failed to fetch folders');
-        }
-      } catch (err) {
-        console.error('Error fetching folders:', err);
-        setError('Error fetching folders');
-      }
-    };
+  const treeData = useMemo(() => {
+    return buildTree(folders, playlists);
+  }, [folderKeys, playlistKeys]);
 
-    fetchFolders();
-  }, []);
 
-  // Build tree whenever folders or local playlists change
-  useEffect(() => {
-    if (folders && localPlaylists) {
-      const tree = buildTree(folders, localPlaylists);
-      console.log('Tree data:', tree); // Debugging line to check the tree structure
-      setTreeData(tree);
-    }
-  }, [folders, localPlaylists]);
-
-  // const treeData = useMemo(
-  //   () => buildTree(folders, playlists),
-  //   [ 
-  //     // only re‑run when folder membership or order changes
-  //     JSON.stringify(
-  //       folders.map(f => [f.id, f.parent_id, f.custom_order])
-  //     ),
-  //     JSON.stringify(
-  //       playlists.map(p => [p.id, p.folder_id, p.custom_order])
-  //     )
-  //   ]
-  // );
-
-  // Handle playlist update (for immediate UI updates)
-  const handlePlaylistUpdate = (updatedPlaylist) => {
-    setLocalPlaylists(prevPlaylists =>
-      prevPlaylists.map(playlist =>
-        playlist.id === updatedPlaylist.id ? updatedPlaylist : playlist
-      )
-    );
-  };
+  // Dnd-kit drag and drop handlers
 
   // When drag starts, keep track of the active id
   const handleDragStart = (event) => {
     setActiveId(event.active.id);
   };
+
+  // Look up the active draggable item using activeId
+  const activeItem = activeId ? findItemById(treeData, activeId) : null;
 
   // When dragging over, if the droppable id indicates an insertion zone, update activeDropTarget
   const handleDragOver = (event) => {
@@ -159,7 +125,7 @@ function PlaylistList({ playlists, fetchPlaylists, selectedPlaylists, onSelectCh
       if (removed) {
         // Update the UI optimistically at adjusted index
         const updatedTree = insertItemAt(newTree, parentId, adjustedIndex, removed);
-        setTreeData(updatedTree);
+        //setTreeData(updatedTree);
 
         try {
           // Send the frontend tree structure directly to the reorder endpoint
@@ -174,7 +140,7 @@ function PlaylistList({ playlists, fetchPlaylists, selectedPlaylists, onSelectCh
           }
         } catch (err) {
           console.error('Error reordering items:', err);
-          setError('Failed to update item position');
+          //setError('Failed to update item position');
           fetchPlaylists(); // Refresh to get the server's current state
         }
       }
@@ -183,23 +149,6 @@ function PlaylistList({ playlists, fetchPlaylists, selectedPlaylists, onSelectCh
     setActiveId(null);
     setActiveDropTarget(null);
   };
-
-  // Handler for folder creation
-  const handleFolderAdded = async () => {
-    try {
-      const response = await fetch(`${backendUrl}/api/folders`);
-      const data = await response.json();
-
-      if (response.ok) {
-        setFolders(data.folders || []);
-      }
-    } catch (err) {
-      console.error('Error refreshing folders:', err);
-    }
-  };
-
-  // Look up the active draggable item using activeId
-  const activeItem = activeId ? findItemById(treeData, activeId) : null;
 
   // Render tree recursively starting from the root level
   const renderTree = (items, level = 0) => {
@@ -229,7 +178,7 @@ function PlaylistList({ playlists, fetchPlaylists, selectedPlaylists, onSelectCh
                 },
                 opacity: { duration: 0.2 }
               }}
-              // style={{ height: activeId === item.id ? 0 : 'auto' }}
+              // style={{ height: activeId === item.id ? 0 : 'auto' }}  // Makes the moved item disappear from the list while dragging, removed because of visual bugs
               className="item-container"
             >
               {item.type === 'folder' ? (
@@ -241,7 +190,7 @@ function PlaylistList({ playlists, fetchPlaylists, selectedPlaylists, onSelectCh
                   fetchPlaylists={fetchPlaylists}
                   selectedPlaylists={selectedPlaylists}
                   onSelectChange={onSelectChange}
-                  onPlaylistUpdate={handlePlaylistUpdate}
+                  onPlaylistUpdate={() => { }}
                 />
               ) : (
                 <PlaylistItem
@@ -251,7 +200,7 @@ function PlaylistList({ playlists, fetchPlaylists, selectedPlaylists, onSelectCh
                   onSelectChange={onSelectChange}
                   draggable={true}
                   id={item.id}
-                  onPlaylistUpdate={handlePlaylistUpdate}
+                  onPlaylistUpdate={() => { }}
                 />
               )}
             </motion.div>
@@ -271,30 +220,11 @@ function PlaylistList({ playlists, fetchPlaylists, selectedPlaylists, onSelectCh
     );
   };
 
-  // Add folder function
-  const addFolder = async () => {
-    try {
-      const response = await fetch(`${backendUrl}/api/folders`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: `Folder ${folders.length + 1}` })
-      });
-      if (response.ok) {
-        handleFolderAdded();
-      } else {
-        setError('Failed to create folder');
-      }
-    } catch (err) {
-      console.error('Error creating folder:', err);
-      setError('Error creating folder');
-    }
-  };
-
   return (
     <div id="playlist-list" className="flex-1 min-h-0 overflow-y-auto custom-scrollbar">
       {error && (
         <div className="p-4 mb-4 text-sm text-red-700 bg-red-100 border border-red-300 rounded">
-          {error}
+          {error instanceof Error ? error.message : String(error)}
         </div>
       )}
 

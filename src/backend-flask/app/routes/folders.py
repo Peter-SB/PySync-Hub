@@ -14,8 +14,7 @@ def get_folders():
     """Retrieve all folders."""
     try:
         folders = Folder.query.all()
-        return jsonify({
-            'folders': [
+        return jsonify([
                 {
                     'id': folder.id,
                     'name': folder.name,
@@ -25,7 +24,7 @@ def get_folders():
                 }
                 for folder in folders
             ]
-        }), 200
+        ), 200
     except Exception as e:
         logger.error(f"Error retrieving folders: {str(e)}")
         return jsonify({'error': 'Failed to retrieve folders'}), 500
