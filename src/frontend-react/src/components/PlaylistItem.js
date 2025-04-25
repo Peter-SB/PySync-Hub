@@ -8,6 +8,7 @@ function PlaylistItem({ playlist, fetchPlaylists, isSelected, onSelectChange, st
   const [isDisabled, setIsDisabled] = useState(playlist.disabled);
   const navigate = useNavigate();
 
+
   // Update isDisabled when playlist.disabled changes
   useEffect(() => {
     setIsDisabled(playlist.disabled);

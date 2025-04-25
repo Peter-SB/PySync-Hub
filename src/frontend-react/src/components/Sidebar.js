@@ -18,9 +18,7 @@ export default function Sidebar({ onExport }) {
         const [currentMajor, currentMinor] = version.split('.').map(Number);
         const [latestMajor, latestMinor] = latestVersion.split('.').map(Number);
 
-        console.log(latestMajor)
         if (currentMajor < latestMajor) {
-
           setVersionStatus('major');
         } else if (currentMinor < latestMinor) {
           setVersionStatus('minor');

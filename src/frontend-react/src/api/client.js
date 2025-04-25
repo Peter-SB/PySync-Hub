@@ -15,11 +15,9 @@ export async function request(url_path, options = {}) {
     };
 
     const res = await fetch(url, opts);
-    console.log('response: ', res.status, res.body);
     if (!res.ok) {
         const err = await res.json().catch(() => ({}));
-        console.error('Error response:', err.message || res.statusText);
-        throw new Error(err.message || res.statusText);
+        throw new Error(err.error || `An error occurred.`);
     }
 
     return res.json();

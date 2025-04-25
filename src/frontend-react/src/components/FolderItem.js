@@ -206,8 +206,8 @@ function FolderItem({ item, level, activeDropTarget, activeItem, fetchPlaylists,
 
     // Handle saving the renamed folder
     const handleSaveRename = async () => {
-        if (!folderName.trim() || folderName === item.title) {
-            setFolderName(item.title);
+        if (!folderName.trim() || folderName === folder.name) {
+            setFolderName(folder.name);
             setIsEditing(false);
             return;
         }
@@ -218,7 +218,7 @@ function FolderItem({ item, level, activeDropTarget, activeItem, fetchPlaylists,
 
     // Handle cancelling the rename
     const handleCancelRename = () => {
-        setFolderName(item.title);
+        setFolderName(folder.name);
         setIsEditing(false);
     };
 

@@ -4,8 +4,17 @@ import {
     toggleMultiplePlaylists,
     syncPlaylists,
     deletePlaylists,
-    exportAll
+    exportAll,
+    addPlaylist
 } from '../api/playlists'
+
+export function useAddPlaylist() {
+    const qc = useQueryClient()
+    return useMutation({
+        mutationFn: (playlistData) => addPlaylist(playlistData),
+        onSuccess: () => { qc.invalidateQueries(['playlists']) },
+    })
+}
 
 export function useTogglePlaylist() {
     const qc = useQueryClient()
@@ -30,4 +39,26 @@ export function useTogglePlaylist() {
             }
         }
     )
+}
+
+export function useSyncPlaylists() {
+    const qc = useQueryClient()
+    return useMutation({
+        mutationFn: (playlistIds = []) => syncPlaylists(playlistIds),
+        onSuccess: () => { qc.invalidateQueries(['playlists']) }
+    })
+}
+
+export function useDeletePlaylists() {
+    const qc = useQueryClient()
+    return useMutation({
+        mutationFn: (playlistIds) => deletePlaylists(playlistIds),
+        onSuccess: () => { qc.invalidateQueries(['playlists']) }
+    })
+}
+
+export function useExportAll() {
+    return useMutation({
+        mutationFn: exportAll,
+    })
 }

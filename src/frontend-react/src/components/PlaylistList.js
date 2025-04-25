@@ -22,13 +22,14 @@ import {
   findParentAndIndex
 } from '../utils/folderUtils';
 import { useFolders } from '../hooks/useFolders';
-import { useCreateFolder } from '../hooks/useFolderMutations';
+import { useCreateFolder, useReorderFolders } from '../hooks/useFolderMutations';
 
 function PlaylistList({ playlists, fetchPlaylists, selectedPlaylists, onSelectChange }) {
   const [activeId, setActiveId] = useState(null);
   const [activeDropTarget, setActiveDropTarget] = useState(null);
   const { data: folders = [], isLoading, error } = useFolders();
   const createFolderMutation = useCreateFolder();
+  const reorderFoldersMutation = useReorderFolders();
 
   // Add folder function
   const addFolder = () => {
@@ -53,6 +54,7 @@ function PlaylistList({ playlists, fetchPlaylists, selectedPlaylists, onSelectCh
   );
 
   const treeData = useMemo(() => {
+    console.log('Rebuilding tree data...');
     return buildTree(folders, playlists);
   }, [folderKeys, playlistKeys]);
 
@@ -125,23 +127,12 @@ function PlaylistList({ playlists, fetchPlaylists, selectedPlaylists, onSelectCh
       if (removed) {
         // Update the UI optimistically at adjusted index
         const updatedTree = insertItemAt(newTree, parentId, adjustedIndex, removed);
-        //setTreeData(updatedTree);
 
         try {
-          // Send the frontend tree structure directly to the reorder endpoint
-          const response = await fetch(`${backendUrl}/api/folders/reorder`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ items: updatedTree })
-          });
-
-          if (!response.ok) {
-            throw new Error('Failed to reorder items');
-          }
+          // Use the reorderFoldersMutation hook to update the backend
+          await reorderFoldersMutation.mutateAsync(updatedTree);
         } catch (err) {
           console.error('Error reordering items:', err);
-          //setError('Failed to update item position');
-          fetchPlaylists(); // Refresh to get the server's current state
         }
       }
     }

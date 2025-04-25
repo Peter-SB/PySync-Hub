@@ -6,6 +6,13 @@ export function fetchPlaylists() {
     });
 }
 
+export function addPlaylist(playlistData) {
+    return request('/api/playlists', {
+        method: 'POST',
+        body: playlistData,
+    });
+}
+
 export function syncPlaylists(playlistIds = []) {
     return request('/api/playlists/sync', {
         method: 'POST',
@@ -31,5 +38,11 @@ export function deletePlaylists(playlistIds) {
     return request('/api/playlists', {
         method: 'DELETE',
         body: { playlist_ids: playlistIds },
+    });
+}
+
+export function exportAll() {
+    return request('/api/export', {
+        method: 'GET',
     });
 }

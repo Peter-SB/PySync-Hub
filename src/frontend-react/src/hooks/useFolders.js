@@ -5,6 +5,6 @@ export function useFolders() {
     return useQuery({
         queryKey: ['folders'],
         queryFn: fetchFolders,
-        refetchOnWindowFocus: false
+        refetchOnWindowFocus: false,
     })
 }

@@ -1,13 +1,14 @@
 // src/components/AddPlaylistForm.js
 import React, { useState, useRef, useEffect } from 'react';
-import { backendUrl } from '../config';
+import { useAddPlaylist } from '../hooks/usePlaylistMutations';
 
-function AddPlaylistForm({ onPlaylistAdded, setError }) {
+function AddPlaylistForm() {
   const [playlistUrl, setPlaylistUrl] = useState('');
   const [trackLimit, setTrackLimit] = useState('');
   const [dateLimit, setDateLimit] = useState('');
   const [showOptions, setShowOptions] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const addPlaylistMutation = useAddPlaylist();
 
   // Create a ref for the form container
   const containerRef = useRef(null);
@@ -26,37 +27,22 @@ function AddPlaylistForm({ onPlaylistAdded, setError }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!playlistUrl.trim()) return;
-    setIsSubmitting(true);
-    setError('');
-    try {
-      const payload = {
-        url_or_id: playlistUrl,
-        track_limit: trackLimit,
-        date_limit: dateLimit,
-      };
 
-      setShowOptions(false);
-      const response = await fetch(`${backendUrl}/api/playlists`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      });
+    const payload = {
+      url_or_id: playlistUrl,
+      track_limit: trackLimit || undefined,
+      date_limit: dateLimit || undefined,
+    };
 
-      const data = await response.json();
-      if (!response.ok) {
-        setError(data.error || 'Failed to add playlist');
-      } else {
-        onPlaylistAdded();
+    setShowOptions(false);
+
+    addPlaylistMutation.mutate(payload, {
+      onSuccess: () => {
         setPlaylistUrl('');
         setTrackLimit('');
         setDateLimit('');
       }
-    } catch (error) {
-      console.error(error);
-      setError('Failed to add playlist');
-    } finally {
-      setIsSubmitting(false);
-    }
+    });
   };
 
   return (
@@ -73,15 +59,14 @@ function AddPlaylistForm({ onPlaylistAdded, setError }) {
             onChange={(e) => setPlaylistUrl(e.target.value)}
             placeholder="Enter Playlist URL"
             className="flex-1 p-3 border rounded focus:outline-none focus:ring focus:border-blue-300 transition-colors"
-
           />
           <div className="relative flex">
             <button
               type="submit"
-              disabled={!playlistUrl.trim() || isSubmitting}
+              disabled={!playlistUrl.trim() || addPlaylistMutation.isPending}
               className="px-4 py-3 bg-blue-600 text-white rounded-l hover:bg-blue-700 disabled:cursor-not-allowed transition-colors "
             >
-              {isSubmitting ? 'Adding...' : 'Add Playlist'}
+              {addPlaylistMutation.isPending ? 'Adding...' : 'Add Playlist'}
             </button>
             <button
               type="button"

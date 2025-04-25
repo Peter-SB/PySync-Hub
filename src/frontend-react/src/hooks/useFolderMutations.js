@@ -55,25 +55,28 @@ export function useReorderFolders() {
     return useMutation({
         mutationFn: (items) => reorderFolders(items),
 
-        // onMutate: async (items) => {
-        //     await qc.cancelQueries(['folders'])
-        //     const previous = qc.getQueryData(['folders'])
-        //     qc.setQueryData(['folders'], old => {
-        //         const newOrder = items.map(item => {
-        //             const folder = old.find(f => f.id === item.id)
-        //             return { ...folder, custom_order: item.custom_order }
-        //         })
-        //         return [...old.filter(f => !items.some(i => i.id === f.id)), ...newOrder]
-        //     })
+        onMutate: async (items) => {
+            await qc.cancelQueries(['folders'])
+            const previous = qc.getQueryData(['folders'])
+            qc.setQueryData(['folders'], old => {
+                const newOrder = items.map(item => {
+                    const folder = old.find(f => f.id === item.id)
+                    return { ...folder, custom_order: item.custom_order }
+                })
+                return [...old.filter(f => !items.some(i => i.id === f.id)), ...newOrder]
+            })
 
-        //     return { previous }
-        // },
+            return { previous }
+        },
 
-        // onError: (_err, _vars, context) => {
-        //     qc.setQueryData(['folders'], context.previous)
-        // },
+        onError: (_err, _vars, context) => {
+            qc.setQueryData(['folders'], context.previous)
+        },
 
-        onSettled: () => qc.invalidateQueries(['folders'])
+        onSettled: () => {
+            qc.invalidateQueries(['folders']);
+            //qc.invalidateQueries(['playlists']);
+        }
     }
     )
 }
