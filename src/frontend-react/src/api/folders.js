@@ -33,3 +33,10 @@ export function reorderFolders(items) {
         body: { items },
     });
 }
+
+export function moveItems(items) {
+    return request('/api/folders/move-items', {
+        method: 'POST',
+        body: { items },
+    });
+}

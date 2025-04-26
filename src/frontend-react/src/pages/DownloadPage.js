@@ -20,6 +20,7 @@ function DownloadPage() {
   const exportMutation = useExportAll();
 
   // Sort playlists based on the selected sort criterion and order.
+  // todo: move to PlaylistSortOrder?
   const sortedPlaylists = useMemo(() => {
     return playlists.slice().sort((a, b) => {
       let aVal = a[sortBy];
@@ -105,7 +106,7 @@ function DownloadPage() {
             </button>
           </div>
           <div className="flex items-center gap-2 ml-auto">
-            <PlaylistSortOrder sortBy={sortBy} setSortBy={setSortBy} sortOrder={sortOrder} setSortOrder={setSortOrder} />
+            {/* <PlaylistSortOrder sortBy={sortBy} setSortBy={setSortBy} sortOrder={sortOrder} setSortOrder={setSortOrder} />  todo: reimplement*/}
             {selectedPlaylists.length > 0 && (
               <button
                 onClick={handleDelete}
@@ -133,7 +134,6 @@ function DownloadPage() {
       <ErrorMessage />
 
       <PlaylistList
-        playlists={sortedPlaylists}
         selectedPlaylists={selectedPlaylists}
         onSelectChange={handleCheckboxChange}
       />

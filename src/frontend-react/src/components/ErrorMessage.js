@@ -1,34 +1,29 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
+import { useGlobalError } from '../contexts/GlobalErrorContext';
 import { useQueryClient } from '@tanstack/react-query';
 
 export function ErrorMessage() {
-    const [errorMessage, setErrorMessage] = useState(null);
+    const { error, setError } = useGlobalError();
     const queryClient = useQueryClient();
 
+    // Set default options for queries and mutations to handle errors globally
+    const onError = (error) => {
+        setError(error);
+    }
     queryClient.setDefaultOptions({
-        queries: {
-            onError: (error) => {
-                setErrorMessage(typeof error === 'string' ? error : error.message || 'An error occurred');
-            },
-        },
-        mutations: {
-            onError: (error) => {
-                setErrorMessage(typeof error === 'string' ? error : error.message || 'An error occurred during operation');
-            },
-        },
+        queries: { onError },
+        mutations: { onError },
     })
 
-    const dismissError = () => {
-        setErrorMessage(null);
-    };
+    if (!error) return null;
 
-    if (!errorMessage) return null;
+    const errorMessage = error instanceof Error ? error.message : String(error);
 
     return (
         <div className="p-4 mb-4 text-sm text-red-700 bg-red-100 border border-red-300 rounded relative">
             {errorMessage}
             <button
-                onClick={dismissError}
+                onClick={() => setError(null)}
                 className="absolute top-1 right-1 text-red-700 hover:text-red-900 focus:outline-none"
                 aria-label="Close"
             >

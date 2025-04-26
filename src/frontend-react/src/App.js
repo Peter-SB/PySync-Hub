@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { HashRouter as Router, Routes, Route } from 'react-router-dom';  // Use this for production and when running in Electron. Because Electron uses file:// protocol and BrowserRouter doesn't work with file:// protocol
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { useSocketPlaylistUpdates } from './hooks/useSocketPlaylistUpdates';
@@ -8,6 +8,7 @@ import DownloadPage from './pages/DownloadPage';
 import TrackPage from './pages/TrackPage';
 import PlaylistPage from './pages/PlaylistPage';
 import SettingsPage from './pages/SettingsPage';
+import { GlobalErrorProvider } from './contexts/GlobalErrorContext';
 
 
 const qc = new QueryClient({
@@ -29,7 +30,7 @@ const qc = new QueryClient({
 
 
 
-// Main application component wrapped in React Query Client Provider
+// Main application component wrapped in React Query Client Provider.
 function AppContent() {
   useSocketPlaylistUpdates();
 
@@ -52,9 +53,12 @@ function AppContent() {
 
 function App() {
   return (
-    <QueryClientProvider client={qc}>
-      <AppContent />
-    </QueryClientProvider>
+    <GlobalErrorProvider>
+      <QueryClientProvider client={qc}>
+        <AppContent />
+      </QueryClientProvider>
+    </GlobalErrorProvider>
+
   );
 }
 

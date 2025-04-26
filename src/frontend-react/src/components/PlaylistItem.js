@@ -3,11 +3,17 @@ import { useNavigate } from 'react-router-dom';
 import DownloadStatus from './DownloadStatus.js';
 import { backendUrl } from '../config';
 import { useDraggable } from '@dnd-kit/core';
+import { usePlaylists } from '../hooks/usePlaylists.js';
+import { useTogglePlaylist, useCancelDownload } from '../hooks/usePlaylistMutations.js';
 
-function PlaylistItem({ playlist, fetchPlaylists, isSelected, onSelectChange, style, draggable = false, id, onPlaylistUpdate }) {
+function PlaylistItem({ id, isSelected, onSelectChange, style, draggable = false, onPlaylistUpdate }) {
+  const { data: playlists = [] } = usePlaylists();
+  const playlist = playlists.find((p) => `playlist-${p.id}` === id);
+
   const [isDisabled, setIsDisabled] = useState(playlist.disabled);
   const navigate = useNavigate();
-
+  const cancelDownload = useCancelDownload();
+  const togglePlaylistMutation = useTogglePlaylist();
 
   // Update isDisabled when playlist.disabled changes
   useEffect(() => {
@@ -46,65 +52,13 @@ function PlaylistItem({ playlist, fetchPlaylists, isSelected, onSelectChange, st
   };
 
   // Cancel an ongoing download for this playlist
-  const handleCancelClick = async () => {
-    try {
-      const response = await fetch(`${backendUrl}/api/download/${playlist.id}/cancel`, {
-        method: 'DELETE',
-      });
-      if (!response.ok) {
-        console.error('Failed to cancel download');
-      }
-      fetchPlaylists();
-    } catch (error) {
-      console.error('Error cancelling download', error);
-    }
-  };
+  const handleCancelClick = async () => await cancelDownload.mutateAsync(playlist.id);
 
   // Toggle the disabled state of the playlist
-  const handleToggleClick = async (playlistId, newState) => {
-    // Optimistically update the UI
-    setIsDisabled(newState);
-
-    // Immediately update the playlist data in the parent component
-    if (onPlaylistUpdate) {
-      const updatedPlaylist = {
-        ...playlist,
-        disabled: newState
-      };
-      onPlaylistUpdate(updatedPlaylist);
-    }
-
-    try {
-      const response = await fetch(`${backendUrl}/api/playlists/toggle`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ playlist_id: playlistId, disabled: newState }),
-      });
-      if (!response.ok) {
-        throw new Error('Failed to toggle playlist state');
-      }
-      // Still fetch the playlists in the background to ensure data consistency
-      fetchPlaylists();
-    } catch (error) {
-      console.error('Error toggling playlist state', error);
-      // Revert the UI update if there was an error
-      setIsDisabled(!newState);
-
-      // Also revert the parent component's data
-      if (onPlaylistUpdate) {
-        const revertedPlaylist = {
-          ...playlist,
-          disabled: !newState
-        };
-        onPlaylistUpdate(revertedPlaylist);
-      }
-    }
-  };
+  const handleToggleClick = async (playlistId, newState) => await togglePlaylistMutation.mutateAsync({ playlistId, disabled: newState });
 
   // Navigate to the playlist tracks page
-  const handlePlaylistClick = () => {
-    navigate(`/playlist/${playlist.id}`);
-  };
+  const handlePlaylistClick = () => navigate(`/playlist/${playlist.id}`);
 
   return (
     <div

@@ -314,3 +314,65 @@ def process_tree_items(items, parent_id=None):
                 db.session.add(playlist)
                 
     db.session.flush()
+
+
+@bp.route('/move-items', methods=['POST'])
+def batch_move_items():
+    """
+    Update parent_id and custom_order from a mixed list of folders and playlists.
+
+    {
+      "items": [
+        { "type": "folder",   "id": 12, "parent_id": 5,  "custom_order": 0 },
+        { "type": "playlist", "id": 34, "parent_id": null, "custom_order": 2 },
+        // …only the ones whose parent_id or position changed…
+      ]
+    }
+    """
+    data = request.get_json(force=True)
+    items = data.get('items')
+    if not isinstance(items, list):
+        return jsonify({'error': '`items` must be a list'}), 400
+
+    # Partition into folders vs playlists
+    folder_updates   = []
+    playlist_updates = []
+
+    for item in items:
+        try:
+            item_type = item['type']
+            item_id = int(item['id'])
+            parent_id = item['parent_id']
+            custom_order = int(item['custom_order'])
+        except (KeyError, ValueError) as e:
+            return jsonify({'error': f'Invalid item format, {e}'}), 400
+
+        if item_type == 'folder':
+            folder_updates.append({
+                'id':        item_id,
+                'parent_id': parent_id,
+                'custom_order': custom_order
+            })
+        elif item_type == 'playlist':
+            playlist_updates.append({
+                'id':         item_id,
+                'folder_id':  parent_id,
+                'custom_order': custom_order
+            })
+        else:
+            return jsonify({'error': f'Unknown type `{item_type}`'}), 400
+
+    try:
+        # Bulk-update without loading every model
+        if folder_updates:
+            db.session.bulk_update_mappings(Folder,   folder_updates)
+        if playlist_updates:
+            db.session.bulk_update_mappings(Playlist, playlist_updates)
+
+        db.session.commit()
+        return jsonify({'message': 'Items moved successfully'}), 200
+
+    except Exception as e:
+        db.session.rollback()
+        logger.error(f"Error in batch move: {e}")
+        return jsonify({'error': 'Failed to move items'}), 500

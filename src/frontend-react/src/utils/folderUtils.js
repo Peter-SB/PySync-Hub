@@ -202,40 +202,38 @@ export function isDescendant(folder, descendantId) {
 }
 
 /**
- * Flatten the tree into a list of node operations for backend
+ * Flatten the tree into a list of nodes for backend
  * 
  * @param {Array} tree - Current tree structure 
- * @returns {Array} - List of operations to send to backend
+ * @returns {Array} - List of nodes to send to backend
  */
 export function getFolderOperations(tree) {
-    const operations = [];
+    const treeNodes = [];
 
     function processNode(node, parentId, index) {
         const itemType = node.id.startsWith('folder-') ? 'folder' : 'playlist';
         const itemId = parseInt(node.originalId, 10);
 
-        operations.push({
+        if (isNaN(itemId)) {
+            console.warn(`Invalid ID in node`, node);
+            throw new Error(`Invalid ID in node: ${node.id}`);
+        }
+
+        treeNodes.push({
             type: itemType,
             id: itemId,
             parent_id: parentId,
-            position: index
+            custom_order: index
         });
 
-        if (node.children && node.children.length > 0) {
-            node.children.forEach((child, idx) => {
-                if (itemType === 'folder') {
-                    processNode(child, itemId, idx);
-                } else {
-                    // Playlists can't have children
-                    console.error('Playlists should not have children', node);
-                }
-            });
+        if (itemType === 'folder' && Array.isArray(node.children)) {
+            node.children.forEach((child, idx) => processNode(child, itemId, idx));
+        } else if (itemType === 'playlist' && node.children?.length) {
+            console.error('Playlists should not have children:', node);
         }
     }
 
-    tree.forEach((node, index) => {
-        processNode(node, null, index);
-    });
+    tree.forEach((node, index) => processNode(node, null, index));
 
-    return operations;
+    return treeNodes;
 }

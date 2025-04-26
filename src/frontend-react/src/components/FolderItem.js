@@ -359,15 +359,12 @@ function FolderItem({ item, level, activeDropTarget, activeItem, fetchPlaylists,
                                         level={level + 1}
                                         activeDropTarget={activeDropTarget}
                                         activeItem={activeItem}
-                                        fetchPlaylists={fetchPlaylists}
                                         selectedPlaylists={selectedPlaylists}
                                         onSelectChange={onSelectChange}
                                         onPlaylistUpdate={onPlaylistUpdate}
                                     />
                                 ) : (
                                     <PlaylistItem
-                                        playlist={child.playlist}
-                                        fetchPlaylists={fetchPlaylists}
                                         isSelected={selectedPlaylists.includes(child.playlist.id)}
                                         onSelectChange={onSelectChange}
                                         style={{

@@ -12,29 +12,61 @@ import FolderItem from './FolderItem'; import PlaylistItem from './PlaylistItem'
 import './CustomScrollbar.css';
 import './PlaylistList.css';
 import InsertionZone from './InsertionZone';
-import { backendUrl } from '../config';
 import {
   buildTree,
   removeItem,
   insertItemAt,
   findItemById,
   isDescendant,
-  findParentAndIndex
+  findParentAndIndex,
+  getFolderOperations as flattenTreeItems
 } from '../utils/folderUtils';
 import { useFolders } from '../hooks/useFolders';
-import { useCreateFolder, useReorderFolders } from '../hooks/useFolderMutations';
+import { useCreateFolder, useMoveItems } from '../hooks/useFolderMutations';
+import { usePlaylists } from '../hooks/usePlaylists';
 
-function PlaylistList({ playlists, fetchPlaylists, selectedPlaylists, onSelectChange }) {
+function PlaylistList({ selectedPlaylists, onSelectChange }) {
   const [activeId, setActiveId] = useState(null);
   const [activeDropTarget, setActiveDropTarget] = useState(null);
-  const { data: folders = [], isLoading, error } = useFolders();
+  const [treeData, setTreeData] = useState([]);
+
+  const { data: folders = [] } = useFolders();
+  const { data: playlists = [] } = usePlaylists();
   const createFolderMutation = useCreateFolder();
-  const reorderFoldersMutation = useReorderFolders();
+  const moveItemsMutation = useMoveItems();
 
   // Add folder function
   const addFolder = () => {
-    createFolderMutation.mutateAsync({ name: `Folder ${folders.length + 1}` })
+    createFolderMutation.mutateAsync({ name: `Folder ${folders.length + 1}` });
   };
+
+  // Memoize the folder and playlist. 
+  // Using just keys and order to avoid unnecessary tree structure re-renders when only data (e.g playlist progress) changes   
+  const folderKeys = useMemo(() =>
+
+    JSON.stringify(folders.map(f => [f.id, f.parent_id, f.custom_order])),
+    [folders]
+  );
+
+  const playlistKeys = useMemo(() =>
+    JSON.stringify(playlists.map(p => [p.id, p.folder_id, p.custom_order])),
+    [playlists]
+  );
+
+  // Memoize the tree building operation based on structure changes
+  const memoizedTreeData = useMemo(() => {
+    console.log('Rebuilding tree data...');
+    return buildTree(folders, playlists);
+  }, [folderKeys, playlistKeys]);
+
+  // Update state when memoized tree data changes
+  useEffect(() => {
+    setTreeData(memoizedTreeData);
+  }, [memoizedTreeData]);
+
+  // ------------------------------------
+  //    Dnd-kit drag and drop handlers
+  // ------------------------------------
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -43,23 +75,6 @@ function PlaylistList({ playlists, fetchPlaylists, selectedPlaylists, onSelectCh
       }
     })
   );
-
-  // Memoize the folder and playlist. 
-  // Using just keys and order to avoid unnecessary tree structure re-renders when only data (e.g playlist progress) changes   
-  const folderKeys = JSON.stringify(
-    folders.map(f => [f.id, f.parent_id, f.custom_order])
-  );
-  const playlistKeys = JSON.stringify(
-    playlists.map(p => [p.id, p.folder_id, p.custom_order])
-  );
-
-  const treeData = useMemo(() => {
-    console.log('Rebuilding tree data...');
-    return buildTree(folders, playlists);
-  }, [folderKeys, playlistKeys]);
-
-
-  // Dnd-kit drag and drop handlers
 
   // When drag starts, keep track of the active id
   const handleDragStart = (event) => {
@@ -121,25 +136,42 @@ function PlaylistList({ playlists, fetchPlaylists, selectedPlaylists, onSelectCh
       if (origin && origin.parentId === parentId && origin.index < index) {
         adjustedIndex = index - 1;
       }
-      // Remove the item from its current position
-      const { newTree, removed } = removeItem(treeData, active.id);
 
+
+      // Update tree and the backend
+      const { newTree, removed } = removeItem(JSON.parse(JSON.stringify(treeData)), active.id); // Deep clone to avoid mutating state directly
       if (removed) {
-        // Update the UI optimistically at adjusted index
         const updatedTree = insertItemAt(newTree, parentId, adjustedIndex, removed);
-
-        try {
-          // Use the reorderFoldersMutation hook to update the backend
-          await reorderFoldersMutation.mutateAsync(updatedTree);
-        } catch (err) {
-          console.error('Error reordering items:', err);
-        }
+        await handleUpdateTree(treeData, updatedTree);
+      } else {
+        console.error("Item not found in the tree:", active.id);
       }
     }
 
     setActiveId(null);
     setActiveDropTarget(null);
   };
+
+  // Handle updating the tree by comparing the old and new tree structures then sending the changes to the backend 
+  const handleUpdateTree = async (treeData, updatedTree) => {
+    // Flatten old & new
+    const oldOps = flattenTreeItems(treeData);
+    const newOps = flattenTreeItems(updatedTree);
+
+    // Get changed nodes 
+    const changed = newOps.filter(n => {
+      const o = oldOps.find(x => x.type === n.type && x.id === n.id);
+      return !o || o.parent_id !== n.parent_id || o.custom_order !== n.custom_order;
+    });
+
+    if (changed.length) {
+      await moveItemsMutation.mutateAsync(changed);
+    }
+
+    // Reset dnd state
+    setActiveId(null);
+    setActiveDropTarget(null);
+  }
 
   // Render tree recursively starting from the root level
   const renderTree = (items, level = 0) => {
@@ -178,20 +210,15 @@ function PlaylistList({ playlists, fetchPlaylists, selectedPlaylists, onSelectCh
                   level={level}
                   activeDropTarget={activeDropTarget}
                   activeItem={activeItem}
-                  fetchPlaylists={fetchPlaylists}
                   selectedPlaylists={selectedPlaylists}
                   onSelectChange={onSelectChange}
-                  onPlaylistUpdate={() => { }}
                 />
               ) : (
                 <PlaylistItem
-                  playlist={item.playlist}
-                  fetchPlaylists={fetchPlaylists}
+                  id={item.id}
                   isSelected={selectedPlaylists.includes(item.playlist.id)}
                   onSelectChange={onSelectChange}
                   draggable={true}
-                  id={item.id}
-                  onPlaylistUpdate={() => { }}
                 />
               )}
             </motion.div>
@@ -213,12 +240,6 @@ function PlaylistList({ playlists, fetchPlaylists, selectedPlaylists, onSelectCh
 
   return (
     <div id="playlist-list" className="flex-1 min-h-0 overflow-y-auto custom-scrollbar">
-      {error && (
-        <div className="p-4 mb-4 text-sm text-red-700 bg-red-100 border border-red-300 rounded">
-          {error instanceof Error ? error.message : String(error)}
-        </div>
-      )}
-
       <DndContext
         sensors={sensors}
         onDragStart={handleDragStart}

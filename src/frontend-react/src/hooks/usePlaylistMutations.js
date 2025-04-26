@@ -5,8 +5,10 @@ import {
     syncPlaylists,
     deletePlaylists,
     exportAll,
-    addPlaylist
+    addPlaylist,
+    cancelDownload
 } from '../api/playlists'
+import { useGlobalError } from '../contexts/GlobalErrorContext';
 
 export function useAddPlaylist() {
     const qc = useQueryClient()
@@ -17,28 +19,26 @@ export function useAddPlaylist() {
 }
 
 export function useTogglePlaylist() {
+    const { setError } = useGlobalError();
     const qc = useQueryClient()
-    return useMutation(
-        ({ playlistId, disabled }) => togglePlaylist(playlistId, disabled),
-        {
-            onMutate: async ({ playlistId, disabled }) => {
-                await qc.cancelQueries(['playlists'])
-                const previous = qc.getQueryData(['playlists'])
-                qc.setQueryData(['playlists'], old =>
-                    old.map(p => p.id === playlistId ? { ...p, disabled } : p)
-                )
-                return { previous }
-            },
-
-            onError: (_err, _vars, context) => {
-                qc.setQueryData(['playlists'], context.previous)
-            },
-
-            onSettled: () => {
-                qc.invalidateQueries(['playlists'])
-            }
+    return useMutation({
+        mutationFn: ({ playlistId, disabled }) => togglePlaylist(playlistId, disabled),
+        onMutate: async ({ playlistId, disabled }) => {
+            await qc.cancelQueries({ queryKey: ['playlists'] })
+            const previous = qc.getQueryData(['playlists'])
+            qc.setQueryData(['playlists'], old =>
+                old.map(p => p.id === playlistId ? { ...p, disabled } : p)
+            )
+            return { previous }
+        },
+        onError: (error, _vars, context) => {
+            setError(error);
+            qc.setQueryData(['playlists'], context.previous);
+        },
+        onSettled: () => {
+            qc.invalidateQueries({ queryKey: ['playlists'] })
         }
-    )
+    })
 }
 
 export function useSyncPlaylists() {
@@ -60,5 +60,14 @@ export function useDeletePlaylists() {
 export function useExportAll() {
     return useMutation({
         mutationFn: exportAll,
+    })
+}
+
+export function useCancelDownload() {
+    const qc = useQueryClient()
+    return useMutation({
+        mutationFn: (playlistId) => cancelDownload(playlistId),
+        // todo: optimistic ui update
+        onSuccess: () => { qc.invalidateQueries(['playlists']) }
     })
 }

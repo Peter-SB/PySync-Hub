@@ -46,3 +46,9 @@ export function exportAll() {
         method: 'GET',
     });
 }
+
+export function cancelDownload(playlistId) {
+    return request(`/api/download/${playlistId}/cancel`, {
+        method: 'DELETE',
+    });
+}
