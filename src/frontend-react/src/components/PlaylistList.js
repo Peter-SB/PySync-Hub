@@ -223,7 +223,7 @@ function PlaylistList({ selectedPlaylists, onSelectChange }) {
               )}
             </motion.div>
 
-            {/* Add an insertion zone after the last item */}
+            {/* Insertion zone after the last item */}
             {index === items.length - 1 && (
               <InsertionZone
                 parentId="root"

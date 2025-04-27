@@ -41,6 +41,29 @@ export function useTogglePlaylist() {
     })
 }
 
+export function useToggleMultiplePlaylists() {
+    const { setError } = useGlobalError();
+    const qc = useQueryClient()
+    return useMutation({
+        mutationFn: ({ playlistIds, disabled }) => toggleMultiplePlaylists(playlistIds, disabled),
+        onMutate: async ({ playlistIds, disabled }) => {
+            await qc.cancelQueries({ queryKey: ['playlists'] })
+            const previous = qc.getQueryData(['playlists'])
+            qc.setQueryData(['playlists'], old =>
+                old.map(p => playlistIds.includes(p.id) ? { ...p, disabled } : p)
+            )
+            return { previous }
+        },
+        onError: (error, _vars, context) => {
+            setError(error);
+            qc.setQueryData(['playlists'], context.previous);
+        },
+        onSettled: () => {
+            qc.invalidateQueries({ queryKey: ['playlists'] })
+        }
+    })
+}
+
 export function useSyncPlaylists() {
     const qc = useQueryClient()
     return useMutation({

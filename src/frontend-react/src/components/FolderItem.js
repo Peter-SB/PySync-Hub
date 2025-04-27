@@ -7,6 +7,7 @@ import PlaylistItem from './PlaylistItem';
 import { backendUrl } from '../config';
 import { useDeleteFolder, useRenameFolder } from '../hooks/useFolderMutations';
 import { useFolders } from '../hooks/useFolders';
+import { useToggleMultiplePlaylists } from '../hooks/usePlaylistMutations';
 
 // FolderItem: renders a folder with its label and its children along with insertion zones.
 function FolderItem({ item, level, activeDropTarget, activeItem, fetchPlaylists, selectedPlaylists, onSelectChange, onPlaylistUpdate }) {
@@ -127,6 +128,8 @@ function FolderItem({ item, level, activeDropTarget, activeItem, fetchPlaylists,
     };
 
     // Handle toggle for all playlists in this folder
+    const toggleMultiplePlaylists = useToggleMultiplePlaylists();
+
     const handleToggleClick = async (newState) => {
         // Optimistically update the UI
         setIsDisabled(newState);
@@ -143,18 +146,11 @@ function FolderItem({ item, level, activeDropTarget, activeItem, fetchPlaylists,
         }
 
         try {
-            // Call the toggle API for all playlists
-            const response = await fetch(`${backendUrl}/api/playlists/toggle-multiple`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ playlist_ids: playlistIds, disabled: newState }),
+            // Use the React Query mutation instead of direct fetch
+            await toggleMultiplePlaylists.mutateAsync({
+                playlistIds: playlistIds,
+                disabled: newState
             });
-
-            if (!response.ok) {
-                throw new Error('Failed to toggle folder playlists');
-            }
-
-            fetchPlaylists();
         } catch (error) {
             console.error('Error toggling folder playlists:', error);
             // Revert the UI update if there was an error
