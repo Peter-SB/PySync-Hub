@@ -102,42 +102,6 @@ function FolderItem({ item, level, activeDropTarget, activeItem, fetchPlaylists,
         await toggleFolderMutation.mutateAsync(item.originalId);
     }
 
-    // const handleToggleClick = async (newState) => {
-    //     // Optimistically update the UI
-    //     setIsDisabled(newState);
-
-    //     // Immediately update the playlist data in the parent component
-    //     if (onPlaylistUpdate) {
-    //         updatePlaylistsInFolder(item, newState);
-    //     }
-
-    //     const playlistIds = collectAllPlaylistIds(item);
-
-    //     try {
-    //         // First, toggle the folder itself using our new mutation
-    //         await toggleFolderMutation.mutateAsync(item.originalId);
-
-    //         // Then toggle all child playlists if there are any
-    //         if (playlistIds.length > 0) {
-    //             await toggleMultiplePlaylists.mutateAsync({
-    //                 playlistIds: playlistIds,
-    //                 disabled: newState
-    //             });
-    //         }
-    //     } catch (error) {
-    //         console.error('Error toggling folder:', error);
-    //         // Revert the UI update if there was an error
-    //         setIsDisabled(!newState);
-
-    //         // Revert the parent component's data
-    //         if (onPlaylistUpdate) {
-    //             updatePlaylistsInFolder(item, !newState);
-    //         }
-    //     } finally {
-    //         forceRefreshDisabledState();
-    //     }
-    // };
-
     // Handle sync for all playlists in this folder
     const handleFolderSync = async (e) => {
         e.stopPropagation();

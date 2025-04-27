@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import DownloadStatus from './DownloadStatus.js';
-import { backendUrl } from '../config';
 import { useDraggable } from '@dnd-kit/core';
 import { usePlaylists } from '../hooks/usePlaylists.js';
-import { useTogglePlaylist, useCancelDownload } from '../hooks/usePlaylistMutations.js';
+import { useTogglePlaylist, useCancelDownload, useSyncPlaylists } from '../hooks/usePlaylistMutations.js';
 
 function PlaylistItem({ id, isSelected, onSelectChange, style, draggable = false, onPlaylistUpdate }) {
   const { data: playlists = [] } = usePlaylists();
@@ -14,6 +13,7 @@ function PlaylistItem({ id, isSelected, onSelectChange, style, draggable = false
   const navigate = useNavigate();
   const cancelDownload = useCancelDownload();
   const togglePlaylistMutation = useTogglePlaylist();
+  const syncPlaylistMutation = useSyncPlaylists();
 
   // Update isDisabled when playlist.disabled changes
   useEffect(() => {
@@ -35,21 +35,8 @@ function PlaylistItem({ id, isSelected, onSelectChange, style, draggable = false
     }
     : style;
 
-  // Trigger a sync for this playlist only
-  const handleSyncClick = async () => {
-    try {
-      const response = await fetch(`${backendUrl}/api/playlists/sync`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ playlist_ids: [playlist.id] }),
-      });
-      if (!response.ok) {
-        console.error('Failed to sync playlist');
-      }
-    } catch (error) {
-      console.error('Error syncing playlist', error);
-    }
-  };
+  // Trigger a sync for this playlist
+  const handleSyncClick = async () => await syncPlaylistMutation.mutateAsync([playlist.id])
 
   // Cancel an ongoing download for this playlist
   const handleCancelClick = async () => await cancelDownload.mutateAsync(playlist.id);

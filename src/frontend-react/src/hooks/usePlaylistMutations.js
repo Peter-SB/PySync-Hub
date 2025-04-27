@@ -89,10 +89,9 @@ export function useTogglePlaylist() {
 }
 
 export function useSyncPlaylists() {
-    const qc = useQueryClient()
     return useMutation({
-        mutationFn: (playlistIds = []) => syncPlaylists(playlistIds),
-        onSuccess: () => { qc.invalidateQueries(['playlists']) }
+        mutationFn: (playlistIds = []) => syncPlaylists(playlistIds)
+        // no need for query invalidation because websocket will handle updating the ui
     })
 }
 
