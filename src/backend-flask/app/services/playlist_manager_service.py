@@ -95,7 +95,7 @@ class PlaylistManagerService:
             TrackManagerService.fetch_playlist_tracks(playlist.id)
         except Exception as e:
             logger.error("Error fetching tracks for new playlist: %s", e, exc_info=True)
-            return "Error fetching tracks for new playlist"
+            return str(e)
 
         return None
 

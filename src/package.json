@@ -26,7 +26,7 @@
     "package": "electron-forge package",
     "make": "electron-forge make",
     "build": "cd frontend-react && npm run build && cd .. &&  && rmdir /S /Q backend-flask\\build && xcopy frontend-react\\build backend-flask\\build /E /I /Y && npx electron-forge make",
-    "build-python-lite": "cd frontend-react && npm run build && cd .. && rmdir /S /Q backend-flask\\build && xcopy frontend-react\\build backend-flask\\build /E /I /Y && cd backend-flask && pyinstaller pysync-hub-lite.spec",
-    "build-python-desktop": "cd frontend-react && npm run build && cd .. && rmdir /S /Q backend-flask\\build && xcopy frontend-react\\build backend-flask\\build /E /I /Y && cd backend-flask && pyinstaller pysync-hub-backend.spec && cd .. && npx electron-forge make"
+    "build-python-win-lite": "cd frontend-react && npm run build && cd .. && rmdir /S /Q backend-flask\\build && xcopy frontend-react\\build backend-flask\\build /E /I /Y && cd backend-flask && pyinstaller pysync-hub-lite.spec",
+    "build-python-win-desktop": "cd frontend-react && npm run build && cd .. && rmdir /S /Q backend-flask\\build && xcopy frontend-react\\build backend-flask\\build /E /I /Y && cd backend-flask && pyinstaller pysync-hub-backend.spec && cd .. && npx electron-forge make"
   }
 }

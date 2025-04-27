@@ -15,7 +15,7 @@ export function useAddPlaylist() {
     const qc = useQueryClient()
     return useMutation({
         mutationFn: (playlistData) => addPlaylist(playlistData),
-        onSuccess: () => { qc.invalidateQueries(['playlists']) },
+        onSettled: () => { qc.invalidateQueries({ queryKey: ['playlists'] }) },
     })
 }
 
@@ -99,7 +99,7 @@ export function useDeletePlaylists() {
     const qc = useQueryClient()
     return useMutation({
         mutationFn: (playlistIds) => deletePlaylists(playlistIds),
-        onSuccess: () => { qc.invalidateQueries(['playlists']) }
+        onSettled: () => { qc.invalidateQueries(['playlists']) }
     })
 }
 
@@ -114,6 +114,6 @@ export function useCancelDownload() {
     return useMutation({
         mutationFn: (playlistId) => cancelDownload(playlistId),
         // todo: optimistic ui update
-        onSuccess: () => { qc.invalidateQueries(['playlists']) }
+        onSettled: () => { qc.invalidateQueries(['playlists']) }
     })
 }

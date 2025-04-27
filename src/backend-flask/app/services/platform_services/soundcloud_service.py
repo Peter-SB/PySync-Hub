@@ -19,6 +19,11 @@ class PlaylistNotFoundException(Exception):
         super().__init__(message)
         self.status_code = status_code
 
+class SoundCloudAuthError(Exception):
+    def __init__(self, message, status_code):
+        super().__init__(message)
+        self.status_code = status_code
+
 
 headers = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36"
@@ -43,6 +48,9 @@ class SoundcloudService:
 
             if response.status_code == 404:
                 raise PlaylistNotFoundException("Playlist not found. Could it be private or deleted?", 404)
+
+            if response.status_code == 401:
+                raise SoundCloudAuthError("Authentication Error. Try a new Soundcloud API Key. See Help for instructions.", 401)
 
             raise Exception(f"HTTP GET error: {response.status_code} {response.text}")
 

@@ -89,4 +89,4 @@ class TrackManagerService:
         except Exception as e:
             logger.error("Error syncing playlist tracks for playlist %s: %s", playlist.external_id, e, exc_info=True)
             db.session.rollback()
-            return "Error syncing playlist tracks"
+            raise e
