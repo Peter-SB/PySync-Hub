@@ -19,12 +19,6 @@ function FolderItem({ item, level, activeDropTarget, activeItem, fetchPlaylists,
     const toggleFolderMutation = useToggleFolder();
     const { data: folders = [], isLoading, error } = useFolders();
     const folder = folders.find(f => parseInt(f.id) === parseInt(item.id.replace('folder-', '')));
-
-    const deleteFolder = async (e) => {
-        e.stopPropagation();
-        deleteFolderMutation.mutateAsync(item.originalId);
-    };
-
     const { attributes, listeners, setNodeRef: setDraggableRef, transform, transition } =
         useDraggable({ id: item.id });
 
@@ -41,6 +35,15 @@ function FolderItem({ item, level, activeDropTarget, activeItem, fetchPlaylists,
             inputRef.current.select();
         }
     }, [isEditing]);
+
+    if (!folder) {
+        return null;
+    }
+
+    const deleteFolder = async (e) => {
+        e.stopPropagation();
+        deleteFolderMutation.mutateAsync(item.originalId);
+    };
 
     // Recursively collect all playlist IDs from this folder and its subfolders
     const collectPlaylistIds = (folderItem) => {
@@ -59,43 +62,6 @@ function FolderItem({ item, level, activeDropTarget, activeItem, fetchPlaylists,
         }
 
         return playlistIds;
-    };
-
-    // Recursively collect ALL playlist IDs from this folder and its subfolders (including disabled ones)
-    const collectAllPlaylistIds = (folderItem) => {
-        let playlistIds = [];
-
-        if (folderItem.children) {
-            folderItem.children.forEach(child => {
-                if (child.type === 'folder') {
-                    // Recursively collect IDs from subfolders
-                    playlistIds = [...playlistIds, ...collectAllPlaylistIds(child)];
-                } else if (child.playlist) {
-                    // Add this playlist's ID regardless of disabled status
-                    playlistIds.push(child.playlist.id);
-                }
-            });
-        }
-
-        return playlistIds;
-    };
-
-    // Update playlists recursively in the local state
-    const updatePlaylistsInFolder = (folderItem, disabled) => {
-        if (folderItem.children) {
-            folderItem.children.forEach(child => {
-                if (child.type === 'folder') {
-                    // Recursively update playlists in subfolders
-                    updatePlaylistsInFolder(child, disabled);
-                } else if (child.playlist && onPlaylistUpdate) {
-                    // Update this playlist in the parent component's state
-                    onPlaylistUpdate({
-                        ...child.playlist,
-                        disabled: disabled
-                    });
-                }
-            });
-        }
     };
 
     const handleToggleClick = async () => {
