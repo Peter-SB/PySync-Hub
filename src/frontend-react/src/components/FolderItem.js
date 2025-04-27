@@ -139,7 +139,7 @@ function FolderItem({ item, level, activeDropTarget, activeItem, fetchPlaylists,
     };
 
     return (
-        <>
+        <AnimatePresence>
             <div
                 ref={setDraggableRef}
                 style={{ ...indentStyle, ...draggableStyle }}
@@ -253,17 +253,18 @@ function FolderItem({ item, level, activeDropTarget, activeItem, fetchPlaylists,
 
             {/* Render children and insertion zones */}
             <div style={{ paddingLeft: `${0 * 30}px` }}>
-                {/* Insertion zone before first child */}
-                <InsertionZone
-                    parentId={item.id}
-                    index={0}
-                    activeDropTarget={activeDropTarget}
-                    indent={(level + 1)}
-                />
+
 
                 {/* Only render children if folder is expanded */}
                 {folder.expanded && (
-                    <AnimatePresence>
+                    <>
+                        {/* Insertion zone before first child */}
+                        <InsertionZone
+                            parentId={item.id}
+                            index={0}
+                            activeDropTarget={activeDropTarget}
+                            indent={(level + 1)}
+                        />
                         {item.children && item.children.map((child, i) => (
                             <React.Fragment key={child.id}>
                                 <motion.div
@@ -317,10 +318,10 @@ function FolderItem({ item, level, activeDropTarget, activeItem, fetchPlaylists,
                                 />
                             </React.Fragment>
                         ))}
-                    </AnimatePresence>
+                    </>
                 )}
             </div>
-        </>
+        </AnimatePresence>
     );
 }
 

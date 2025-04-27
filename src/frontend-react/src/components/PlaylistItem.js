@@ -7,24 +7,25 @@ import { useTogglePlaylist, useCancelDownload, useSyncPlaylists } from '../hooks
 
 function PlaylistItem({ id, isSelected, onSelectChange, style, draggable = false, onPlaylistUpdate }) {
   const { data: playlists = [] } = usePlaylists();
-  const playlist = playlists.find((p) => `playlist-${p.id}` === id);
 
-  const [isDisabled, setIsDisabled] = useState(playlist.disabled);
+
   const navigate = useNavigate();
   const cancelDownload = useCancelDownload();
   const togglePlaylistMutation = useTogglePlaylist();
   const syncPlaylistMutation = useSyncPlaylists();
-
-  // Update isDisabled when playlist.disabled changes
-  useEffect(() => {
-    setIsDisabled(playlist.disabled);
-  }, [playlist.disabled]);
 
   // Set up draggable functionality with dnd-kit
   const { attributes, listeners, setNodeRef, transform, transition } = useDraggable({
     id: id || `playlist-${playlist.id}`,
     disabled: !draggable
   });
+
+  const playlist = playlists.find((p) => `playlist-${p.id}` === id);
+
+  // Handles when no playlist
+  if (!playlist) {
+    return null;
+  }
 
   // Compute combined styles for dragging
   const draggableStyles = transform
@@ -54,7 +55,7 @@ function PlaylistItem({ id, isSelected, onSelectChange, style, draggable = false
       ref={draggable ? setNodeRef : undefined}
     >
       <div
-        className={`flex items-center p-2 rounded border shadow transition-shadow my-0.5 px-4 flex-1 cursor-pointer ${isDisabled ? 'bg-gray-200 hover:shadow-none' : 'bg-white hover:shadow-md'
+        className={`flex items-center p-2 rounded border shadow transition-shadow my-0.5 px-4 flex-1 cursor-pointer ${playlist.disabled ? 'bg-gray-200 hover:shadow-none' : 'bg-white hover:shadow-md'
           }`}
         onClick={handlePlaylistClick}
       >
@@ -135,8 +136,8 @@ function PlaylistItem({ id, isSelected, onSelectChange, style, draggable = false
         <input
           type="checkbox"
           id={`toggle-${playlist.id}`}
-          onChange={() => handleToggleClick(playlist.id, !isDisabled)}
-          checked={isDisabled}
+          onChange={() => handleToggleClick(playlist.id, !playlist.disabled)}
+          checked={playlist.disabled}
           className="sr-only peer"
         />
         <div className="relative w-[35px] h-[21px] bg-gray-400 border border-gray-300 rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:ring-gray-600 disabled:opacity-50 disabled:pointer-events-none

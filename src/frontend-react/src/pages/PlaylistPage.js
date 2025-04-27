@@ -4,6 +4,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { backendUrl } from '../config';
 import TrackModal from '../components/TrackModal';
 import { usePlaylists } from '../hooks/usePlaylists';
+import { useDeletePlaylists } from '../hooks/usePlaylistMutations';
 
 function PlaylistPage() {
     const { playlistId } = useParams();
@@ -19,6 +20,7 @@ function PlaylistPage() {
     const navigate = useNavigate();
 
     const { data: playlists = [] } = usePlaylists();
+    const deleteMutation = useDeletePlaylists();
     const playlist = playlists.find(pl => String(pl.id) === playlistId);
 
     // Refresh playlist info and tracks without downloading
@@ -98,15 +100,8 @@ function PlaylistPage() {
     const handleDeleteClick = async () => {
         if (!window.confirm('Are you sure you want to delete this playlist?')) return;
         try {
-            const response = await fetch(`${backendUrl}/api/playlists/${playlist.id}`, {
-                method: 'DELETE',
-            });
-            if (response.ok) {
-                navigate('/');
-                //setPlaylists(playlists.filter(pl => pl.id !== playlistInfo.id));
-            } else {
-                console.error('Failed to delete playlist');
-            }
+            await deleteMutation.mutateAsync([playlist.id]);
+            navigate('/');
         } catch (error) {
             console.error('Error deleting playlist', error);
         }
