@@ -5,7 +5,8 @@ import {
     deleteFolder,
     reorderFolders,
     moveItems,
-    toggleFolder
+    toggleFolder,
+    toggleExpandFolder
 } from '../api/folders'
 import { useGlobalError } from '../contexts/GlobalErrorContext'
 
@@ -159,6 +160,49 @@ export function useMoveItems() {
 
         onSettled: () => {
             qc.invalidateQueries({ queryKey: ['playlists'] })
+            qc.invalidateQueries({ queryKey: ['folders'] })
+        }
+    })
+}
+
+export function useToggleExpandFolder() {
+    const { setError } = useGlobalError();
+    const qc = useQueryClient()
+    return useMutation({
+        mutationFn: (folderId) => toggleExpandFolder(folderId),
+        onMutate: async (folderId) => {
+            await qc.cancelQueries({ queryKey: ['folders'] })
+
+            const previousFolders = qc.getQueryData(['folders'])
+
+            // Get the current folder to toggle expanded state
+            const folders = qc.getQueryData(['folders']) || []
+            const folderToToggle = folders.find(f => f.id === folderId)
+
+            if (!folderToToggle) return { previousFolders }
+
+            // The new state will be the opposite of the current state
+            const newExpandedState = !folderToToggle.expanded
+
+            // Optimistically update folders cache
+            qc.setQueryData(['folders'], old => {
+                if (!old) return old;
+                return old.map(folder => {
+                    // Toggle only this specific folder
+                    if (folder.id === folderId) {
+                        return { ...folder, expanded: newExpandedState }
+                    }
+                    return folder;
+                });
+            })
+
+            return { previousFolders }
+        },
+        onError: (error, _vars, context) => {
+            setError(error);
+            qc.setQueryData(['folders'], context.previousFolders);
+        },
+        onSettled: () => {
             qc.invalidateQueries({ queryKey: ['folders'] })
         }
     })

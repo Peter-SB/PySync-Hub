@@ -21,7 +21,8 @@ def get_folders():
                     'parent_id': folder.parent_id,
                     'custom_order': folder.custom_order,
                     'created_at': folder.created_at.isoformat() if folder.created_at else None,
-                    'disabled': folder.disabled
+                    'disabled': folder.disabled,
+                    'expanded': folder.expanded
                 }
                 for folder in folders
             ]
@@ -441,3 +442,24 @@ def update_folder_disabled_state(folder_id):
         db.session.rollback()
         logger.error(f"Error checking folder state: {str(e)}")
         return jsonify({'error': 'Failed to check folder state'}), 500
+
+@bp.route('/<int:folder_id>/toggle-expand', methods=['POST'])
+def toggle_expand_folder(folder_id):
+    """Toggle the expanded state of a folder."""
+    try:
+        folder = Folder.query.get(folder_id)
+        if not folder:
+            return jsonify({'error': 'Folder not found'}), 404
+                
+        # Toggle the folder's expanded state
+        folder.expanded = not folder.expanded
+        db.session.commit()
+            
+        return jsonify({
+            'message': f"Folder {'collapsed' if not folder.expanded else 'expanded'} successfully",
+        }), 200
+        
+    except Exception as e:
+        db.session.rollback()
+        logger.error(f"Error toggling folder expanded state: {str(e)}")
+        return jsonify({'error': 'Failed to toggle folder expanded state'}), 500

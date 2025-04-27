@@ -32,6 +32,12 @@ export function toggleFolder(folderId) {
     });
 }
 
+export function toggleExpandFolder(folderId) {
+    return request(`/api/folders/${folderId}/toggle-expand`, {
+        method: 'POST'
+    });
+}
+
 export function reorderFolders(items) {
     return request('/api/folders/reorder', {
         method: 'POST',

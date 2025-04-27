@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import InsertionZone from './InsertionZone';
 import PlaylistItem from './PlaylistItem';
 import { backendUrl } from '../config';
-import { useDeleteFolder, useRenameFolder, useToggleFolder } from '../hooks/useFolderMutations';
+import { useDeleteFolder, useRenameFolder, useToggleFolder, useToggleExpandFolder } from '../hooks/useFolderMutations';
 import { useFolders } from '../hooks/useFolders';
 
 // FolderItem: renders a folder with its label and its children along with insertion zones.
@@ -17,6 +17,7 @@ function FolderItem({ item, level, activeDropTarget, activeItem, fetchPlaylists,
     const deleteFolderMutation = useDeleteFolder();
     const renameFolderMutation = useRenameFolder();
     const toggleFolderMutation = useToggleFolder();
+    const toggleExpandFolderMutation = useToggleExpandFolder();
     const { data: folders = [], isLoading, error } = useFolders();
     const folder = folders.find(f => parseInt(f.id) === parseInt(item.id.replace('folder-', '')));
     const { attributes, listeners, setNodeRef: setDraggableRef, transform, transition } =
@@ -66,7 +67,14 @@ function FolderItem({ item, level, activeDropTarget, activeItem, fetchPlaylists,
 
     const handleToggleClick = async () => {
         await toggleFolderMutation.mutateAsync(item.originalId);
-    }
+    };
+
+    // Handle toggling folder expanded state
+    const handleToggleExpand = (e) => {
+        e.stopPropagation();
+        console.log('Toggling expand for folder:', item.originalId);
+        toggleExpandFolderMutation.mutateAsync(item.originalId);
+    };
 
     // Handle sync for all playlists in this folder
     const handleFolderSync = async (e) => {
@@ -138,11 +146,27 @@ function FolderItem({ item, level, activeDropTarget, activeItem, fetchPlaylists,
                 className="flex flex-row items-center py-0"
             >
                 <div className={`flex items-center p-2 pr-4 my-1 rounded border shadow hover:shadow-md flex-1 ${folder.disabled ? 'bg-gray-200' : 'bg-white'}`}>
+                    {/* Expand/Collapse icon */}
+                    {item.children && item.children.length > 0 && (
+                        <button
+                            onClick={handleToggleExpand}
+                            className="mr-1 text-gray-600 hover:text-gray-800 focus:outline-none"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                {folder.expanded ? (
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                ) : (
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                )}
+                            </svg>
+                        </button>
+                    )}
                     <div
                         {...listeners}
                         {...attributes}
                         className="flex items-center cursor-grab pl-2 pr-4"
                     >
+
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
                         </svg>
@@ -235,61 +259,64 @@ function FolderItem({ item, level, activeDropTarget, activeItem, fetchPlaylists,
                     indent={(level + 1)}
                 />
 
-                <AnimatePresence>
-                    {item.children && item.children.map((child, i) => (
-                        <React.Fragment key={child.id}>
-                            <motion.div
-                                layout
-                                // layoutId={`item-${item.id}`}
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                exit={{ opacity: 1 }}
-                                transition={{
-                                    layout: {
-                                        type: "tween",
-                                    },
-                                    opacity: { duration: 0.2 }
-                                }}
-                                className="item-container"
-                            >
-                                {child.type === 'folder' ? (
-                                    <FolderItem
-                                        item={child}
-                                        level={level + 1}
-                                        activeDropTarget={activeDropTarget}
-                                        activeItem={activeItem}
-                                        selectedPlaylists={selectedPlaylists}
-                                        onSelectChange={onSelectChange}
-                                        onPlaylistUpdate={onPlaylistUpdate}
-                                    />
-                                ) : (
-                                    <PlaylistItem
-                                        isSelected={selectedPlaylists.includes(child.playlist.id)}
-                                        onSelectChange={onSelectChange}
-                                        style={{
-                                            marginLeft: `${(level + 1) * 30}px`,
-                                            ...(transform ? {
-                                                transform: `translate(${transform.x}px, ${transform.y}px)`,
-                                                transition
-                                            } : {})
-                                        }}
-                                        draggable={true}
-                                        id={child.id}
-                                        onPlaylistUpdate={onPlaylistUpdate}
-                                    />
-                                )}
-                            </motion.div>
+                {/* Only render children if folder is expanded */}
+                {folder.expanded && (
+                    <AnimatePresence>
+                        {item.children && item.children.map((child, i) => (
+                            <React.Fragment key={child.id}>
+                                <motion.div
+                                    layout
+                                    // layoutId={`item-${item.id}`}
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    exit={{ opacity: 0 }}
+                                    transition={{
+                                        layout: {
+                                            type: "tween",
+                                        },
+                                        opacity: { duration: 0.2 }
+                                    }}
+                                    className="item-container"
+                                >
+                                    {child.type === 'folder' ? (
+                                        <FolderItem
+                                            item={child}
+                                            level={level + 1}
+                                            activeDropTarget={activeDropTarget}
+                                            activeItem={activeItem}
+                                            selectedPlaylists={selectedPlaylists}
+                                            onSelectChange={onSelectChange}
+                                            onPlaylistUpdate={onPlaylistUpdate}
+                                        />
+                                    ) : (
+                                        <PlaylistItem
+                                            isSelected={selectedPlaylists.includes(child.playlist.id)}
+                                            onSelectChange={onSelectChange}
+                                            style={{
+                                                marginLeft: `${(level + 1) * 30}px`,
+                                                ...(transform ? {
+                                                    transform: `translate(${transform.x}px, ${transform.y}px)`,
+                                                    transition
+                                                } : {})
+                                            }}
+                                            draggable={true}
+                                            id={child.id}
+                                            onPlaylistUpdate={onPlaylistUpdate}
+                                        />
+                                    )}
+                                </motion.div>
 
-                            {/* Insertion zone after each child */}
-                            <InsertionZone
-                                parentId={item.id}
-                                index={i + 1}
-                                activeDropTarget={activeDropTarget}
-                                indent={(level + 1)}
-                            />
-                        </React.Fragment>
-                    ))}
-                </AnimatePresence>
+                                {/* Insertion zone after each child */}
+                                <InsertionZone
+                                    parentId={item.id}
+                                    index={i + 1}
+                                    activeDropTarget={activeDropTarget}
+                                    indent={(level + 1)}
+                                />
+                            </React.Fragment>
+                        ))}
+                    </AnimatePresence>
+                )}
             </div>
         </>
     );
