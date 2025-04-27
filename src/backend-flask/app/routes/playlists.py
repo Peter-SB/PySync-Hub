@@ -143,6 +143,19 @@ def toggle_playlist():
     # Convert the value to a boolean
     playlist.disabled = True if str(disabled_value).lower() == 'true' else False
     db.session.commit()
+    
+    # After toggling the playlist, recursively update parent folders' disabled states
+    if playlist.folder_id:
+        folder_id = playlist.folder_id
+        # Update the immediate parent folder first
+        FolderRepository.update_folder_disabled_state(folder_id)
+        
+        # Then recursively check all ancestors
+        current_folder = FolderRepository.get_folder_by_id(folder_id)
+        while current_folder and current_folder.parent_id:
+            FolderRepository.update_folder_disabled_state(current_folder.parent_id)
+            current_folder = FolderRepository.get_folder_by_id(current_folder.parent_id)
+    
     return jsonify(playlist.to_dict()), 200
 
 
@@ -163,12 +176,31 @@ def toggle_multiple_playlists():
         playlists = PlaylistRepository.get_playlists_by_ids(playlist_ids)
         updated_playlists = []
         
+        # Keep track of affected folder IDs for later updates
+        affected_folder_ids = set()
+        
         # Update each playlist's disabled status
         for playlist in playlists:
             playlist.disabled = disabled
             updated_playlists.append(playlist.to_dict())
+            
+            # Add the folder ID to the affected set if the playlist is in a folder
+            if playlist.folder_id:
+                affected_folder_ids.add(playlist.folder_id)
         
         db.session.commit()
+        
+        # Update all affected folders and their ancestors
+        for folder_id in affected_folder_ids:
+            # Update the immediate parent folder first
+            FolderRepository.update_folder_disabled_state(folder_id)
+            
+            # Then recursively check all ancestors
+            current_folder = FolderRepository.get_folder_by_id(folder_id)
+            while current_folder and current_folder.parent_id:
+                FolderRepository.update_folder_disabled_state(current_folder.parent_id)
+                current_folder = FolderRepository.get_folder_by_id(current_folder.parent_id)
+        
         return jsonify(updated_playlists), 200
     except Exception as e:
         logger.error(f"Error toggling multiple playlists: {str(e)}")

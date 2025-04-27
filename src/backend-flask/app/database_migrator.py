@@ -47,6 +47,12 @@ class DatabaseMigrator:
                 conn.commit()
                 logger.info("Applied migration: add_folder_fields_to_playlists")
             
+            if 'add_disabled_field_to_folders' not in applied_migrations:
+                DatabaseMigrator._add_disabled_field_to_folders(conn, cursor)
+                cursor.execute("INSERT INTO migration_history (migration_name) VALUES ('add_disabled_field_to_folders')")
+                conn.commit()
+                logger.info("Applied migration: add_disabled_field_to_folders")
+            
             conn.close()
             logger.info("Database migration completed successfully")
             
@@ -110,3 +116,16 @@ class DatabaseMigrator:
             conn.rollback()
             logger.error(f"Error adding folder fields to playlists: {str(e)}")
             raise
+            
+    @staticmethod
+    def _add_disabled_field_to_folders(conn, cursor):
+        """Add disabled field to folders table"""
+        # Check if column exists
+        cursor.execute("PRAGMA table_info(folders)")
+        columns = {row[1] for row in cursor.fetchall()}
+        
+        # Add disabled column if it doesn't exist
+        if 'disabled' not in columns:
+            cursor.execute("ALTER TABLE folders ADD COLUMN disabled BOOLEAN NOT NULL DEFAULT 1")
+            conn.commit()
+            logger.info("Added disabled field to folders table")

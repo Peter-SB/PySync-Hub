@@ -27,6 +27,12 @@ export function deleteFolder(folderId) {
     });
 }
 
+export function toggleFolder(folderId) {
+    return request(`/api/folders/${folderId}/toggle`, {
+        method: 'POST'
+    });
+}
+
 export function reorderFolders(items) {
     return request('/api/folders/reorder', {
         method: 'POST',

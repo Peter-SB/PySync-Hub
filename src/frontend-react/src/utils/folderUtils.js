@@ -237,3 +237,60 @@ export function getFolderOperations(tree) {
 
     return treeNodes;
 }
+
+/**
+ * Helper function to find all parent folder IDs for a playlist
+ * @param {Array} folders - All folders
+ * @param {Integer} folderId - The ID of the folder to find parents for
+ * @returns 
+ */
+export function getParentFolderIds(folders, folderId) {
+    const parentIds = [];
+    let currentFolderId = folderId;
+
+    while (currentFolderId) {
+        // Add the current folder ID to the list
+        parentIds.push(currentFolderId);
+
+        // Find the folder object
+        const folder = folders.find(f => f.id === currentFolderId);
+
+        // Move up to its parent, or break if we're at the root
+        currentFolderId = folder ? folder.parent_id : null;
+    }
+
+    return parentIds;
+}
+
+/**
+ * Helper function to check if a folder should be disabled based on its children
+ * @param {Array} folders - All folders
+ * @param {Array} playlists - All playlists
+ * @param {Integer} folderId - The ID of the folder to check
+ * @returns - True if the folder should be disabled, false otherwise
+ */
+export function shouldFolderBeDisabled(folders, playlists, folderId) {
+    // Get direct child playlists of this folder
+    const childPlaylists = playlists.filter(p => p.folder_id === folderId);
+
+    // Get direct child folders of this folder
+    const childFolders = folders.filter(f => f.parent_id === folderId);
+
+    // If there are no children at all, the folder should be disabled
+    if (childPlaylists.length === 0 && childFolders.length === 0) {
+        return true;
+    }
+
+    // Check if all child playlists are disabled
+    const allPlaylistsDisabled = childPlaylists.length > 0
+        ? childPlaylists.every(p => p.disabled)
+        : true;
+
+    // Check if all child folders are disabled (recursive check)
+    const allFoldersDisabled = childFolders.length > 0
+        ? childFolders.every(f => shouldFolderBeDisabled(folders, playlists, f.id))
+        : true;
+
+    // The folder should be disabled if all its children (both playlists and folders) are disabled
+    return allPlaylistsDisabled && allFoldersDisabled;
+}

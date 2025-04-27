@@ -13,6 +13,7 @@ class Folder(db.Model):
     parent_id = db.Column(db.Integer, db.ForeignKey('folders.id'), nullable=True)
     custom_order = db.Column(db.Integer, nullable=False, default=0)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    disabled = db.Column(db.Boolean, default=True)
 
     # Relationship to allow nesting folders (subfolders)
     subfolders = db.relationship(
@@ -27,6 +28,18 @@ class Folder(db.Model):
         backref='folder',
         cascade="all"
     )
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'parent_id': self.parent_id,
+            'custom_order': self.custom_order,
+            'created_at': self.created_at.isoformat() if self.created_at else None,
+            'disabled': self.disabled,
+            'subfolders': [subfolder.to_dict() for subfolder in self.subfolders],
+            'playlists': [playlist.to_dict() for playlist in self.playlists],
+        }
 
     def __repr__(self):
         return f'<Folder {self.name}>'

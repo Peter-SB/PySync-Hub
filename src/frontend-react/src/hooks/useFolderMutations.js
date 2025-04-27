@@ -4,7 +4,8 @@ import {
     renameFolder,
     deleteFolder,
     reorderFolders,
-    moveItems
+    moveItems,
+    toggleFolder
 } from '../api/folders'
 import { useGlobalError } from '../contexts/GlobalErrorContext'
 
@@ -35,84 +36,87 @@ export function useDeleteFolder() {
     )
 }
 
-// export function useReorderFolders() {
-//     const { setError } = useGlobalError();
-//     const qc = useQueryClient()
-//     return useMutation({
-//         mutationFn: (items) => reorderFolders(items),
+export function useToggleFolder() {
+    const { setError } = useGlobalError();
+    const qc = useQueryClient()
+    return useMutation({
+        mutationFn: (folderId) => toggleFolder(folderId),
+        onMutate: async (folderId) => {
+            await qc.cancelQueries({ queryKey: ['folders'] })
+            await qc.cancelQueries({ queryKey: ['playlists'] })
 
-//         onMutate: async (items) => {
-//             await qc.cancelQueries({ queryKey: ['folders'] })
-//             await qc.cancelQueries({ queryKey: ['playlists'] })
+            const previousFolders = qc.getQueryData(['folders'])
+            const previousPlaylists = qc.getQueryData(['playlists'])
 
-//             const previousFolders = qc.getQueryData(['folders'])
-//             const previousPlaylists = qc.getQueryData(['playlists'])
+            // Get the current folder to toggle
+            const folders = qc.getQueryData(['folders']) || []
+            const folderToToggle = folders.find(f => f.id === folderId)
 
-//             // Update folders in the cache
-//             qc.setQueryData(['folders'], old => {
-//                 if (!old) return old;
+            if (!folderToToggle) return { previousFolders, previousPlaylists }
 
-//                 // Create a copy of the original folders
-//                 const updatedFolders = [...old];
+            // The new state will be the opposite of the current state
+            const newDisabledState = !folderToToggle.disabled
 
-//                 // Update folders that are being reordered
-//                 items.forEach(item => {
-//                     if (item.type === 'folder') {
-//                         // Extract the numeric ID from "folder-X" format
-//                         // todo: replace with originalId
-//                         const folderId = parseInt(item.id.replace('folder-', ''));
-//                         console.log("Folder ID", folderId)
+            // Get all subfolder IDs recursively that will be affected
+            const affectedFolderIds = getSubfolderIds(folders, folderId)
+            affectedFolderIds.push(folderId) // Include the parent folder itself
 
-//                         // Find the folder in the cache and update its order
-//                         const folderIndex = updatedFolders.findIndex(f => f.id === folderId);
-//                         if (folderIndex !== -1) {
-//                             updatedFolders[folderIndex] = {
-//                                 ...updatedFolders[folderIndex],
-//                                 custom_order: item.custom_order
-//                             };
-//                         }
-//                     }
-//                 });
+            // Optimistically update folders cache
+            qc.setQueryData(['folders'], old => {
+                if (!old) return old;
+                return old.map(folder => {
+                    // Toggle all affected folders
+                    if (affectedFolderIds.includes(folder.id)) {
+                        return { ...folder, disabled: newDisabledState }
+                    }
+                    return folder;
+                });
+            })
 
-//                 return updatedFolders;
-//             })
+            // Optimistically update playlists cache
+            qc.setQueryData(['playlists'], old => {
+                if (!old) return old;
 
-//             // Update playlists in the cache
-//             qc.setQueryData(['playlists'], old => {
-//                 if (!old) return old;
+                return old.map(playlist => {
+                    // Update playlists that belong to any of the affected folders
+                    if (playlist.folder_id && affectedFolderIds.includes(playlist.folder_id)) {
+                        return { ...playlist, disabled: newDisabledState }
+                    }
+                    return playlist;
+                });
+            })
 
-//                 const updatedPlaylists = [...old];
+            return { previousFolders, previousPlaylists }
+        },
+        onError: (error, _vars, context) => {
+            setError(error);
+            qc.setQueryData(['folders'], context.previousFolders);
+            qc.setQueryData(['playlists'], context.previousPlaylists);
+        },
+        onSettled: () => {
+            qc.invalidateQueries({ queryKey: ['folders'] })
+            qc.invalidateQueries({ queryKey: ['playlists'] })
+        }
+    })
+}
 
-//                 items.forEach(item => {
-//                     if (item.type !== 'folder') {
-//                         const playlistIndex = updatedPlaylists.findIndex(p => p.id === item.id);  // todo: replace with originalId
-//                         if (playlistIndex !== -1) {
-//                             updatedPlaylists[playlistIndex] = {
-//                                 ...updatedPlaylists[playlistIndex],
-//                                 custom_order: item.custom_order
-//                             };
-//                         }
-//                     }
-//                 });
+// Helper function to get all subfolder IDs recursively
+function getSubfolderIds(folders, parentId) {
+    const subfolderIds = []
 
-//                 return updatedPlaylists;
-//             })
+    // Find immediate children
+    const children = folders.filter(f => f.parent_id === parentId)
 
-//             return { previousFolders, previousPlaylists }
-//         },
+    // Add their IDs
+    children.forEach(child => {
+        subfolderIds.push(child.id)
+        // Recursively add all descendants
+        const descendants = getSubfolderIds(folders, child.id)
+        subfolderIds.push(...descendants)
+    })
 
-//         onError: (error, _vars, context) => {
-//             setError(error);
-//             qc.setQueryData(['folders'], context.previousFolders)
-//             qc.setQueryData(['playlists'], context.previousPlaylists)
-//         },
-
-//         onSettled: () => {
-//             qc.invalidateQueries({ queryKey: ['folders'] });
-//             qc.invalidateQueries({ queryKey: ['playlists'] });
-//         }
-//     })
-// }
+    return subfolderIds
+}
 
 export function useMoveItems() {
     const qc = useQueryClient()

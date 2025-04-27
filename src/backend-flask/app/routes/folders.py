@@ -20,7 +20,8 @@ def get_folders():
                     'name': folder.name,
                     'parent_id': folder.parent_id,
                     'custom_order': folder.custom_order,
-                    'created_at': folder.created_at.isoformat() if folder.created_at else None
+                    'created_at': folder.created_at.isoformat() if folder.created_at else None,
+                    'disabled': folder.disabled
                 }
                 for folder in folders
             ]
@@ -63,6 +64,7 @@ def create_folder():
         db.session.add(folder)
         db.session.commit()
         
+        # todo: review, replace with folder.to_dict()? 
         return jsonify({
             'id': folder.id,
             'name': folder.name,
@@ -376,3 +378,66 @@ def batch_move_items():
         db.session.rollback()
         logger.error(f"Error in batch move: {e}")
         return jsonify({'error': 'Failed to move items'}), 500
+
+@bp.route('/<int:folder_id>/toggle', methods=['POST'])
+def toggle_folder(folder_id):
+    """Toggle the disabled state of a folder."""
+    try:
+        from app.repositories.folder_repository import FolderRepository
+                
+        # Toggle the folder's disabled state
+        result = FolderRepository.toggle_folder_disabled(folder_id)
+        
+        if not result:
+            return jsonify({'error': 'Folder not found'}), 404
+        
+        # After toggling the folder, recursively update parent folders' disabled states
+        folder = FolderRepository.get_folder_by_id(folder_id)
+        if folder and folder.parent_id:
+            current_folder_id = folder.parent_id
+            # Recursively update all ancestors
+            while current_folder_id:
+                FolderRepository.update_folder_disabled_state(current_folder_id)
+                current_folder = FolderRepository.get_folder_by_id(current_folder_id)
+                current_folder_id = current_folder.parent_id if current_folder else None
+            
+        return jsonify({
+            'message': f"Folder {'disabled' if result['disabled'] else 'enabled'} successfully",
+            'folder': result
+        }), 200
+        
+    except Exception as e:
+        db.session.rollback()
+        logger.error(f"Error toggling folder state: {str(e)}")
+        return jsonify({'error': 'Failed to toggle folder state'}), 500
+
+@bp.route('/<int:folder_id>/update-disabled-state', methods=['POST'])
+def update_folder_disabled_state(folder_id):
+    """
+    Check and optionally update a folder's disabled state based on its children.
+    A folder should be disabled if ALL children (playlists and subfolders) are disabled.
+    A folder should be enabled if ANY child is enabled.
+    """
+    try:
+        from app.repositories.folder_repository import FolderRepository
+                
+        # Check the folder's disabled state
+        success, should_be_disabled = FolderRepository.update_folder_disabled_state(folder_id)
+        
+        if not success:
+            return jsonify({'error': 'Folder not found'}), 404
+            
+        # Get the folder again if we need its current state
+        folder = FolderRepository.get_folder_by_id(folder_id)
+        
+        return jsonify({
+            'folder_id': folder_id,
+            'should_be_disabled': should_be_disabled,
+            'is_disabled': folder.disabled,
+            'was_updated': (should_be_disabled != folder.disabled)
+        }), 200
+        
+    except Exception as e:
+        db.session.rollback()
+        logger.error(f"Error checking folder state: {str(e)}")
+        return jsonify({'error': 'Failed to check folder state'}), 500

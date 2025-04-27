@@ -5,9 +5,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import InsertionZone from './InsertionZone';
 import PlaylistItem from './PlaylistItem';
 import { backendUrl } from '../config';
-import { useDeleteFolder, useRenameFolder } from '../hooks/useFolderMutations';
+import { useDeleteFolder, useRenameFolder, useToggleFolder } from '../hooks/useFolderMutations';
 import { useFolders } from '../hooks/useFolders';
-import { useToggleMultiplePlaylists } from '../hooks/usePlaylistMutations';
 
 // FolderItem: renders a folder with its label and its children along with insertion zones.
 function FolderItem({ item, level, activeDropTarget, activeItem, fetchPlaylists, selectedPlaylists, onSelectChange, onPlaylistUpdate }) {
@@ -17,41 +16,13 @@ function FolderItem({ item, level, activeDropTarget, activeItem, fetchPlaylists,
     const inputRef = useRef(null);
     const deleteFolderMutation = useDeleteFolder();
     const renameFolderMutation = useRenameFolder();
+    const toggleFolderMutation = useToggleFolder();
     const { data: folders = [], isLoading, error } = useFolders();
     const folder = folders.find(f => parseInt(f.id) === parseInt(item.id.replace('folder-', '')));
 
     const deleteFolder = async (e) => {
         e.stopPropagation();
         deleteFolderMutation.mutateAsync(item.originalId);
-    };
-
-    // Calculate if folder is disabled based on all child playlists being disabled
-    const isFolderDisabled = () => {
-        if (!item.children || item.children.length === 0) return true;
-
-        // Check if all children are disabled
-        return item.children.every(child => {
-            if (child.type === 'folder') {
-                // For folder children, we'd need their state but we don't have it directly
-                // For simplicity, let's consider an empty folder as disabled
-                return !child.children || child.children.length === 0;
-            } else {
-                // For playlist children, check if they're disabled
-                return child.playlist.disabled;
-            }
-        });
-    };
-
-    const [isDisabled, setIsDisabled] = useState(isFolderDisabled());
-
-    // Update disabled state when children change or when item.children changes
-    useEffect(() => {
-        setIsDisabled(isFolderDisabled());
-    }, [item.children]);
-
-    // Force refresh of the disabled state when any child playlist is toggled
-    const forceRefreshDisabledState = () => {
-        setIsDisabled(isFolderDisabled());
     };
 
     const { attributes, listeners, setNodeRef: setDraggableRef, transform, transition } =
@@ -127,43 +98,45 @@ function FolderItem({ item, level, activeDropTarget, activeItem, fetchPlaylists,
         }
     };
 
-    // Handle toggle for all playlists in this folder
-    const toggleMultiplePlaylists = useToggleMultiplePlaylists();
+    const handleToggleClick = async () => {
+        await toggleFolderMutation.mutateAsync(item.originalId);
+    }
 
-    const handleToggleClick = async (newState) => {
-        // Optimistically update the UI
-        setIsDisabled(newState);
+    // const handleToggleClick = async (newState) => {
+    //     // Optimistically update the UI
+    //     setIsDisabled(newState);
 
-        // Immediately update the playlist data in the parent component
-        if (onPlaylistUpdate) {
-            updatePlaylistsInFolder(item, newState);
-        }
+    //     // Immediately update the playlist data in the parent component
+    //     if (onPlaylistUpdate) {
+    //         updatePlaylistsInFolder(item, newState);
+    //     }
 
-        const playlistIds = collectAllPlaylistIds(item);
+    //     const playlistIds = collectAllPlaylistIds(item);
 
-        if (playlistIds.length === 0) {
-            return; // No playlists to toggle
-        }
+    //     try {
+    //         // First, toggle the folder itself using our new mutation
+    //         await toggleFolderMutation.mutateAsync(item.originalId);
 
-        try {
-            // Use the React Query mutation instead of direct fetch
-            await toggleMultiplePlaylists.mutateAsync({
-                playlistIds: playlistIds,
-                disabled: newState
-            });
-        } catch (error) {
-            console.error('Error toggling folder playlists:', error);
-            // Revert the UI update if there was an error
-            setIsDisabled(!newState);
+    //         // Then toggle all child playlists if there are any
+    //         if (playlistIds.length > 0) {
+    //             await toggleMultiplePlaylists.mutateAsync({
+    //                 playlistIds: playlistIds,
+    //                 disabled: newState
+    //             });
+    //         }
+    //     } catch (error) {
+    //         console.error('Error toggling folder:', error);
+    //         // Revert the UI update if there was an error
+    //         setIsDisabled(!newState);
 
-            // Revert the parent component's data
-            if (onPlaylistUpdate) {
-                updatePlaylistsInFolder(item, !newState);
-            }
-        } finally {
-            forceRefreshDisabledState();
-        }
-    };
+    //         // Revert the parent component's data
+    //         if (onPlaylistUpdate) {
+    //             updatePlaylistsInFolder(item, !newState);
+    //         }
+    //     } finally {
+    //         forceRefreshDisabledState();
+    //     }
+    // };
 
     // Handle sync for all playlists in this folder
     const handleFolderSync = async (e) => {
@@ -234,7 +207,7 @@ function FolderItem({ item, level, activeDropTarget, activeItem, fetchPlaylists,
                 style={{ ...indentStyle, ...draggableStyle }}
                 className="flex flex-row items-center py-0"
             >
-                <div className={`flex items-center p-2 pr-4 my-1 rounded border shadow hover:shadow-md flex-1 ${isDisabled ? 'bg-gray-200' : 'bg-white'}`}>
+                <div className={`flex items-center p-2 pr-4 my-1 rounded border shadow hover:shadow-md flex-1 ${folder.disabled ? 'bg-gray-200' : 'bg-white'}`}>
                     <div
                         {...listeners}
                         {...attributes}
@@ -290,7 +263,7 @@ function FolderItem({ item, level, activeDropTarget, activeItem, fetchPlaylists,
                     ) : (
                         <>
                             <span
-                                className={`font-medium cursor-pointer hover:text-blue-600 flex-grow ${isDisabled ? 'text-gray-500' : 'text-gray-700'}`}
+                                className={`font-medium cursor-pointer hover:text-blue-600 flex-grow ${folder.disabled ? 'text-gray-500' : 'text-gray-700'}`}
                                 onClick={handleStartRename}
                             >
                                 {folder.name}
@@ -310,8 +283,8 @@ function FolderItem({ item, level, activeDropTarget, activeItem, fetchPlaylists,
                     <input
                         type="checkbox"
                         id={`toggle-folder-${item.id}`}
-                        onChange={() => handleToggleClick(!isDisabled)}
-                        checked={isDisabled}
+                        onChange={() => handleToggleClick()}
+                        checked={folder.disabled}
                         className="sr-only peer"
                     />
                     <div className="relative w-[35px] h-[21px] bg-gray-400 border border-gray-300 rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:ring-gray-600 disabled:opacity-50 disabled:pointer-events-none

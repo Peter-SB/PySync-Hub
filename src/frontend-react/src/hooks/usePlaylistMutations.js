@@ -9,6 +9,7 @@ import {
     cancelDownload
 } from '../api/playlists'
 import { useGlobalError } from '../contexts/GlobalErrorContext';
+import { getParentFolderIds, shouldFolderBeDisabled } from '../utils/folderUtils'
 
 export function useAddPlaylist() {
     const qc = useQueryClient()
@@ -24,42 +25,65 @@ export function useTogglePlaylist() {
     return useMutation({
         mutationFn: ({ playlistId, disabled }) => togglePlaylist(playlistId, disabled),
         onMutate: async ({ playlistId, disabled }) => {
+            // Cancel any in-flight queries
             await qc.cancelQueries({ queryKey: ['playlists'] })
-            const previous = qc.getQueryData(['playlists'])
+            await qc.cancelQueries({ queryKey: ['folders'] })
+
+            // Save the current state
+            const previousPlaylists = qc.getQueryData(['playlists'])
+            const previousFolders = qc.getQueryData(['folders'])
+
+            // Find the playlist to toggle
+            const playlists = qc.getQueryData(['playlists']) || []
+            const playlist = playlists.find(p => p.id === playlistId)
+
+            if (!playlist) return { previousPlaylists, previousFolders }
+
+            // Get all parent folder IDs that need updating
+            const folders = qc.getQueryData(['folders']) || []
+            const parentFolderIds = playlist.folder_id
+                ? getParentFolderIds(folders, playlist.folder_id)
+                : [];
+
+            // Optimistically update the playlist
             qc.setQueryData(['playlists'], old =>
                 old.map(p => p.id === playlistId ? { ...p, disabled } : p)
             )
-            return { previous }
-        },
-        onError: (error, _vars, context) => {
-            setError(error);
-            qc.setQueryData(['playlists'], context.previous);
-        },
-        onSettled: () => {
-            qc.invalidateQueries({ queryKey: ['playlists'] })
-        }
-    })
-}
 
-export function useToggleMultiplePlaylists() {
-    const { setError } = useGlobalError();
-    const qc = useQueryClient()
-    return useMutation({
-        mutationFn: ({ playlistIds, disabled }) => toggleMultiplePlaylists(playlistIds, disabled),
-        onMutate: async ({ playlistIds, disabled }) => {
-            await qc.cancelQueries({ queryKey: ['playlists'] })
-            const previous = qc.getQueryData(['playlists'])
-            qc.setQueryData(['playlists'], old =>
-                old.map(p => playlistIds.includes(p.id) ? { ...p, disabled } : p)
-            )
-            return { previous }
+            // Optimistically update the folders if we have parent folders
+            if (parentFolderIds.length > 0) {
+                qc.setQueryData(['folders'], old => {
+                    // First create a modified copy of playlists with our toggled playlist
+                    const updatedPlaylists = playlists.map(p =>
+                        p.id === playlistId ? { ...p, disabled } : p
+                    );
+
+                    // Now update each parent folder's disabled state
+                    return old.map(folder => {
+                        if (parentFolderIds.includes(folder.id)) {
+                            // Recalculate if this folder should be disabled based on its children
+                            const shouldBeDisabled = shouldFolderBeDisabled(
+                                old,
+                                updatedPlaylists,
+                                folder.id
+                            );
+                            return { ...folder, disabled: shouldBeDisabled };
+                        }
+                        return folder;
+                    });
+                });
+            }
+
+            return { previousPlaylists, previousFolders }
         },
         onError: (error, _vars, context) => {
             setError(error);
-            qc.setQueryData(['playlists'], context.previous);
+            qc.setQueryData(['playlists'], context.previousPlaylists);
+            qc.setQueryData(['folders'], context.previousFolders);
         },
         onSettled: () => {
             qc.invalidateQueries({ queryKey: ['playlists'] })
+            qc.invalidateQueries({ queryKey: ['folders'] })
         }
     })
 }
