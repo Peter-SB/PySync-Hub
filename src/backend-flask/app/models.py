@@ -30,6 +30,10 @@ class Folder(db.Model):
         cascade="all"
     )
 
+    def children_count(self):
+        """Returns the number of subfolders and playlists in this folder."""
+        return len(self.subfolders) + len(self.playlists)
+
     def to_dict(self):
         return {
             'id': self.id,
@@ -41,6 +45,7 @@ class Folder(db.Model):
             'expanded': self.expanded,
             'subfolders': [subfolder.to_dict() for subfolder in self.subfolders],
             'playlists': [playlist.to_dict() for playlist in self.playlists],
+            'children_count': self.children_count(),
         }
 
     def __repr__(self):

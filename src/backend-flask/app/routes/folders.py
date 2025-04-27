@@ -22,7 +22,8 @@ def get_folders():
                     'custom_order': folder.custom_order,
                     'created_at': folder.created_at.isoformat() if folder.created_at else None,
                     'disabled': folder.disabled,
-                    'expanded': folder.expanded
+                    'expanded': folder.expanded,
+                    'children_count': folder.children_count(),
                 }
                 for folder in folders
             ]
