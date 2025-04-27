@@ -128,13 +128,8 @@ export function useMoveItems() {
             await qc.cancelQueries({ queryKey: ['folders'] })
             await qc.cancelQueries({ queryKey: ['playlists'] })
 
-            console.log("Moving items", items)
-
             const previousFolders = qc.getQueryData(['folders'])
             const previousPlaylists = qc.getQueryData(['playlists'])
-
-            console.log("Previous folders", previousFolders)
-            console.log("Previous playlists", previousPlaylists)
 
             // Optimistically update only the changed items
             qc.setQueryData(['folders'], (folders = []) =>

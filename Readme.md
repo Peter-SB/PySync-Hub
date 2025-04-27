@@ -11,7 +11,7 @@ As well as Spotify integration, PySync now had soundcloud and youtube support.
 PySync DJ Hub is a desktop app that allows you to seamlessly sync your playlists from multiple music platforms to your Rekordbox library. It supports currently supports Spotify, Soundcloud, and soon Youtube.
 
 <div align="center">
-    <img src="docs/images/pysync-16-03-25-home.png" alt="PySync Hub" style="width:80%; height:auto;">
+    <img src="docs/images/pysync-27-04-25-home.png" alt="PySync Hub" style="width:80%; height:auto;">
 </div>
 
 **Ethos:** This app is built with the hope that more people take up DJing and get more people get into dance music. The quality of audio downloaded by this app is capped at 128kbps and all audio sourced from publicly available sources. **Please buy the music your love and support the artists. The music scene is dying, and it needs everyone's support.**

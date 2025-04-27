@@ -1,7 +1,6 @@
 import { request } from './client';
 
 export function fetchFolders() {
-    console.log('fetching folders...');
     return request('/api/folders', {
         method: 'GET',
     });
