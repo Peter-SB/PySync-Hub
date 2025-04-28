@@ -4,7 +4,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { backendUrl } from '../config';
 import TrackModal from '../components/TrackModal';
 import { usePlaylists } from '../hooks/usePlaylists';
-import { useDeletePlaylists } from '../hooks/usePlaylistMutations';
+import { useDeletePlaylists, useRefreshPlaylist } from '../hooks/usePlaylistMutations';
 
 function PlaylistPage() {
     const { playlistId } = useParams();
@@ -21,21 +21,20 @@ function PlaylistPage() {
 
     const { data: playlists = [] } = usePlaylists();
     const deleteMutation = useDeletePlaylists();
+    const refreshMutation = useRefreshPlaylist();
     const playlist = playlists.find(pl => String(pl.id) === playlistId);
 
     // Refresh playlist info and tracks without downloading
-    const handleRefreshClick = async () => {
-        try {
-            const response = await fetch(`${backendUrl}/api/playlists/${playlistId}/refresh`, {
-                method: 'POST',
-            });
-            if (!response.ok) {
-                console.error('Failed to refresh playlist');
+    const handleRefreshClick = () => {
+        refreshMutation.mutate(playlistId, {
+            onSuccess: () => {
+                fetchPlaylistTracks();
+            },
+            onError: (error) => {
+                console.error('Error refreshing playlist', error);
+                setError('Failed to refresh playlist');
             }
-            fetchPlaylistTracks()
-        } catch (error) {
-            console.error('Error refreshing playlist', error);
-        }
+        });
     };
 
     const fetchPlaylistTracks = async () => {
@@ -175,10 +174,11 @@ function PlaylistPage() {
                                         }}
                                         className="mr-1 p-2 rounded bg-gray-400 hover:bg-gray-500 text-white disabled:opacity-50 disabled:cursor-not-allowed"
                                         title="Refresh playlist and tracks without downloading"
+                                        disabled={refreshMutation.isPending}
                                     >
                                         <svg
                                             xmlns="http://www.w3.org/2000/svg"
-                                            className="w-6 h-6"
+                                            className={`w-6 h-6 ${refreshMutation.isPending ? 'animate-spin-reverse' : ''}`}
                                             fill="none"
                                             viewBox="0 0 24 24"
                                             stroke="currentColor"

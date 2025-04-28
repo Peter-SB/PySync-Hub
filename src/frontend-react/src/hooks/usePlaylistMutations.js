@@ -1,12 +1,12 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import {
     togglePlaylist,
-    toggleMultiplePlaylists,
     syncPlaylists,
     deletePlaylists,
     exportAll,
     addPlaylist,
-    cancelDownload
+    cancelDownload,
+    refreshPlaylist
 } from '../api/playlists'
 import { useGlobalError } from '../contexts/GlobalErrorContext';
 import { getParentFolderIds, shouldFolderBeDisabled } from '../utils/folderUtils'
@@ -115,5 +115,15 @@ export function useCancelDownload() {
         mutationFn: (playlistId) => cancelDownload(playlistId),
         // todo: optimistic ui update
         onSettled: () => { qc.invalidateQueries(['playlists']) }
+    })
+}
+
+export function useRefreshPlaylist() {
+    const qc = useQueryClient()
+    return useMutation({
+        mutationFn: (playlistId) => refreshPlaylist(playlistId),
+        onSettled: () => {
+            qc.invalidateQueries({ queryKey: ['playlists'] })
+        }
     })
 }

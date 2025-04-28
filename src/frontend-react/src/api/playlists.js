@@ -52,3 +52,9 @@ export function cancelDownload(playlistId) {
         method: 'DELETE',
     });
 }
+
+export function refreshPlaylist(playlistId) {
+    return request(`/api/playlists/${playlistId}/refresh`, {
+        method: 'POST',
+    });
+}
