@@ -3,7 +3,7 @@
 ## Export
 - export page?
 - error display
-- Potential Bug: Playlists With Same Names - Tested, not an issue.
+- ✅ Potential Bug: Playlists With Same Names - Tested, not an issue.
 
 ## Playlist/Track Managment
  - Better Errors
@@ -11,7 +11,10 @@
  - Repository Patter Use
  - Disable individual tracks
  - ✅ Downloaded count (home screen) is not displaying correctly when finished downloading
-
+ - ✅ Delete Folder UI update
+ - ✅ Add Folder To Top (Currently folders at top first)
+ - React Query 
+ - - Investigate removing redundant invalidateQueries after RQ mutation
 
 ## Downloading
 - Add Quick Sync (That will not check file locations, only download new tracks without a location, maybe also not check playlist if track count hasnt changed. Use a check sum)

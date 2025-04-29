@@ -58,7 +58,8 @@ class PlaylistRepository:
             track_count=playlist_data.get('track_count'),
             url=playlist_data.get('url'),
             disabled=False,
-            download_status="ready"
+            download_status="ready",
+            custom_order=-1
         )
         db.session.add(playlist)
 

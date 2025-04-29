@@ -13,6 +13,8 @@ class Folder(db.Model):
     parent_id = db.Column(db.Integer, db.ForeignKey('folders.id'), nullable=True)
     custom_order = db.Column(db.Integer, nullable=False, default=0)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    disabled = db.Column(db.Boolean, default=True)
+    expanded = db.Column(db.Boolean, default=True)
 
     # Relationship to allow nesting folders (subfolders)
     subfolders = db.relationship(
@@ -27,6 +29,24 @@ class Folder(db.Model):
         backref='folder',
         cascade="all"
     )
+
+    def children_count(self):
+        """Returns the number of subfolders and playlists in this folder."""
+        return len(self.subfolders) + len(self.playlists)
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'parent_id': self.parent_id,
+            'custom_order': self.custom_order,
+            'created_at': self.created_at.isoformat() if self.created_at else None,
+            'disabled': self.disabled,
+            'expanded': self.expanded,
+            'subfolders': [subfolder.to_dict() for subfolder in self.subfolders],
+            'playlists': [playlist.to_dict() for playlist in self.playlists],
+            'children_count': self.children_count(),
+        }
 
     def __repr__(self):
         return f'<Folder {self.name}>'
@@ -48,7 +68,6 @@ class Playlist(db.Model):
     date_limit = db.Column(db.DateTime, nullable=True)  # Only sync/download tracks added after this date
     track_limit = db.Column(db.Integer, nullable=True)  # Maximum number of tracks to sync/download
     
-    # New fields for folder organization
     folder_id = db.Column(db.Integer, db.ForeignKey('folders.id'), nullable=True)
     custom_order = db.Column(db.Integer, nullable=False, default=0)
 

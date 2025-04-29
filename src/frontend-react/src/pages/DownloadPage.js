@@ -2,15 +2,25 @@ import React, { useState, useMemo } from 'react';
 import AddPlaylistForm from '../components/AddPlaylistForm';
 import PlaylistList from '../components/PlaylistList';
 import PlaylistSortOrder from '../components/PlaylistSortOrder';
-import { backendUrl } from '../config';
+import ExportStatus from '../components/ExportStatus';
+import { ErrorMessage } from '../components/ErrorMessage';
+import { usePlaylists } from '../hooks/usePlaylists';
+import { useSyncPlaylists, useDeletePlaylists, useExportAll } from '../hooks/usePlaylistMutations';
 
-function DownloadPage({ playlists, fetchPlaylists, errorMessage, setErrorMessage }) {
-  const [exportStatus, setExportStatus] = useState('');
+function DownloadPage() {
+  const [exportMessage, setExportMessage] = useState('');
   const [selectedPlaylists, setSelectedPlaylists] = useState([]);
-  const [sortBy, setSortBy] = useState("created_at"); // default sort by name
-  const [sortOrder, setSortOrder] = useState("dec"); // ascending order by default
+  const [sortBy, setSortBy] = useState("created_at");
+  const [sortOrder, setSortOrder] = useState("dec");
+  const { data: playlists = [] } = usePlaylists();
+
+  // React Query mutations
+  const syncMutation = useSyncPlaylists();
+  const deleteMutation = useDeletePlaylists();
+  const exportMutation = useExportAll();
 
   // Sort playlists based on the selected sort criterion and order.
+  // todo: move to PlaylistSortOrder?
   const sortedPlaylists = useMemo(() => {
     return playlists.slice().sort((a, b) => {
       let aVal = a[sortBy];
@@ -36,57 +46,32 @@ function DownloadPage({ playlists, fetchPlaylists, errorMessage, setErrorMessage
   // Handle export action
   const handleExport = async () => {
     try {
-      const response = await fetch(`${backendUrl}/api/export`);
-      const data = await response.json();
-      if (response.ok) {
-        setExportStatus("Export successful: " + data.export_path);
-        // Clear export status after a few seconds
-        setTimeout(() => setExportStatus(''), 3000);
-      } else {
-        setErrorMessage(data.error);
-      }
+      const result = await exportMutation.mutateAsync();
+      setExportMessage("Export successful: " + result.export_path);
+      // Clear export message after a few seconds
+      setTimeout(() => setExportMessage(''), 3000);
     } catch (error) {
       console.error("Export error", error);
-      setErrorMessage("Export failed");
     }
   };
 
   // Handle sync action
   const handleSync = async () => {
-    const payload = selectedPlaylists.length > 0 ? { playlist_ids: selectedPlaylists } : {};
-    try {
-      const response = await fetch(`${backendUrl}/api/playlists/sync`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      });
-      if (!response.ok) {
-        console.error('Failed to sync playlists');
-      }
-      fetchPlaylists();
-      setSelectedPlaylists([]);
-    } catch (error) {
-      console.error('Error syncing playlists', error);
-    }
+    const playlistIds = selectedPlaylists.length > 0 ? selectedPlaylists : [];
+    await syncMutation.mutateAsync(playlistIds);
+    setSelectedPlaylists([]);
   };
 
   // Handle deletion of selected playlists
   const handleDelete = async () => {
     if (selectedPlaylists.length === 0) return;
-    try {
-      const response = await fetch(`${backendUrl}/api/playlists`, {
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ playlist_ids: selectedPlaylists }),
-      });
-      if (!response.ok) {
-        console.error('Failed to delete playlists');
-      }
-      fetchPlaylists();
-      setSelectedPlaylists([]);
-    } catch (error) {
-      console.error('Error deleting playlists', error);
-    }
+    // Show confirmation dialog before deletion
+    const confirmed = window.confirm(`Are you sure you want to delete ${selectedPlaylists.length} playlist(s)?`);
+    if (!confirmed) return;
+    // Proceed with deletion
+    await deleteMutation.mutateAsync(selectedPlaylists);
+    setSelectedPlaylists([]);
+
   };
 
   // Callback for checkbox selection in PlaylistList
@@ -103,14 +88,17 @@ function DownloadPage({ playlists, fetchPlaylists, errorMessage, setErrorMessage
       {/* Header box */}
       <div id="header-box" className="bg-white p-4 rounded-lg mb-1 shadow">
         <h1 className="text-3xl font-semibold text-gray-800 mb-7">Playlist Downloads</h1>
-        <AddPlaylistForm onPlaylistAdded={fetchPlaylists} setError={setErrorMessage} />
+        <AddPlaylistForm />
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div className="flex items-center gap-2">
             <button
               onClick={handleExport}
               className="flex items-center px-3 py-2 bg-gray-900 hover:bg-black text-white rounded-lg shadow-md"
+              disabled={exportMutation.isLoading}
             >
-              <span className="font-medium text-l">Export All</span>
+              <span className="font-medium text-l">
+                {exportMutation.isLoading ? 'Exporting...' : 'Export All'}
+              </span>
               <div className="bg-white p-0.25 flex items-center justify-center rounded-lg ml-2">
                 <img src="./icons/rekordbox.svg" alt="Rekordbox" className="h-6 w-6 rounded-lg m-0.5" />
                 <img src="./icons/export.svg" alt="Export" className="h-6 w-6 rounded-lg" />
@@ -118,45 +106,39 @@ function DownloadPage({ playlists, fetchPlaylists, errorMessage, setErrorMessage
             </button>
           </div>
           <div className="flex items-center gap-2 ml-auto">
-            <PlaylistSortOrder sortBy={sortBy} setSortBy={setSortBy} sortOrder={sortOrder} setSortOrder={setSortOrder} />
+            {/* <PlaylistSortOrder sortBy={sortBy} setSortBy={setSortBy} sortOrder={sortOrder} setSortOrder={setSortOrder} />  todo: reimplement*/}
             {selectedPlaylists.length > 0 && (
               <button
                 onClick={handleDelete}
                 className="flex items-center px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+                disabled={deleteMutation.isLoading}
               >
-                Delete Selected ({selectedPlaylists.length})
+                {deleteMutation.isLoading ? 'Deleting...' : `Delete Selected (${selectedPlaylists.length})`}
               </button>
             )}
             <button
               onClick={handleSync}
               className="flex items-center px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+              disabled={syncMutation.isLoading}
             >
-              {selectedPlaylists.length > 0
-                ? `Sync Selected (${selectedPlaylists.length})`
-                : 'Sync All'}
+              {syncMutation.isLoading
+                ? 'Syncing...'
+                : (selectedPlaylists.length > 0
+                  ? `Sync Selected (${selectedPlaylists.length})`
+                  : 'Sync All')}
             </button>
           </div>
         </div>
       </div>
 
-      {errorMessage && (
-        <div className="p-4 mb-4 text-sm text-red-700 bg-red-100 border border-red-300 rounded">
-          {errorMessage}
-        </div>
-      )}
+      <ErrorMessage />
 
       <PlaylistList
-        playlists={sortedPlaylists}
-        fetchPlaylists={fetchPlaylists}
         selectedPlaylists={selectedPlaylists}
         onSelectChange={handleCheckboxChange}
       />
 
-      {exportStatus && (
-        <div className="fixed bottom-5 left-1/2 transform -translate-x-1/2 z-50 bg-green-500 text-white text-center py-3 px-6 rounded max-w-4xl w-full md:w-3/4 lg:w-1/2 shadow-lg">
-          {exportStatus}
-        </div>
-      )}
+      {exportMessage && <ExportStatus message={exportMessage} />}
     </div>
   );
 }

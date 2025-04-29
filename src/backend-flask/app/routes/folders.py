@@ -14,18 +14,20 @@ def get_folders():
     """Retrieve all folders."""
     try:
         folders = Folder.query.all()
-        return jsonify({
-            'folders': [
+        return jsonify([
                 {
                     'id': folder.id,
                     'name': folder.name,
                     'parent_id': folder.parent_id,
                     'custom_order': folder.custom_order,
-                    'created_at': folder.created_at.isoformat() if folder.created_at else None
+                    'created_at': folder.created_at.isoformat() if folder.created_at else None,
+                    'disabled': folder.disabled,
+                    'expanded': folder.expanded,
+                    'children_count': folder.children_count(),
                 }
                 for folder in folders
             ]
-        }), 200
+        ), 200
     except Exception as e:
         logger.error(f"Error retrieving folders: {str(e)}")
         return jsonify({'error': 'Failed to retrieve folders'}), 500
@@ -64,6 +66,7 @@ def create_folder():
         db.session.add(folder)
         db.session.commit()
         
+        # todo: review, replace with folder.to_dict()? 
         return jsonify({
             'id': folder.id,
             'name': folder.name,
@@ -315,3 +318,149 @@ def process_tree_items(items, parent_id=None):
                 db.session.add(playlist)
                 
     db.session.flush()
+
+
+@bp.route('/move-items', methods=['POST'])
+def batch_move_items():
+    """
+    Update parent_id and custom_order from a mixed list of folders and playlists.
+
+    {
+      "items": [
+        { "type": "folder",   "id": 12, "parent_id": 5,  "custom_order": 0 },
+        { "type": "playlist", "id": 34, "parent_id": null, "custom_order": 2 },
+        // …only the ones whose parent_id or position changed…
+      ]
+    }
+    """
+    data = request.get_json(force=True)
+    items = data.get('items')
+    if not isinstance(items, list):
+        return jsonify({'error': '`items` must be a list'}), 400
+
+    # Partition into folders vs playlists
+    folder_updates   = []
+    playlist_updates = []
+
+    for item in items:
+        try:
+            item_type = item['type']
+            item_id = int(item['id'])
+            parent_id = item['parent_id']
+            custom_order = int(item['custom_order'])
+        except (KeyError, ValueError) as e:
+            return jsonify({'error': f'Invalid item format, {e}'}), 400
+
+        if item_type == 'folder':
+            folder_updates.append({
+                'id':        item_id,
+                'parent_id': parent_id,
+                'custom_order': custom_order
+            })
+        elif item_type == 'playlist':
+            playlist_updates.append({
+                'id':         item_id,
+                'folder_id':  parent_id,
+                'custom_order': custom_order
+            })
+        else:
+            return jsonify({'error': f'Unknown type `{item_type}`'}), 400
+
+    try:
+        # Bulk-update without loading every model
+        if folder_updates:
+            db.session.bulk_update_mappings(Folder,   folder_updates)
+        if playlist_updates:
+            db.session.bulk_update_mappings(Playlist, playlist_updates)
+
+        db.session.commit()
+        return jsonify({'message': 'Items moved successfully'}), 200
+
+    except Exception as e:
+        db.session.rollback()
+        logger.error(f"Error in batch move: {e}")
+        return jsonify({'error': 'Failed to move items'}), 500
+
+@bp.route('/<int:folder_id>/toggle', methods=['POST'])
+def toggle_folder(folder_id):
+    """Toggle the disabled state of a folder."""
+    try:
+        from app.repositories.folder_repository import FolderRepository
+                
+        # Toggle the folder's disabled state
+        result = FolderRepository.toggle_folder_disabled(folder_id)
+        
+        if not result:
+            return jsonify({'error': 'Folder not found'}), 404
+        
+        # After toggling the folder, recursively update parent folders' disabled states
+        folder = FolderRepository.get_folder_by_id(folder_id)
+        if folder and folder.parent_id:
+            current_folder_id = folder.parent_id
+            # Recursively update all ancestors
+            while current_folder_id:
+                FolderRepository.update_folder_disabled_state(current_folder_id)
+                current_folder = FolderRepository.get_folder_by_id(current_folder_id)
+                current_folder_id = current_folder.parent_id if current_folder else None
+            
+        return jsonify({
+            'message': f"Folder {'disabled' if result['disabled'] else 'enabled'} successfully",
+            'folder': result
+        }), 200
+        
+    except Exception as e:
+        db.session.rollback()
+        logger.error(f"Error toggling folder state: {str(e)}")
+        return jsonify({'error': 'Failed to toggle folder state'}), 500
+
+@bp.route('/<int:folder_id>/update-disabled-state', methods=['POST'])
+def update_folder_disabled_state(folder_id):
+    """
+    Check and optionally update a folder's disabled state based on its children.
+    A folder should be disabled if ALL children (playlists and subfolders) are disabled.
+    A folder should be enabled if ANY child is enabled.
+    """
+    try:
+        from app.repositories.folder_repository import FolderRepository
+                
+        # Check the folder's disabled state
+        success, should_be_disabled = FolderRepository.update_folder_disabled_state(folder_id)
+        
+        if not success:
+            return jsonify({'error': 'Folder not found'}), 404
+            
+        # Get the folder again if we need its current state
+        folder = FolderRepository.get_folder_by_id(folder_id)
+        
+        return jsonify({
+            'folder_id': folder_id,
+            'should_be_disabled': should_be_disabled,
+            'is_disabled': folder.disabled,
+            'was_updated': (should_be_disabled != folder.disabled)
+        }), 200
+        
+    except Exception as e:
+        db.session.rollback()
+        logger.error(f"Error checking folder state: {str(e)}")
+        return jsonify({'error': 'Failed to check folder state'}), 500
+
+@bp.route('/<int:folder_id>/toggle-expand', methods=['POST'])
+def toggle_expand_folder(folder_id):
+    """Toggle the expanded state of a folder."""
+    try:
+        folder = Folder.query.get(folder_id)
+        if not folder:
+            return jsonify({'error': 'Folder not found'}), 404
+                
+        # Toggle the folder's expanded state
+        folder.expanded = not folder.expanded
+        db.session.commit()
+            
+        return jsonify({
+            'message': f"Folder {'collapsed' if not folder.expanded else 'expanded'} successfully",
+        }), 200
+        
+    except Exception as e:
+        db.session.rollback()
+        logger.error(f"Error toggling folder expanded state: {str(e)}")
+        return jsonify({'error': 'Failed to toggle folder expanded state'}), 500

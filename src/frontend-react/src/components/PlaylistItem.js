@@ -1,23 +1,31 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import DownloadStatus from './DownloadStatus.js';
-import { backendUrl } from '../config';
 import { useDraggable } from '@dnd-kit/core';
+import { usePlaylists } from '../hooks/usePlaylists.js';
+import { useTogglePlaylist, useCancelDownload, useSyncPlaylists } from '../hooks/usePlaylistMutations.js';
 
-function PlaylistItem({ playlist, fetchPlaylists, isSelected, onSelectChange, style, draggable = false, id, onPlaylistUpdate }) {
-  const [isDisabled, setIsDisabled] = useState(playlist.disabled);
+function PlaylistItem({ id, isSelected, onSelectChange, style, draggable = false, onPlaylistUpdate }) {
+  const { data: playlists = [] } = usePlaylists();
+
+
   const navigate = useNavigate();
-
-  // Update isDisabled when playlist.disabled changes
-  useEffect(() => {
-    setIsDisabled(playlist.disabled);
-  }, [playlist.disabled]);
+  const cancelDownload = useCancelDownload();
+  const togglePlaylistMutation = useTogglePlaylist();
+  const syncPlaylistMutation = useSyncPlaylists();
 
   // Set up draggable functionality with dnd-kit
   const { attributes, listeners, setNodeRef, transform, transition } = useDraggable({
     id: id || `playlist-${playlist.id}`,
     disabled: !draggable
   });
+
+  const playlist = playlists.find((p) => `playlist-${p.id}` === id);
+
+  // Handles when no playlist
+  if (!playlist) {
+    return null;
+  }
 
   // Compute combined styles for dragging
   const draggableStyles = transform
@@ -28,82 +36,17 @@ function PlaylistItem({ playlist, fetchPlaylists, isSelected, onSelectChange, st
     }
     : style;
 
-  // Trigger a sync for this playlist only
-  const handleSyncClick = async () => {
-    try {
-      const response = await fetch(`${backendUrl}/api/playlists/sync`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ playlist_ids: [playlist.id] }),
-      });
-      if (!response.ok) {
-        console.error('Failed to sync playlist');
-      }
-    } catch (error) {
-      console.error('Error syncing playlist', error);
-    }
-  };
+  // Trigger a sync for this playlist
+  const handleSyncClick = async () => await syncPlaylistMutation.mutateAsync([playlist.id])
 
   // Cancel an ongoing download for this playlist
-  const handleCancelClick = async () => {
-    try {
-      const response = await fetch(`${backendUrl}/api/download/${playlist.id}/cancel`, {
-        method: 'DELETE',
-      });
-      if (!response.ok) {
-        console.error('Failed to cancel download');
-      }
-      fetchPlaylists();
-    } catch (error) {
-      console.error('Error cancelling download', error);
-    }
-  };
+  const handleCancelClick = async () => await cancelDownload.mutateAsync(playlist.id);
 
   // Toggle the disabled state of the playlist
-  const handleToggleClick = async (playlistId, newState) => {
-    // Optimistically update the UI
-    setIsDisabled(newState);
-
-    // Immediately update the playlist data in the parent component
-    if (onPlaylistUpdate) {
-      const updatedPlaylist = {
-        ...playlist,
-        disabled: newState
-      };
-      onPlaylistUpdate(updatedPlaylist);
-    }
-
-    try {
-      const response = await fetch(`${backendUrl}/api/playlists/toggle`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ playlist_id: playlistId, disabled: newState }),
-      });
-      if (!response.ok) {
-        throw new Error('Failed to toggle playlist state');
-      }
-      // Still fetch the playlists in the background to ensure data consistency
-      fetchPlaylists();
-    } catch (error) {
-      console.error('Error toggling playlist state', error);
-      // Revert the UI update if there was an error
-      setIsDisabled(!newState);
-
-      // Also revert the parent component's data
-      if (onPlaylistUpdate) {
-        const revertedPlaylist = {
-          ...playlist,
-          disabled: !newState
-        };
-        onPlaylistUpdate(revertedPlaylist);
-      }
-    }
-  };
+  const handleToggleClick = async (playlistId, newState) => await togglePlaylistMutation.mutateAsync({ playlistId, disabled: newState });
 
   // Navigate to the playlist tracks page
-  const handlePlaylistClick = () => {
-    navigate(`/playlist/${playlist.id}`);
-  };
+  const handlePlaylistClick = () => navigate(`/playlist/${playlist.id}`);
 
   return (
     <div
@@ -112,7 +55,7 @@ function PlaylistItem({ playlist, fetchPlaylists, isSelected, onSelectChange, st
       ref={draggable ? setNodeRef : undefined}
     >
       <div
-        className={`flex items-center p-2 rounded border shadow transition-shadow my-0.5 px-4 flex-1 cursor-pointer ${isDisabled ? 'bg-gray-200 hover:shadow-none' : 'bg-white hover:shadow-md'
+        className={`flex items-center p-2 rounded border shadow transition-shadow my-0.5 px-4 flex-1 cursor-pointer ${playlist.disabled ? 'bg-gray-200 hover:shadow-none' : 'bg-white hover:shadow-md'
           }`}
         onClick={handlePlaylistClick}
       >
@@ -193,8 +136,8 @@ function PlaylistItem({ playlist, fetchPlaylists, isSelected, onSelectChange, st
         <input
           type="checkbox"
           id={`toggle-${playlist.id}`}
-          onChange={() => handleToggleClick(playlist.id, !isDisabled)}
-          checked={isDisabled}
+          onChange={() => handleToggleClick(playlist.id, !playlist.disabled)}
+          checked={playlist.disabled}
           className="sr-only peer"
         />
         <div className="relative w-[35px] h-[21px] bg-gray-400 border border-gray-300 rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:ring-gray-600 disabled:opacity-50 disabled:pointer-events-none

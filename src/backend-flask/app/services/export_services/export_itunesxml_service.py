@@ -49,7 +49,10 @@ class ExportItunesXMLService:
         ).all()
         
         # Fetch folders (subfolders) that have this parent
-        folders = Folder.query.filter_by(parent_id=parent_folder_id).all()
+        folders = Folder.query.filter(
+            Folder.parent_id == parent_folder_id,
+            Folder.disabled == False
+        ).all()
 
         # Merge both lists and sort by the custom_order property
         items = playlists + folders

@@ -49,7 +49,7 @@ def create_app(app_config=Config):
     logger.info(f"Settings Path={os.path.normpath(Config.SETTINGS_PATH)}")
     logger.info("Flask application initialized")
 
-    # todo: refactor to setup_database function
+    # todo: refactor to a setup_database function
     # Run database migrations
     db_path = app_config.SQLALCHEMY_DATABASE_URI.replace('sqlite:///', '')
     if os.path.exists(db_path):
@@ -60,9 +60,6 @@ def create_app(app_config=Config):
     with app.app_context():
         from app.models import Playlist, Folder
         db.create_all()
-        # upgrade()
-    # with app.app_context():
-    #     _handle_database_migrations(app, logger)
 
     # Register folder routes
     # todo: refactor to function, make new blueprints for other routes
@@ -90,20 +87,5 @@ def _handle_database_migrations(app, logger):
         logger.error("Auto migration failed: %s", e)
         db.create_all()
 
-    # migrations_dir = os.path.join(os.path.dirname(__file__), 'migrations')
-    #
-    # if not os.path.exists(migrations_dir):
-    #     # Initialize migrations directory if missing
-    #     init()
-    #     stamp()  # Pretend the current DB state is the initial state
-    #     migrate(message="Initial migration")
-    #     upgrade()
-    # else:
-    #     try:
-    #         # Attempt to migrate and upgrade
-    #         migrate(message="Auto migration")
-    #     except Exception as e:
-    #         print(f"Migration error: {e}")
-    #     upgrade()
 
 # python -m flask run --debug

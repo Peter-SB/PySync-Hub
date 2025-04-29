@@ -3,8 +3,10 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { backendUrl } from '../config';
 import TrackModal from '../components/TrackModal';
+import { usePlaylists } from '../hooks/usePlaylists';
+import { useDeletePlaylists, useRefreshPlaylist } from '../hooks/usePlaylistMutations';
 
-function PlaylistPage({ playlists }) {
+function PlaylistPage() {
     const { playlistId } = useParams();
     const [tracks, setTracks] = useState([]);
     const [error, setError] = useState('');
@@ -17,42 +19,22 @@ function PlaylistPage({ playlists }) {
 
     const navigate = useNavigate();
 
-    const playlistInfo = playlists.find(pl => String(pl.id) === playlistId);
-
-    useEffect(() => {
-        if (playlistInfo) {
-            const defaultTrack = playlistInfo.track_limit ? String(playlistInfo.track_limit) : '';
-            setTrackLimit(defaultTrack);
-            setSavedTrackLimit(defaultTrack);
-
-            if (playlistInfo.date_limit) {
-                const d = new Date(playlistInfo.date_limit);
-                const yyyy = d.getFullYear();
-                const mm = String(d.getMonth() + 1).padStart(2, '0');
-                const dd = String(d.getDate()).padStart(2, '0');
-                const formattedDate = `${yyyy}-${mm}-${dd}`;
-                setDateLimit(formattedDate);
-                setSavedDateLimit(formattedDate);
-            } else {
-                setDateLimit('');
-                setSavedDateLimit('');
-            }
-        }
-    }, [playlistInfo]);
+    const { data: playlists = [] } = usePlaylists();
+    const deleteMutation = useDeletePlaylists();
+    const refreshMutation = useRefreshPlaylist();
+    const playlist = playlists.find(pl => String(pl.id) === playlistId);
 
     // Refresh playlist info and tracks without downloading
-    const handleRefreshClick = async () => {
-        try {
-            const response = await fetch(`${backendUrl}/api/playlists/${playlistId}/refresh`, {
-                method: 'POST',
-            });
-            if (!response.ok) {
-                console.error('Failed to refresh playlist');
+    const handleRefreshClick = () => {
+        refreshMutation.mutate(playlistId, {
+            onSuccess: () => {
+                fetchPlaylistTracks();
+            },
+            onError: (error) => {
+                console.error('Error refreshing playlist', error);
+                setError('Failed to refresh playlist');
             }
-            fetchPlaylistTracks()
-        } catch (error) {
-            console.error('Error refreshing playlist', error);
-        }
+        });
     };
 
     const fetchPlaylistTracks = async () => {
@@ -81,7 +63,7 @@ function PlaylistPage({ playlists }) {
         };
 
         try {
-            const response = await fetch(`${backendUrl}/api/playlists/${playlistInfo.id}`, {
+            const response = await fetch(`${backendUrl}/api/playlists/${playlist.id}`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload),
@@ -117,15 +99,8 @@ function PlaylistPage({ playlists }) {
     const handleDeleteClick = async () => {
         if (!window.confirm('Are you sure you want to delete this playlist?')) return;
         try {
-            const response = await fetch(`${backendUrl}/api/playlists/${playlistInfo.id}`, {
-                method: 'DELETE',
-            });
-            if (response.ok) {
-                navigate('/');
-                //setPlaylists(playlists.filter(pl => pl.id !== playlistInfo.id));
-            } else {
-                console.error('Failed to delete playlist');
-            }
+            await deleteMutation.mutateAsync([playlist.id]);
+            navigate('/');
         } catch (error) {
             console.error('Error deleting playlist', error);
         }
@@ -141,13 +116,13 @@ function PlaylistPage({ playlists }) {
     return (
         <div id="playlist-page" className="flex flex-col h-screen p-4 pt-2">
             <div id="header-box" className="flex flex-col bg-white p-5 rounded-lg mb-1 shadow flex ">
-                {playlistInfo ? (
+                {playlist ? (
                     <div>
                         <div className="flex flex-col sm:flex-row justify-between items-center w-full h-[100px]">
                             <div className="flex items-center">
-                                {playlistInfo.image_url && (
+                                {playlist.image_url && (
                                     <img
-                                        src={playlistInfo.image_url}
+                                        src={playlist.image_url}
                                         alt="Playlist cover"
                                         className="w-24 h-24 rounded-md object-cover mr-4 border border-gray-400"
                                     />
@@ -155,21 +130,21 @@ function PlaylistPage({ playlists }) {
                                 <div className="flex flex-col">
                                     <h1 className="text-3xl font-semibold text-gray-800 mb-1">
                                         <a
-                                            href={playlistInfo.url}
+                                            href={playlist.url}
                                             target="_blank"
                                             rel="noreferrer"
                                             className="hover:underline"
                                         >
-                                            {playlistInfo.name}
+                                            {playlist.name}
                                         </a>
-                                        {playlistInfo.platform === "spotify" && (
+                                        {playlist.platform === "spotify" && (
                                             <img
                                                 src="./icons/spotify.svg"
                                                 alt="Spotify"
                                                 className="w-8 h-8 ml-3 mb-1 inline"
                                             />
                                         )}
-                                        {playlistInfo.platform === "soundcloud" && (
+                                        {playlist.platform === "soundcloud" && (
                                             <img
                                                 src="./icons/soundcloud.svg"
                                                 alt="SoundCloud"
@@ -178,14 +153,14 @@ function PlaylistPage({ playlists }) {
                                         )}
                                     </h1>
                                     <div className="text-sm text-gray-600">
-                                        {playlistInfo.last_synced
-                                            ? `Last synced: ${new Date(playlistInfo.last_synced).toLocaleString()}`
+                                        {playlist.last_synced
+                                            ? `Last synced: ${new Date(playlist.last_synced).toLocaleString()}`
                                             : 'Not synced'}
                                     </div>
                                     <div className="text-sm text-gray-600 mt-1">
-                                        {playlistInfo.downloaded_track_count} downloaded / {playlistInfo.tracks.length} total tracks
-                                        {playlistInfo.tracks.length !== playlistInfo.track_count ? (
-                                            <>, ({playlistInfo.track_count} total platform tracks)</>
+                                        {playlist.downloaded_track_count} downloaded / {playlist.tracks.length} total tracks
+                                        {playlist.tracks.length !== playlist.track_count ? (
+                                            <>, ({playlist.track_count} total platform tracks)</>
                                         ) : null}
                                     </div>
                                 </div>
@@ -199,10 +174,11 @@ function PlaylistPage({ playlists }) {
                                         }}
                                         className="mr-1 p-2 rounded bg-gray-400 hover:bg-gray-500 text-white disabled:opacity-50 disabled:cursor-not-allowed"
                                         title="Refresh playlist and tracks without downloading"
+                                        disabled={refreshMutation.isPending}
                                     >
                                         <svg
                                             xmlns="http://www.w3.org/2000/svg"
-                                            className="w-6 h-6"
+                                            className={`w-6 h-6 ${refreshMutation.isPending ? 'animate-spin-reverse' : ''}`}
                                             fill="none"
                                             viewBox="0 0 24 24"
                                             stroke="currentColor"
@@ -286,7 +262,7 @@ function PlaylistPage({ playlists }) {
                                     className="mt-1 p-2 border rounded w-16 h-6"
                                 />
 
-                                {playlistInfo.platform === "spotify" && (
+                                {playlist.platform === "spotify" && (
                                     <div>
                                         <label htmlFor="dateLimit" className="text-gray-700">
                                             Date Limit{' '}

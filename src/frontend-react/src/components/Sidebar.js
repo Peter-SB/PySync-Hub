@@ -18,9 +18,7 @@ export default function Sidebar({ onExport }) {
         const [currentMajor, currentMinor] = version.split('.').map(Number);
         const [latestMajor, latestMinor] = latestVersion.split('.').map(Number);
 
-        console.log(latestMajor)
         if (currentMajor < latestMajor) {
-
           setVersionStatus('major');
         } else if (currentMinor < latestMinor) {
           setVersionStatus('minor');
@@ -76,6 +74,13 @@ export default function Sidebar({ onExport }) {
   return (
     <aside className="w-64 bg-white h-screen p-5 shadow-lg flex flex-col justify-between relative border bw-3 z-50 fixed">
       <div>
+        <div className="flex justify-center mb-5 mr-2">
+          <img
+            src={"/images/new-logo.png"}
+            alt="Sidebar Logo"
+            className="h-32 w-auto"
+          />
+        </div>
         <h1 className="text-2xl font-semibold text-gray-900 mb-7 text-3xl font-bold">PySync DJ Hub</h1>
         <nav>
           <ul>
