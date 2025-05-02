@@ -23,18 +23,11 @@ PySync DJ Hub is a desktop app that allows you to seamlessly sync your playlists
 
 # Getting Started
 
-## API Keys
-To be able to connect with the music platforms with this app, you will need to get api keys for each platform.
-### Spotify
-You can get a Spotify API key by going to the [Spotify Developer Dashboard](https://developer.spotify.com/dashboard/applications) and creating a new app. Once you have created the app, you will be able to get the client id and client secret.
-### Soundcloud
-You can get a Soundcloud API key by following the instructions here [SoundCloud API Key Tutorial](docs/Help.md).
 
 ## Installation
-1. Go to the releases and download the release relevant to your operating system.
-2. Extract the zip file to a location of your choice. A folder called "Pysync Hub" on your desktop or usb is recommended.
-3. Open the folder and run the executable file. The location of which is /dist/PySync-Hub-platform/PySync-Hub.exe
-4. Go to the settings page and enter your api keys.
+
+See Install and Update guide here: [Install](docs/Install.md)
+
 
 ## Exporting To Rekordbox
 Once your playlists are synced, you can then export them to Rekordbox. To do this, click the export button on the main playlist page. This will generate a `rekordbox.xml` in the `rekordbox_library_exports` folder file which you can import to rekordbox like an itunes_library_file.xml, in Rekordbox Advanced Settings. Once the file is added, the PySync-Hub folder will be avalable in the library section under iTunes.
