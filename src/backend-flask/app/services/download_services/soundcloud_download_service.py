@@ -34,7 +34,7 @@ class SoundcloudDownloadService(BaseDownloadService):
 
         if os.path.exists(file_path):
             logger.info("Track '%s' already exists at '%s'. Skipping download.", track.name, file_path)
-            track.download_location = file_path
+            track.set_download_location(file_path)
 
         else:
             ydl_opts = SoundcloudDownloadService._generate_yt_dlp_options(sanitized_title)
@@ -46,7 +46,7 @@ class SoundcloudDownloadService(BaseDownloadService):
 
             FileDownloadUtils.embed_track_metadata(file_path, track)
 
-            track.download_location = file_path
+            track.set_download_location(file_path)
             logger.info("Downloaded track '%s' to '%s'", track.name, file_path)
 
         db.session.add(track)

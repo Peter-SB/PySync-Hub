@@ -68,7 +68,7 @@ class BaseDownloadService(ABC):
         db.session.add(track)
         db.session.commit()
 
-        if FileDownloadUtils.is_track_already_downloaded(track):
+        if track.is_downloaded():
             logger.info("Track '%s' already downloaded, skipping.", track.name)
             return
 
@@ -80,7 +80,6 @@ class BaseDownloadService(ABC):
             db.session.add(track)
             db.session.commit()
             raise e
-
 
     @classmethod
     def _generate_yt_dlp_options(cls, query: str, filename: str = None):
