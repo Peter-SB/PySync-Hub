@@ -29,7 +29,7 @@ class DownloadManager:
         """ Background worker that processes the download queue. """
         logger.info("Download Worker Started")
         while True:
-            playlist_id = self.download_queue.get()  # blocks until a task is available
+            playlist_id, quick_sync = self.download_queue.get()  # blocks until a task is available
 
             # Check for shutdown signal
             if playlist_id is None:
@@ -47,9 +47,9 @@ class DownloadManager:
 
                 try:
                     if playlist.platform == "spotify":
-                        SpotifyDownloadService.download_playlist(playlist, self.cancellation_flags)
+                        SpotifyDownloadService.download_playlist(playlist, quick_sync, self.cancellation_flags)
                     elif playlist.platform == "soundcloud":
-                        SoundcloudDownloadService.download_playlist(playlist, self.cancellation_flags)
+                        SoundcloudDownloadService.download_playlist(playlist, quick_sync, self.cancellation_flags)
                     else:
                         error_msg = f"Unsupported platform: {playlist.platform}"
                         logger.error(error_msg)
@@ -65,8 +65,8 @@ class DownloadManager:
 
             self.download_queue.task_done()
 
-    def add_to_queue(self, playlist_id):
-        self.download_queue.put(playlist_id)
+    def add_to_queue(self, playlist_id, quick_sync=False):
+        self.download_queue.put((playlist_id, quick_sync))
 
         # Set cancellation flag
         if playlist_id not in self.cancellation_flags:

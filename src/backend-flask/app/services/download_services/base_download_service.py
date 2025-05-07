@@ -22,7 +22,7 @@ class BaseDownloadService(ABC):
     DOWNLOAD_SLEEP_TIME = DOWNLOAD_SLEEP_TIME
 
     @classmethod
-    def download_playlist(cls, playlist: Playlist, cancellation_flags: dict[threading.Event]):
+    def download_playlist(cls, playlist: Playlist, quick_sync: bool, cancellation_flags: dict[threading.Event]):
         """
         Common implementation for downloading a playlist.
         It handles cancellation flags, status updates, progress tracking,
@@ -40,9 +40,14 @@ class BaseDownloadService(ABC):
 
             PlaylistRepository.set_download_status(playlist, 'downloading')
             tracks = [pt.track for pt in playlist.tracks]
+
             total_tracks = len(tracks)
 
             for i, track in enumerate(tracks, start=1):
+                # Remove tracks that already have a download location
+                if quick_sync and track.download_location:
+                    continue
+
                 if cancellation_flags[playlist.id].is_set():
                     logger.info("Download for playlist '%s' cancelled mid-download. (id: %s)",
                                 playlist.name, playlist.id)
