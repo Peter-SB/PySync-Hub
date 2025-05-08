@@ -73,11 +73,10 @@ def sync_playlists():
     selected_ids = data.get('playlist_ids', [])
     quick_sync = data.get('quick_sync', True)
 
-    # Get playlists by IDs if provided, otherwise all playlists.
+    # Get playlists in custom order and filter by selected IDs if provided.
+    playlists = FolderRepository.get_playlists_in_custom_order()
     if selected_ids:
-        playlists = PlaylistRepository.get_playlists_by_ids(selected_ids)
-    else:
-        playlists = PlaylistRepository.get_all_active_playlists()
+        playlists = [playlist for playlist in playlists if playlist.id in selected_ids]
 
     # Set download status and emit update via socketio
     for playlist in playlists:
