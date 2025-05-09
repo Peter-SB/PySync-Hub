@@ -51,24 +51,28 @@ class RekordboxExportService:
                 track = pt.track
                 # Add the track to the collection only once (avoid duplicates)
                 if track.id not in track_id_map:
-                    location = "file:///" + track.download_location.replace("\\", "/")
-                    location = urllib.parse.quote(location, safe=":/")
+                    # Use absolute path for export
+                    absolute_path = track.absolute_download_path
+                    if absolute_path:
+                        location = "file:///" + absolute_path.replace("\\", "/")
+                        location = urllib.parse.quote(location, safe=":/")
 
-                    ET.SubElement(
-                        collection,
-                        "TRACK",
-                        TrackID=str(track_id_counter),
-                        Name=track.name,
-                        Artist=track.artist,
-                        Album=track.album if track.album else "Unknown Album",
-                        Location=location
-                    )
-                    track_id_map[track.id] = track_id_counter
-                    track_id_counter += 1
-                    total_tracks += 1
+                        ET.SubElement(
+                            collection,
+                            "TRACK",
+                            TrackID=str(track_id_counter),
+                            Name=track.name,
+                            Artist=track.artist,
+                            Album=track.album if track.album else "Unknown Album",
+                            Location=location
+                        )
+                        track_id_map[track.id] = track_id_counter
+                        track_id_counter += 1
+                        total_tracks += 1
                 # Reference the track in the current playlist node
-                ET.SubElement(playlist_node, "TRACK", Key=str(track_id_map[track.id]))
-                entries_count += 1
+                if track.id in track_id_map:
+                    ET.SubElement(playlist_node, "TRACK", Key=str(track_id_map[track.id]))
+                    entries_count += 1
 
             # Update playlist node with the number of entries and count this playlist
             playlist_node.set("Entries", str(entries_count))

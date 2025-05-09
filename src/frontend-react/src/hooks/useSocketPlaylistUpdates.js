@@ -44,8 +44,30 @@ export function useSocketPlaylistUpdates() {
             })
         })
 
+        // Handle download error messages
+        socket.on('download_error', data => {
+            console.error('Download error received:', data);
+
+            // Update the UI to show the error state for the specific playlist
+            queryClient.setQueryData(['playlists'], old => {
+                if (!old) return old
+
+                return old.map(playlist =>
+                    playlist.id === data.id
+                        ? {
+                            ...playlist,
+                            download_status: 'error',
+                        }
+                        : playlist
+                )
+            })
+
+            // Display the error message globally
+            setError(`Error downloading playlist: ${data.error}`);
+        })
+
         return () => {
             socket.disconnect()
         }
-    }, [queryClient])
+    }, [queryClient, setError])
 }

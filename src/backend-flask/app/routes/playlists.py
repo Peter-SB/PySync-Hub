@@ -71,15 +71,12 @@ def add_playlist():
 def sync_playlists():
     data = request.get_json() or {}
     selected_ids = data.get('playlist_ids', [])
+    quick_sync = data.get('quick_sync', True)
 
-    # Get playlists by IDs if provided, otherwise all playlists.
+    # Get playlists in custom order and filter by selected IDs if provided.
+    playlists = FolderRepository.get_playlists_in_custom_order()
     if selected_ids:
-        playlists = PlaylistRepository.get_playlists_by_ids(selected_ids)
-    else:
-        playlists = PlaylistRepository.get_all_playlists()
-
-    # Only sync active (not disabled) playlists
-    playlists = [p for p in playlists if not p.disabled]
+        playlists = [playlist for playlist in playlists if playlist.id in selected_ids]
 
     # Set download status and emit update via socketio
     for playlist in playlists:
@@ -90,7 +87,7 @@ def sync_playlists():
     # Sync playlists and queue them for download
     for playlist in playlists:
         PlaylistManagerService.sync_playlists([playlist])
-        current_app.download_manager.add_to_queue(playlist.id)
+        current_app.download_manager.add_to_queue(playlist.id, quick_sync)
 
     updated_playlists = [p.to_dict() for p in playlists]
     return jsonify(updated_playlists), 200

@@ -6,3 +6,18 @@ from flask_socketio import SocketIO
 db = SQLAlchemy()
 migrate = Migrate()
 socketio = SocketIO(async_mode='threading', cors_allowed_origins="*")
+
+def emit_error_message(playlist_id, error_message):
+    """ Helper function to emit error messages via WebSocket. """
+
+    # Handle specific error messages
+    if "Sign in to confirm your age" in error_message:
+        return
+
+    if "No such file or directory" in error_message:
+        return
+
+    socketio.emit("download_error", {
+        "id": playlist_id,
+        "error": error_message
+    })

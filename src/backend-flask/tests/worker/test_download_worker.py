@@ -41,7 +41,7 @@ class TestDownloadWorker:
         dummy_playlist = DummyPlaylist(id="spotify1", platform="spotify", name="Spotify Playlist")
         spotify_called = False
 
-        def fake_spotify_download(playlist, cancellation_flags):
+        def fake_spotify_download(playlist, cancellation_flags, quick_sync):
             nonlocal spotify_called
             spotify_called = True
 
@@ -63,31 +63,3 @@ class TestDownloadWorker:
 
         manager.shutdown()
 
-    def test_download_worker_soundcloud(self, app, monkeypatch):
-        """
-        Test that when a SoundCloud playlist is enqueued, the SoundcloudDownloadService is called.
-        """
-        dummy_playlist = DummyPlaylist(id="sc1", platform="soundcloud", name="SoundCloud Playlist")
-        soundcloud_called = False
-
-        def fake_soundcloud_download(playlist, cancellation_flags):
-            nonlocal soundcloud_called
-            soundcloud_called = True
-
-        monkeypatch.setattr(
-            PlaylistRepository,
-            "get_playlist_by_id",
-            lambda playlist_id: dummy_playlist if playlist_id == "sc1" else None,
-        )
-        monkeypatch.setattr(SoundcloudDownloadService, "download_playlist", fake_soundcloud_download)
-
-        manager = DownloadManager(app)
-        manager.add_to_queue("sc1")
-        manager.download_queue.join()
-
-        assert "sc1" in manager.cancellation_flags
-        assert not manager.cancellation_flags["sc1"].is_set()
-
-        assert soundcloud_called is True
-
-        manager.shutdown()

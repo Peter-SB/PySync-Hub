@@ -116,3 +116,50 @@ class FolderRepository:
                 
         # If we got here, all children are disabled
         return True
+
+    @staticmethod
+    def get_playlists_in_custom_order(enabled_only=True) -> List[Playlist]:
+        """
+        Retrieve all playlists ordered by custom_order within folders hierarchy.
+        """
+        ordered_playlists: List[Playlist] = []
+
+        # Fetch root-level folders and playlists
+        root_folders = Folder.query.filter_by(parent_id=None).order_by(Folder.custom_order).all()
+        root_playlists = Playlist.query.filter_by(folder_id=None).order_by(Playlist.custom_order).all()
+
+        # Combine and sort items by custom_order
+        items = []
+        for folder in root_folders:
+            items.append((folder.custom_order, 'folder', folder))
+        for pl in root_playlists:
+            items.append((pl.custom_order, 'playlist', pl))
+
+        for _, item_type, item in sorted(items, key=lambda x: x[0]):
+            if item_type == 'playlist':
+                ordered_playlists.append(item)
+            else:
+                FolderRepository._traverse_folder(item, ordered_playlists)
+
+        if enabled_only:
+            ordered_playlists = [playlist for playlist in ordered_playlists if not playlist.disabled]
+
+        return ordered_playlists
+
+    @staticmethod
+    def _traverse_folder(folder: Folder, ordered_playlists: List[Playlist]) -> None:
+        """
+        Recursively traverse a folder's content and append playlists in custom order.
+        """
+        items = []
+        # Add subfolders and playlists with their custom_order
+        for subfolder in folder.subfolders:
+            items.append((subfolder.custom_order, 'folder', subfolder))
+        for pl in folder.playlists:
+            items.append((pl.custom_order, 'playlist', pl))
+
+        for _, item_type, item in sorted(items, key=lambda x: x[0]):
+            if item_type == 'playlist':
+                ordered_playlists.append(item)
+            else:
+                FolderRepository._traverse_folder(item, ordered_playlists)

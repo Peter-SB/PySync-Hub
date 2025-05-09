@@ -1,4 +1,4 @@
-⚠️ This Is A WIP Project, and is indented for personal skill development only. While not intended for public use, the aim of the project was to expand my technical ability and further practice developing apps with a seamless hypothetical user in-mind.  
+⚠️ This Is A WIP Project, and is indented for personal skill development only. While not intended for public use, the aim of the project was to expand my technical ability and further practice developing apps with a seamless (hypothetical) user-experience in-mind.  
 
 # PySync DJ Hub
 
@@ -28,10 +28,10 @@ PySync DJ Hub is a desktop app that allows you to seamlessly sync your playlists
 
 See Install and Update guide here: [Install](docs/Install.md)
 
+## How To Use
 
-## Exporting To Rekordbox
-Once your playlists are synced, you can then export them to Rekordbox. To do this, click the export button on the main playlist page. This will generate a `rekordbox.xml` in the `rekordbox_library_exports` folder file which you can import to rekordbox like an itunes_library_file.xml, in Rekordbox Advanced Settings. Once the file is added, the PySync-Hub folder will be avalable in the library section under iTunes.
+See the Help Page for all usage instructions: [Help](docs/Help.md)
 
 ## Troubleshooting
-If you are having trouble with the app, please check the [troubleshooting page](docs/Troubleshooting.md) for common issues and solutions.
+If you are having trouble with the app, please check the [troubleshooting page](docs/Help.md) for common issues and solutions.
 

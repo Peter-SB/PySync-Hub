@@ -8,7 +8,7 @@ from abc import ABC, abstractmethod
 
 from yt_dlp import YoutubeDL
 
-from app.extensions import db
+from app.extensions import db, emit_error_message
 from app.models import Playlist, Track
 from app.repositories.playlist_repository import PlaylistRepository
 from app.utils.file_download_utils import FileDownloadUtils
@@ -22,42 +22,55 @@ class BaseDownloadService(ABC):
     DOWNLOAD_SLEEP_TIME = DOWNLOAD_SLEEP_TIME
 
     @classmethod
-    def download_playlist(cls, playlist: Playlist, cancellation_flags: dict[threading.Event]):
+    def download_playlist(cls, playlist: Playlist, quick_sync: bool, cancellation_flags: dict[threading.Event]):
         """
         Common implementation for downloading a playlist.
         It handles cancellation flags, status updates, progress tracking,
         and then calls the subclass-specific download_track for each track.
         """
-        if playlist.id not in cancellation_flags:
-            logger.info("Creating cancellation flag for playlist id: %s", playlist.id)
-            cancellation_flags[playlist.id] = threading.Event()
+        try:
+            if playlist.id not in cancellation_flags:
+                logger.info("Creating cancellation flag for playlist id: %s", playlist.id)
+                cancellation_flags[playlist.id] = threading.Event()
 
-        if cancellation_flags[playlist.id].is_set():
-            logger.info("Download for playlist '%s' cancelled. (id: %s)", playlist.name, playlist.id)
-            PlaylistRepository.set_download_status(playlist, 'ready')
-            return
-
-        PlaylistRepository.set_download_status(playlist, 'downloading')
-        tracks = [pt.track for pt in playlist.tracks]
-        total_tracks = len(tracks)
-
-        for i, track in enumerate(tracks, start=1):
             if cancellation_flags[playlist.id].is_set():
-                logger.info("Download for playlist '%s' cancelled mid-download. (id: %s)",
-                            playlist.name, playlist.id)
-                break
+                logger.info("Download for playlist '%s' cancelled. (id: %s)", playlist.name, playlist.id)
+                PlaylistRepository.set_download_status(playlist, 'ready')
+                return
 
-            try:
-                cls.download_track(track)
-            except Exception as e:
-                logger.warning("Error downloading track '%s': %s", track.name, e)
+            PlaylistRepository.set_download_status(playlist, 'downloading')
+            tracks = [pt.track for pt in playlist.tracks]
 
-            progress_percent = int((i / total_tracks) * 100)
-            PlaylistRepository.set_download_progress(playlist, progress_percent)
-            time.sleep(cls.DOWNLOAD_SLEEP_TIME)
+            total_tracks = len(tracks)
 
-        logger.info("Download finished for playlist '%s'", playlist.name)
-        PlaylistRepository.set_download_status(playlist, 'ready')
+            for i, track in enumerate(tracks, start=1):
+                # Remove tracks that already have a download location
+                if quick_sync and track.download_location:
+                    continue
+
+                if cancellation_flags[playlist.id].is_set():
+                    logger.info("Download for playlist '%s' cancelled mid-download. (id: %s)",
+                                playlist.name, playlist.id)
+                    break
+
+                try:
+                    cls.download_track(track)
+                except Exception as e:
+                    logger.warning("Error downloading track '%s': %s", track.name, e)
+                    error_message = f"Error downloading playlist '{playlist.name}': {str(e)}"
+                    emit_error_message( "" , error_message)
+                progress_percent = int((i / total_tracks) * 100)
+                PlaylistRepository.set_download_progress(playlist, progress_percent)
+                time.sleep(cls.DOWNLOAD_SLEEP_TIME)
+
+            logger.info("Download finished for playlist '%s'", playlist.name)
+            PlaylistRepository.set_download_status(playlist, 'ready')
+        except Exception as e:
+            logger.error("Error downloading playlist '%s': %s", playlist.name, e)
+            error_message = f"Error downloading playlist '{playlist.name}': {str(e)}"
+            emit_error_message(playlist.id, error_message)
+            PlaylistRepository.set_download_status(playlist, 'ready')
+            raise e
 
     @classmethod
     def download_track(cls, track: Track):
@@ -68,7 +81,7 @@ class BaseDownloadService(ABC):
         db.session.add(track)
         db.session.commit()
 
-        if FileDownloadUtils.is_track_already_downloaded(track):
+        if track.is_downloaded():
             logger.info("Track '%s' already downloaded, skipping.", track.name)
             return
 
@@ -79,8 +92,8 @@ class BaseDownloadService(ABC):
             track.notes_errors = str(e)
             db.session.add(track)
             db.session.commit()
+            # todo: display frontend error            
             raise e
-
 
     @classmethod
     def _generate_yt_dlp_options(cls, query: str, filename: str = None):

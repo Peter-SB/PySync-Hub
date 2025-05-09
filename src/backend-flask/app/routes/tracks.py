@@ -11,6 +11,7 @@ from app.repositories.playlist_repository import PlaylistRepository
 from app.routes import api
 from app.services.export_services.export_itunesxml_service import ExportItunesXMLService
 from app.services.playlist_manager_service import PlaylistManagerService
+from app.utils.file_download_utils import FileDownloadUtils
 from config import Config
 
 logger = logging.getLogger(__name__)
@@ -55,7 +56,7 @@ def update_track(track_id):
         if 'download_url' in data:
             track.download_url = data['download_url']
         if 'download_location' in data:
-            track.download_location = data['download_location']
+            track.set_download_location(data['download_location'])
 
         db.session.commit()
         return jsonify(track.to_dict()), 200
@@ -72,10 +73,13 @@ def re_download_track(track_id):
         if not track:
             return jsonify({'error': 'Track not found'}), 404
 
-        logger.info("Clearing previous download for track %s, location %s", track_id, track.download_location)
-        if track.download_location and os.path.exists(track.download_location):
-            logger.info("Removing file, location %s", track.download_location)
-            os.remove(track.download_location)
+        # Get the absolute path for file operations
+        absolute_path = track.absolute_download_path
+        logger.info("Clearing previous download for track %s, location %s", track_id, absolute_path)
+        
+        if absolute_path and os.path.exists(absolute_path):
+            logger.info("Removing file, location %s", absolute_path)
+            os.remove(absolute_path)
 
         # Optionally clear previous download details
         track.download_location = None

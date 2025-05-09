@@ -10,7 +10,7 @@ from mutagen.easyid3 import EasyID3
 from mutagen.mp3 import MP3
 
 from app.extensions import db
-from app.models import Playlist, Folder
+from app.models import Playlist, Folder, Track
 from app.repositories.playlist_repository import PlaylistRepository
 
 logger = logging.getLogger(__name__)
@@ -82,9 +82,9 @@ class ExportItunesXMLService:
                 )
 
             elif isinstance(item, Playlist):
-                # For a playlist, grab the file locations from its tracks
+                # For a playlist, grab the absolute file paths from its tracks
                 file_locations = [
-                    pt.track.download_location 
+                    pt.track.absolute_download_path 
                     for pt in item.tracks 
                     if pt.track and pt.track.download_location
                 ]
@@ -98,9 +98,10 @@ class ExportItunesXMLService:
                 track_entries = []
                 track_ids = []
                 for file_location in file_locations:
-                    track_id = xml_lib.gen_track_id()
-                    track_ids.append(track_id)
-                    track_entries.append((track_id, file_location))
+                    if file_location:  # Only add if the path is valid
+                        track_id = xml_lib.gen_track_id()
+                        track_ids.append(track_id)
+                        track_entries.append((track_id, file_location))
                 
                 # Add the track info to the XML's tracks dictionary
                 xml_lib.add_to_all_track(track_entries)

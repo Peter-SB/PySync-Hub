@@ -109,7 +109,8 @@ class PlaylistRepository:
     def set_download_status(playlist, status):
         if status == "ready":
             playlist.download_status = 'ready'
-            socketio.emit("download_status", {"id": playlist.id, "status": "ready"})
+            download_progress = playlist.downloaded_track_count/len(playlist.tracks) * 100 if len(playlist.tracks) > 0 else 0
+            socketio.emit("download_status", {"id": playlist.id, "status": "ready", "progress": download_progress})
         elif status == "queued":
             playlist.download_status = 'queued'
         elif status == "downloading":
