@@ -24,7 +24,7 @@ PySync DJ Hub is a desktop app that allows you to seamlessly sync your playlists
 # Getting Started
 
 
-## Installation
+## Installation & Updating
 
 See Install and Update guide here: [Install](docs/Install.md)
 
@@ -33,5 +33,5 @@ See Install and Update guide here: [Install](docs/Install.md)
 See the Help Page for all usage instructions: [Help](docs/Help.md)
 
 ## Troubleshooting
-If you are having trouble with the app, please check the [troubleshooting page](docs/Help.md) for common issues and solutions.
+If you are having trouble with the app, please check the [Troubleshooting Section](docs/Help.md) for common issues and solutions.
 
