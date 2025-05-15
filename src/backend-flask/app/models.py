@@ -3,6 +3,7 @@ import os
 from datetime import datetime
 
 from app.extensions import db
+from app.utils.file_download_utils import FileDownloadUtils
 
 logger = logging.getLogger(__name__)
 
@@ -120,6 +121,24 @@ class Track(db.Model):
     __table_args__ = (
         db.UniqueConstraint('platform', 'platform_id', name='uq_platform_track'),)  # Prevent duplicate tracks
 
+    @property
+    def absolute_download_path(self):
+        """Get the absolute path to the downloaded file."""
+        if not self.download_location:
+            return None
+        return FileDownloadUtils.get_absolute_path(self.download_location)
+        
+    def set_download_location(self, absolute_path):
+        """Set the download location using an absolute path, converting to relative."""
+        if absolute_path:
+            self.download_location = FileDownloadUtils.get_relative_path(absolute_path)
+        else:
+            self.download_location = None
+            
+    def is_downloaded(self):
+        """Check if the track is already downloaded."""
+        return FileDownloadUtils.is_track_already_downloaded(self.download_location)
+
     def to_dict(self):
         return {
             'id': self.id,
@@ -130,7 +149,7 @@ class Track(db.Model):
             'album': self.album,
             'album_art_url': self.album_art_url,
             'download_url': self.download_url,
-            'download_location': self.download_location,
+            'download_location': self.absolute_download_path,
             'notes_errors': self.notes_errors,
         }
 

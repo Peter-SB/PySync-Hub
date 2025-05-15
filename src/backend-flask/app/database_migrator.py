@@ -3,6 +3,9 @@ import sqlite3
 import os
 from pathlib import Path
 
+from app.utils.file_download_utils import FileDownloadUtils
+from config import Config
+
 logger = logging.getLogger(__name__)
 
 class DatabaseMigrator:
@@ -58,6 +61,12 @@ class DatabaseMigrator:
                 cursor.execute("INSERT INTO migration_history (migration_name) VALUES ('add_expanded_field_to_folders')")
                 conn.commit()
                 logger.info("Applied migration: add_expanded_field_to_folders")
+            
+            if 'convert_absolute_paths_to_relative' not in applied_migrations:
+                DatabaseMigrator._convert_absolute_paths_to_relative(conn, cursor)
+                cursor.execute("INSERT INTO migration_history (migration_name) VALUES ('convert_absolute_paths_to_relative')")
+                conn.commit()
+                logger.info("Applied migration: convert_absolute_paths_to_relative")
             
             conn.close()
             logger.info("Database migration completed successfully")
@@ -148,3 +157,47 @@ class DatabaseMigrator:
             cursor.execute("ALTER TABLE folders ADD COLUMN expanded BOOLEAN NOT NULL DEFAULT 1")
             conn.commit()
             logger.info("Added expanded field to folders table")
+    
+    @staticmethod
+    def _convert_absolute_paths_to_relative(conn, cursor):
+        """Convert absolute download paths to relative paths based on DOWNLOAD_FOLDER"""
+        logger.info("Converting absolute paths to relative paths")
+        
+        # Get the download folder from config
+        download_folder = Config.DOWNLOAD_FOLDER
+        if not download_folder:
+            logger.error("Cannot convert paths: DOWNLOAD_FOLDER is not defined in config")
+            return
+        
+        # Make sure download folder path is normalized
+        download_folder = os.path.abspath(download_folder)
+        
+        # Get all tracks with a download location
+        cursor.execute("SELECT id, download_location FROM tracks WHERE download_location IS NOT NULL")
+        tracks = cursor.fetchall()
+        
+        tracks_updated = 0
+        for track_id, download_location in tracks:
+            if not download_location:  # Skip empty paths
+                continue
+                
+            # Skip if already a relative path
+            if not os.path.isabs(download_location):
+                continue
+                
+            try:
+                # Convert to relative path
+                relative_path = FileDownloadUtils.get_relative_path(download_location)
+                
+                if relative_path and relative_path != download_location:
+                    # If conversion succeeded and path changed, update the database
+                    cursor.execute(
+                        "UPDATE tracks SET download_location = ? WHERE id = ?", 
+                        (relative_path, track_id)
+                    )
+                    tracks_updated += 1
+            except Exception as e:
+                logger.error(f"Error converting path for track {track_id}: {e}")
+        
+        conn.commit()
+        logger.info(f"Converted {tracks_updated} track paths from absolute to relative format")

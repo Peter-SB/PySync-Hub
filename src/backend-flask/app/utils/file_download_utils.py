@@ -6,29 +6,27 @@ import requests
 from mutagen.id3 import APIC, ID3, TALB, TIT2, TPE1
 from mutagen.mp3 import MP3
 
-from app.models import Track
+from config import Config
 
 logger = logging.getLogger(__name__)
 
 class FileDownloadUtils:
     @staticmethod
-    def is_track_already_downloaded(track: Track) -> bool:
+    def is_track_already_downloaded(download_location) -> bool:
         """Check if the track is already downloaded and update the database accordingly."""
-        if track.download_location and os.path.isfile(track.download_location):
 
-            #track.notes_errors = "Already Downloaded, Skipped"
-            #db.session.add(track)
-            #db.session.commit()
+        absolute_path = FileDownloadUtils.get_absolute_path(download_location)
+        if download_location and os.path.isfile(absolute_path):
             return True
         return False
 
     @staticmethod
-    def embed_track_metadata(file_path, track: Track):
+    def embed_track_metadata(file_path, track):
         """
         Adds metadata from the track data to the MP3 audio file, including cover art if available.
 
-        :param track: Track data from Spotify.
-        :param track_file_path: Path to the MP3 audio file.
+        :param track: Track data object with name, artist, album, etc.
+        :param file_path: Path to the MP3 audio file.
         """
         logger.info(f"Embedding metadata for track '{track.name}' at '{file_path}'")
 
@@ -78,3 +76,49 @@ class FileDownloadUtils:
 
         # Truncate to max_length and remove trailing spaces
         return filename[:max_length].rstrip()
+    
+    @staticmethod
+    def get_relative_path(absolute_path):
+        """Convert an absolute file path to a path relative to the DOWNLOAD_FOLDER.
+        
+        Returns None if the path is not in the download folder.
+        """
+        if not absolute_path:
+            return None
+            
+        if not os.path.isabs(absolute_path):
+            # Already a relative path
+            return absolute_path
+            
+        download_folder = Config.DOWNLOAD_FOLDER
+        try:
+            # Make both paths absolute and normalized
+            abs_path = os.path.abspath(absolute_path)
+            abs_download = os.path.abspath(download_folder)
+            
+            if abs_path.startswith(abs_download):
+                # Get the part of the path after the download folder
+                rel_path = os.path.relpath(abs_path, abs_download)
+                return rel_path
+            else:
+                logger.warning(f"Path {absolute_path} is not within the download folder {download_folder}")
+                return absolute_path  # Return as is if not in download folder
+        except Exception as e:
+            logger.error(f"Error converting to relative path: {e}")
+            return absolute_path
+            
+    @staticmethod
+    def get_absolute_path(relative_path):
+        """Convert a path relative to DOWNLOAD_FOLDER to an absolute path.
+        
+        If the path is already absolute, returns it unchanged.
+        """
+        if not relative_path:
+            return None
+            
+        if os.path.isabs(relative_path):
+            # Already an absolute path
+            return relative_path
+            
+        # Join with the download folder to get the absolute path
+        return os.path.join(Config.DOWNLOAD_FOLDER, relative_path)

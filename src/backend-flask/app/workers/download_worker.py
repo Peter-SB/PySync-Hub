@@ -4,6 +4,7 @@ import queue
 
 from flask import Flask
 
+from app.extensions import emit_error_message
 from app.repositories.playlist_repository import PlaylistRepository
 from app.services.download_services.spotify_download_service import SpotifyDownloadService
 from app.services.download_services.soundcloud_download_service import SoundcloudDownloadService
@@ -28,7 +29,7 @@ class DownloadManager:
         """ Background worker that processes the download queue. """
         logger.info("Download Worker Started")
         while True:
-            playlist_id = self.download_queue.get()  # blocks until a task is available
+            playlist_id, quick_sync = self.download_queue.get()  # blocks until a task is available
 
             # Check for shutdown signal
             if playlist_id is None:
@@ -44,17 +45,28 @@ class DownloadManager:
 
                 logger.info(f"Downloading playlist {playlist}")
 
-                if playlist.platform == "spotify":
-                    SpotifyDownloadService.download_playlist(playlist, self.cancellation_flags)
-                elif playlist.platform == "soundcloud":
-                    SoundcloudDownloadService.download_playlist(playlist, self.cancellation_flags)
-
-                self.cancellation_flags[playlist.id].clear()
+                try:
+                    if playlist.platform == "spotify":
+                        SpotifyDownloadService.download_playlist(playlist, quick_sync, self.cancellation_flags)
+                    elif playlist.platform == "soundcloud":
+                        SoundcloudDownloadService.download_playlist(playlist, quick_sync, self.cancellation_flags)
+                    else:
+                        error_msg = f"Unsupported platform: {playlist.platform}"
+                        logger.error(error_msg)
+                        emit_error_message(playlist.id, error_msg)
+                        PlaylistRepository.set_download_status(playlist, 'ready')
+                except Exception as e:
+                    logger.error(f"Error downloading playlist {playlist.id}: {e}")
+                    emit_error_message(playlist.id, f"Error downloading playlist: {str(e)}")
+                    PlaylistRepository.set_download_status(playlist, 'ready')
+                finally:
+                    if playlist.id in self.cancellation_flags:
+                        self.cancellation_flags[playlist.id].clear()
 
             self.download_queue.task_done()
 
-    def add_to_queue(self, playlist_id):
-        self.download_queue.put(playlist_id)
+    def add_to_queue(self, playlist_id, quick_sync=False):
+        self.download_queue.put((playlist_id, quick_sync))
 
         # Set cancellation flag
         if playlist_id not in self.cancellation_flags:

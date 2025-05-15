@@ -32,7 +32,7 @@ Once playlists are added you can click into them and see their tracks. From ther
 
 ## 2. Syncing/Download Playlists:
 
-Once playlist are added they can be synced (i.e downloaded). This will get the up to date playlist infomation and then add the playlist to a queue to be downloaded in the background. The download bar displays progress along side the downloaded count.
+Once playlist are added they can be synced (i.e downloaded). This will get the up to date playlist information and then add the playlist to a queue to be downloaded in the background. The download bar displays progress along side the downloaded count.
 Playlist are saved to a `/music_downloads` folder in the root of the program. **Note:** moving them from this folder will break the link between the program and the file causing the program to redownload the file.
 
 ## 3. Exporting To Rekordbox:
@@ -61,7 +61,7 @@ Enjoy!
 
 # Tips and Hints
 ### Track and Date Limits
-You can limit how many tracks are downloaded, this is paticularly useful for liked songs. You can set these limits as a date limit, tracks up to that date. Or track limit, the number of tracks to download. This can be accessed by the dropdown arrow when adding playlists or on the playlist page under options.
+You can limit how many tracks are downloaded, this is particularly useful for liked songs. You can set these limits as a date limit, tracks up to that date. Or track limit, the number of tracks to download. This can be accessed by the dropdown arrow when adding playlists or on the playlist page under options.
 
 # Troubleshooting 
 
@@ -73,6 +73,7 @@ You can limit how many tracks are downloaded, this is paticularly useful for lik
 3. If you are downloading a private spotify playlist, make sure you have logged in.
 4. If you are downloading a soundcloud playlist, its possible that the app my need updating. Go to the [GitHub Page](https://github.com/Peter-SB/PySync-Hub)
 
-## Troubleshooting Installing
+## Troubleshooting 
 
-### 1. Antivirus 
+### Antivirus 
+Anti virus software may cause the app not to start properly.
