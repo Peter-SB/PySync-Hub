@@ -5,9 +5,8 @@ import { backendUrl } from '../config'
 import { useGlobalError } from '../contexts/GlobalErrorContext';
 
 
-/**
- * Hook to listen for playlist updates (e.g download progress) via WebSocket and update the query cache accordingly.
- */
+
+// Hook to listen for playlist updates (e.g download progress) via WebSocket and update the query cache accordingly.
 export function useSocketPlaylistUpdates() {
     const { setError } = useGlobalError();
     const queryClient = useQueryClient()
@@ -25,6 +24,7 @@ export function useSocketPlaylistUpdates() {
 
         console.log('Socket connected')
 
+        // Handle download status updates
         socket.on('download_status', data => {
             queryClient.setQueryData(['playlists'], old => {
                 if (!old) return old
@@ -64,6 +64,29 @@ export function useSocketPlaylistUpdates() {
 
             // Display the error message globally
             setError(`Error downloading playlist: ${data.error}`);
+        })
+
+        // Handle playlist sync updates
+        socket.on('playlist_sync_update', data => {
+            console.log('Playlist sync update received:', data);
+
+            // Update the track count and tracks in the playlist data
+            queryClient.setQueryData(['playlists'], old => {
+                if (!old) return old
+
+                return old.map(playlist => {
+                    if (playlist.id === data.id) {
+                        return {
+                            ...playlist,
+                            // Update the tracks array length
+                            track_count: data.track_count,
+                            // Update tracks array if provided in the data
+                            tracks: data.tracks || playlist.tracks || []
+                        }
+                    }
+                    return playlist
+                })
+            })
         })
 
         return () => {

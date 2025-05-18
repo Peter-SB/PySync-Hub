@@ -21,3 +21,16 @@ def emit_error_message(playlist_id, error_message):
         "id": playlist_id,
         "error": error_message
     })
+
+def emit_playlist_sync_update(playlist_id, track_count, tracks=None):
+    """ Helper function to emit playlist sync updates via WebSocket. """
+    update_data = {
+        "id": playlist_id,
+        "track_count": track_count
+    }
+    
+    # Include tracks data if provided
+    if tracks is not None:
+        update_data["tracks"] = tracks
+        
+    socketio.emit("playlist_sync_update", update_data)

@@ -44,6 +44,8 @@ class BaseDownloadService(ABC):
             total_tracks = len(tracks)
 
             for i, track in enumerate(tracks, start=1):
+                progress_percent = int((i / total_tracks) * 100)
+                PlaylistRepository.set_download_progress(playlist, progress_percent)
                 # Remove tracks that already have a download location
                 if quick_sync and track.download_location:
                     continue
@@ -59,8 +61,7 @@ class BaseDownloadService(ABC):
                     logger.warning("Error downloading track '%s': %s", track.name, e)
                     error_message = f"Error downloading playlist '{playlist.name}': {str(e)}"
                     emit_error_message( "" , error_message)
-                progress_percent = int((i / total_tracks) * 100)
-                PlaylistRepository.set_download_progress(playlist, progress_percent)
+
                 time.sleep(cls.DOWNLOAD_SLEEP_TIME)
 
             logger.info("Download finished for playlist '%s'", playlist.name)

@@ -78,14 +78,5 @@ def create_app(app_config=Config):
 
     return app
 
-def _handle_database_migrations(app, logger):
-    try:
-        # Automatically run pending migrations
-        upgrade()
-    except Exception as e:
-        # Log the error, and as a fallback, create tables (useful for a fresh install)
-        logger.error("Auto migration failed: %s", e)
-        db.create_all()
-
 
 # python -m flask run --debug

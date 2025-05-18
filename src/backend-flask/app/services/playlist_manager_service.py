@@ -6,7 +6,7 @@ import logging
 
 from spotipy import SpotifyException
 
-from app.extensions import db
+from app.extensions import db, emit_playlist_sync_update
 from app.models import Playlist
 from app.repositories.playlist_repository import PlaylistRepository
 from app.services.platform_services.platform_services_factory import PlatformServiceFactory
@@ -33,15 +33,19 @@ class PlaylistManagerService:
         for playlist in playlists:
             try:
                 data = PlatformServiceFactory.get_service(playlist.platform).get_playlist_data(playlist.url)
-
                 playlist.name = data['name']
                 playlist.last_synced = datetime.utcnow()
                 playlist.image_url = data['image_url']
-                playlist.track_count = data['track_count']
-                logger.info("Pulled latest playlist info (ID: %s, external_id: %s)", playlist.id,
-                            playlist.external_id)
-
+                playlist.track_count = data['track_count']                
+                logger.info("Pulled latest playlist info (ID: %s, external_id: %s)", playlist.id, playlist.external_id)
+                            
                 TrackManagerService.fetch_playlist_tracks(playlist.id) # todo: investigate if this make duplicate calls with get_playlist_data
+                
+                # Get updated tracks after fetching
+                tracks = PlaylistRepository.get_playlist_tracks(playlist.id)
+                
+                # Emit WebSocket event to update the frontend with track count and tracks
+                emit_playlist_sync_update(playlist.id, data['track_count'], tracks)
 
             except Exception as e:
                 logger.error("Failed to sync playlist ID %s: %s", playlist.id, e, exc_info=True)
@@ -116,3 +120,19 @@ class PlaylistManagerService:
                 logger.info("Deleted playlists with IDs: %s", selected_ids_int)
             except Exception as e:
                 logger.error("Error deleting playlists with IDs %s: %s", selected_ids_int, e, exc_info=True)
+
+    @staticmethod
+    def emit_playlist_sync_with_tracks(playlist_id, track_count):
+        """
+        Helper method to emit playlist sync updates with tracks via WebSocket.
+        This is called after syncing a playlist to update the frontend.
+        """
+        try:
+            # Get updated tracks
+            tracks = PlaylistRepository.get_playlist_tracks(playlist_id)
+            
+            # Emit WebSocket event to update the frontend with track count and tracks
+            emit_playlist_sync_update(playlist_id, track_count, tracks)
+            logger.info("Emitted playlist sync update with tracks for playlist ID %s", playlist_id)
+        except Exception as e:
+            logger.error("Failed to emit playlist sync update with tracks: %s", e, exc_info=True)
