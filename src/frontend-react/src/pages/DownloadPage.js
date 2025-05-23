@@ -1,11 +1,12 @@
 import React, { useState, useMemo } from 'react';
 import AddPlaylistForm from '../components/AddPlaylistForm';
 import PlaylistList from '../components/PlaylistList';
-import PlaylistSortOrder from '../components/PlaylistSortOrder';
+// import PlaylistSortOrder from '../components/PlaylistSortOrder'; // todo: reimplement
 import ExportStatus from '../components/ExportStatus';
 import { ErrorMessage } from '../components/ErrorMessage';
 import { usePlaylists } from '../hooks/usePlaylists';
-import { useSyncPlaylists, useDeletePlaylists, useExportAll } from '../hooks/usePlaylistMutations';
+import { useSyncPlaylists, useDeletePlaylists } from '../hooks/usePlaylistMutations'; // Removed useExportAll
+import ExportButton from '../components/ExportButton'; // Added import for the new component
 
 function DownloadPage() {
   const [exportMessage, setExportMessage] = useState('');
@@ -17,7 +18,6 @@ function DownloadPage() {
   // React Query mutations
   const syncMutation = useSyncPlaylists();
   const deleteMutation = useDeletePlaylists();
-  const exportMutation = useExportAll();
 
   // Sort playlists based on the selected sort criterion and order.
   // todo: move to PlaylistSortOrder?
@@ -42,18 +42,6 @@ function DownloadPage() {
       }
     });
   }, [playlists, sortBy, sortOrder]);
-
-  // Handle export action
-  const handleExport = async () => {
-    try {
-      const result = await exportMutation.mutateAsync();
-      setExportMessage("Export successful: " + result.export_path);
-      // Clear export message after a few seconds
-      setTimeout(() => setExportMessage(''), 3000);
-    } catch (error) {
-      console.error("Export error", error);
-    }
-  };
 
   // Handle sync action
   const handleSync = async () => {
@@ -91,19 +79,7 @@ function DownloadPage() {
         <AddPlaylistForm />
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div className="flex items-center gap-2">
-            <button
-              onClick={handleExport}
-              className="flex items-center px-3 py-2 bg-gray-900 hover:bg-black text-white rounded-lg shadow-md"
-              disabled={exportMutation.isLoading}
-            >
-              <span className="font-medium text-l">
-                {exportMutation.isLoading ? 'Exporting...' : 'Export All'}
-              </span>
-              <div className="bg-white p-0.25 flex items-center justify-center rounded-lg ml-2">
-                <img src="./icons/rekordbox.svg" alt="Rekordbox" className="h-6 w-6 rounded-lg m-0.5" />
-                <img src="./icons/export.svg" alt="Export" className="h-6 w-6 rounded-lg" />
-              </div>
-            </button>
+            <ExportButton setExportMessage={setExportMessage} /> {/* Replaced button with ExportButton component */}
           </div>
           <div className="flex items-center gap-2 ml-auto">
             {/* <PlaylistSortOrder sortBy={sortBy} setSortBy={setSortBy} sortOrder={sortOrder} setSortOrder={setSortOrder} />  todo: reimplement*/}
