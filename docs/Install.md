@@ -6,17 +6,15 @@ First choose which version you need to download. Pick either Windows or Mac. The
 The download can be found at [Releases](https://github.com/Peter-SB/PySync-Hub/releases) under Assets. 
 
 ### Lite VS Desktop?
-**The Desktop** version is a full standalone desktop app that will run like a normal software with its own application window. This means it takes a little longer to download or startup.
+**The Desktop** version is a full standalone desktop app that will run like a normal software with its own application window. (This can mean it takes a little longer to download or startup.)
 
-**The Lite** version will run in your browser (e.g Chrome, Firefox etc). It is faster and takes up less space but looks less professional. 
+**The Lite** version will run in your browser (e.g Chrome, Firefox etc). It is faster and takes up less space but looks less flashy.
 
 ## 2. Extract 
-Next extract the .zip to a folder e.g "`PySync-Hub`". This folder can be put on your usb or desktop for example.
+Once downloaded, extract the .zip to a folder e.g "`PySync-Hub`". This folder can be put on your usb or desktop for example. 
 
 ## 3. Run
-Either run the shortcut or go to application directly in the correct folder in `/dist`. \( e.g `/dist/PySync-Hub-win32-x64` or `/dist/pysync-hub-lite`.)
-
-You may need to 
+Either **run the shortcut** or go to application directly in the correct folder in `/dist`. \( e.g `/dist/PySync-Hub-win32-x64` or `/dist/pysync-hub-lite`.)
 
 ## Troubleshooting
 **Windows protected your PC** Click "More info" and then "Run anyway"
@@ -37,6 +35,7 @@ You must set a Redirect URLs if you wish to sync liked songs or a private playli
 <div align="center">
     <img src="images/Spotify-Developer-Dashboard.png" alt="Spotify API" style="width:80%; height:auto;">
 </div>
+<br>
 
 ### Soundcloud
 
@@ -47,10 +46,11 @@ The Soundcloud API key can be simply found:
 4. Use `ctr+f` to find the `client_id`.
 5. Save this in your settings. 
 
+<br>
 <div align="center">
     <img src="images/Scoundcloud-API.png" alt="Spotify API" style="width:%95; height:auto;">
 </div>
-
+<br>
 
 # How To Update
 

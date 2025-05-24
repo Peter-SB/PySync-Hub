@@ -1,4 +1,4 @@
-# Help
+# Help and How To Use
 
 This page will go over how to use this software as well as some common issues and how to fix them. Read the whole page for some useful tips and instructions.
 
@@ -37,11 +37,12 @@ Playlist are saved to a `/music_downloads` folder in the root of the program. **
 
 ## 3. Exporting To Rekordbox:
 
-Click the export button to export your library to Rekordbox and wait for a green confirmation notification. This will export all the playlists you have added to the program. 
+Click the export button to export your library to Rekordbox and wait for a green confirmation notification. This will export all the playlists you have added to the program (and are enabled). 
 
 <div align="center">
     <img src="./images/Export-Button.png" alt="Export Button" style="width:80%; height:auto;">
 </div>
+<br>
 
 Once finished exporting to Rekordbox, the program will generate a `rekordbox.xml` file in the `rekordbox_library_exports` folder. 
 This file is imported to Rekordbox in Rekordbox Advanced Settings.
@@ -49,8 +50,9 @@ This file is imported to Rekordbox in Rekordbox Advanced Settings.
 <div align="center">
     <img src="./images/Rekordbox-Import-Settings.png" alt="PySync Hub" style="width:80%; height:auto;">
 </div>
+<br>
 
-Once the file is added, the PySync-Hub folder will be available in the library section under iTunes. From there PySync Hub can be imported into your own library.
+Once the file is added, the PySync-Hub folder will be available in the library section **under iTunes**. From there PySync Hub can be imported into your own library.
 
 <div align="center">
     <img src="./images/Rekordbox-Import-Library.png" alt="PySync Hub" style="width:30%; height:auto;">
@@ -68,7 +70,7 @@ You can limit how many tracks are downloaded, this is particularly useful for li
 ## Troubleshooting Adding Playlists
 
 ### 401 Unauthorized Error
-1. Make sure you have set your API keys in `settings.py` before running the program. Without them the software cannot communicate with the relevant platform. You can get these keys by following the instructions in the instructions in the [Getting Started](../Readme.md#getting-started) guide.
+1. Make sure you have set your API keys in the settings page. Without them the software cannot communicate with the relevant platform. You can get these keys by following the instructions in the instructions in the [Getting Started](../Readme.md#getting-started) guide.
 2. Disconnect from any VPNs or proxies you may be using. 
 3. If you are downloading a private spotify playlist, make sure you have logged in.
 4. If you are downloading a soundcloud playlist, its possible that the app my need updating. Go to the [GitHub Page](https://github.com/Peter-SB/PySync-Hub)
