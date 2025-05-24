@@ -37,9 +37,9 @@ This app is built with Flask (Python) backend, React (Javascript) frontend, and 
 
 # Demo
 
-Demonstration of the a simple user flow: Adding a playlist, dragging and dropping in the right folder, syncing and downloading the playlist, before lastly exporting to Rekordbox. 
+Demonstration of the a simple user flow: Adding a playlist, dragging and dropping in the right folder, syncing and downloading the playlist, before lastly exporting to Rekordbox. [HD Demo Video Link](docs/PySync%20Hub%20Demo.mp4)
 
-<video controls src="docs/PySync Hub Demo.mp4" title="Title"></video>
+<video controls src="docs/PySync Hub Demo.gif" title="Title"></video>
 
 The exported playlists then visible in Rekordbox: 
 
