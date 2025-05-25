@@ -5,7 +5,7 @@
 <strong> Automated DJ Music Library Manager Tool</strong>
 </div>
 
-PySync DJ Hub is a desktop app that allows you to seamlessly sync your playlists from multiple music platforms to your Rekordbox library, currently supports Spotify, Soundcloud, and soon Youtube.
+PySync DJ Hub is a desktop app that allows you to seamlessly sync your playlists from multiple music platforms to your Rekordbox library. This tool streamlines the laborious task of DJ library management and lets you get straight to mixing music!
 
 <div align="center">
     <img src="docs/images/pysync-29-04-25-home.png" alt="PySync Hub" style="width:80%; height:auto;">
@@ -15,7 +15,7 @@ PySync DJ Hub is a desktop app that allows you to seamlessly sync your playlists
 
 
 ### **Ethos:** 
-This app is built with the hope that more people take up DJing and more people get into dance music. Having music to play is often a barrier to entry for this. All audio sourced from publicly available sources, such as youtube. Hence, the quality of audio downloaded by this app is capped at a lower quality. **Please buy the music your love and support the artists for full quality tracks. The dance music scene is dying, and it needs everyone's support.**
+This app is built with the hope that more people take up DJing and more people get into dance music. Having music to play is often a barrier to entry for this. All audio sourced from publicly available sources, such as youtube. Hence, the quality of audio sourced by this app is capped at a lower quality. Full quality tracks **please buy the music your love and support the artists. The dance music scene is dying, and it needs everyone's support.**
 
 ### **Features:**
 - Seamless automated syncing of playlists between platforms such as SoundCloud and Spotify.
@@ -23,6 +23,7 @@ This app is built with the hope that more people take up DJing and more people g
 - Organise your playlists with folders and a intuitive drag and drop interface.
 - Intelligent downloads avoids duplicate track downloads saving storage space and time.   
 - Standalone desktop app or in browser interface.
+- Support for Spotify, Soundcloud, and soon Youtube.
 
 ### **How it works:** 
 The program has three main stages: 
@@ -31,13 +32,13 @@ The program has three main stages:
 3. The final stage is exporting the playlists to Rekordbox. This step involves generating an iTunes XML file that can be imported into Rekordbox.  
 
 ### **Technical Details:** 
-This app is built with Flask (Python) backend, React (Javascript) frontend, and a SQLite database. It has been bundled with Electron js to allow it to be run on desktop. Read more here [Technical Details](docs/TechnicalReadme.md)
+This app is built with Flask (Python) backend, React (Javascript) frontend, and a SQLite database. It has been bundled with Electron js to allow it to be run on desktop. Read more here [Technical Details](src/Readme.md)
 
 # Demo
 
 Demonstration of the a simple user flow: Adding a playlist, dragging and dropping in the right folder, syncing and downloading the playlist, before lastly exporting to Rekordbox. [HD Demo Video Link](docs/PySync%20Hub%20Demo.mp4)
 
-![Demo Gif](docs/PySync%20Hub%20Demo.gif){ .image25percent }
+![Demo Gif](docs/PySync%20Hub%20Demo.gif)
 
 The exported playlists then visible in Rekordbox: 
 

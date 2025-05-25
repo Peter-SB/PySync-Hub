@@ -67,15 +67,14 @@ You can limit how many tracks are downloaded, this is particularly useful for li
 
 # Troubleshooting 
 
-## Troubleshooting Adding Playlists
-
-### 401 Unauthorized Error
+### Troubleshooting Adding Playlists - 401 Unauthorized Error
 1. Make sure you have set your API keys in the settings page. Without them the software cannot communicate with the relevant platform. You can get these keys by following the instructions in the instructions in the [Getting Started](../Readme.md#getting-started) guide.
 2. Disconnect from any VPNs or proxies you may be using. 
 3. If you are downloading a private spotify playlist, make sure you have logged in.
 4. If you are downloading a soundcloud playlist, its possible that the app my need updating. Go to the [GitHub Page](https://github.com/Peter-SB/PySync-Hub)
 
-## Troubleshooting 
-
 ### Antivirus 
 Anti virus software may cause the app not to start properly.
+
+### VPN
+If you are on a VPN Youtube may not allow video downloading and hence Spotify sync wont work.

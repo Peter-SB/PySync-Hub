@@ -52,6 +52,15 @@ The Soundcloud API key can be simply found:
 </div>
 <br>
 
+### Settings
+
+Lastly save the tokens in the Settings page.
+
+<div align="center">
+    <img src="images/Settings.png" alt="Spotify API" style="width:80%; height:auto;">
+</div>
+<br>
+
 # How To Update
 
 Similar to installing Go to [Releases](https://github.com/Peter-SB/PySync-Hub/releases) and download the correct version.

@@ -16,14 +16,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     curl &&\
     rm -rf /var/lib/apt/lists/*
 
-# Install Node.js
-#RUN apt-get update && \
-#    apt-get install -y curl && \
-#    curl -sL https://deb.nodesource.com/setup_20.x | bash - && \
-#    apt-get install -y nodejs && \
-#    apt-get purge -y --auto-remove curl && \
-#    rm -rf /var/lib/apt/lists/*
-
 # Install standalone FFmpeg and FFprobe binaries
 RUN mkdir -p /ffmpeg && \
     curl -L -o /ffmpeg/ffmpeg.tar.xz https://johnvansickle.com/ffmpeg/releases/ffmpeg-release-i686-static.tar.xz && \
