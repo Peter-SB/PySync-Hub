@@ -15,14 +15,14 @@ PySync DJ Hub is a desktop app that allows you to seamlessly sync your playlists
 
 
 ### **Ethos:** 
-This app is built with the hope that more people take up DJing and more people get into dance music. Having music to play is often a barrier to entry for this. All audio sourced from publicly available sources, such as youtube. Hence, the quality of audio sourced by this app is capped at a lower quality. Full quality tracks **please buy the music your love and support the artists. The dance music scene is dying, and it needs everyone's support.**
+This app is built with the hope that more people take up DJing and more people get into dance music. Having music to play is often a barrier to entry for this. All audio sourced from publicly available sources, such as youtube. Hence, the quality of audio sourced by this app is capped at a lower quality. Full quality tracks **please buy the music you love and support the artists. The dance music scene is dying, and it needs everyone's support.**
 
 ### **Features:**
 - Seamless automated syncing of playlists between platforms such as SoundCloud and Spotify.
 - Easily export playlists into Rekordbox.
 - Organise your playlists with folders and a intuitive drag and drop interface.
 - Intelligent downloads avoids duplicate track downloads saving storage space and time.   
-- Standalone desktop app or in browser interface.
+- Stand-alone desktop app or in browser interface.
 - Support for Spotify, Soundcloud, and soon Youtube.
 
 ### **How it works:** 
@@ -36,11 +36,11 @@ This app is built with Flask (Python) backend, React (Javascript) frontend, and 
 
 # Demo
 
-Demonstration of the a simple user flow: Adding a playlist, dragging and dropping in the right folder, syncing and downloading the playlist, before lastly exporting to Rekordbox. [HD Demo Video Link](docs/PySync%20Hub%20Demo.mp4)
+Demonstration of a simple user flow: Adding a playlist, dragging and dropping in the right folder, syncing and downloading the playlist, before lastly exporting to Rekordbox. [HD Demo Video Link](docs/PySync%20Hub%20Demo.mp4)
 
 ![Demo Gif](docs/PySync%20Hub%20Demo.gif)
 
-The exported playlists then visible in Rekordbox: 
+The exported playlists then now visible in Rekordbox: 
 
 ![Exported Tracks In Rekordbox](docs/images/Exported-Tracks-Rekordbox.png)
 
