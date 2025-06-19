@@ -26,6 +26,7 @@ def print_debug_info():
     print(get_base_path())
 
 def check_module(module_name):
+    """" Check if a module can be imported and print its location """
     try:
         spec = importlib.util.find_spec(module_name)
         if spec is None:
@@ -40,7 +41,6 @@ def open_browser():
     is_frozen = getattr(sys, 'frozen', False)
     is_lite = is_frozen and sys.argv[0].endswith("pysync-hub-lite.exe")
     is_reloader = os.environ.get('WERKZEUG_RUN_MAIN') == 'true'
-    
     if is_lite and not is_reloader:
         threading.Timer(1.0, lambda: webbrowser.open("http://127.0.0.1:5000/")).start()
 
@@ -51,15 +51,10 @@ from config import Config
 app = create_app(Config)
 
 if __name__ == '__main__':
-    print("starting server")
-    print_debug_info()
-
+    print("Starting Server")
     open_browser()
-
     socketio.run(app, debug=False)
 
 # python -m flask run --debug
 # pyinstaller --console --name pysync-hub-backend run.py
 # pyinstaller pysync-hub-backend.spec
-
-

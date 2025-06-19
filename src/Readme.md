@@ -33,7 +33,7 @@ This project was primarily built as a learning project to expand my fullstack ab
 <div></div>
 </div> -->
 
-## Frontend
+## [Frontend](/src/frontend-react/Readme.md)
 - JavaScript
 - React
 - React Query
@@ -41,7 +41,7 @@ This project was primarily built as a learning project to expand my fullstack ab
 [Read More Here](/src/frontend-react/Readme.md)
 
 
-## Backend
+## [Backend](/src/backend-flask/Readme.md)
 - Python
 - Flask
 - SQLAlchemy
