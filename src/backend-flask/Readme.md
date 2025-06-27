@@ -37,7 +37,7 @@ This file plays a special role in Flask because it contains the Flask app factor
 
 This directory contains the service classes for handling business logic. These include
 
-**Playlist Manager Service** - Service class for managing playlists such as adding, syncing and deleteig playlists.  
+**Playlist Manager Service** - Service class for managing playlists such as adding, syncing and deleting playlists.  
 **Track Manager Service** - Service class for managing tracks mainly `fetch_playlist_tracks`.  
 **Platform Services** - Service classes for interacting with different platforms such as Spotify and Soundcloud. For Spotify the Spotipy Library is used. Currently, only the Soundcloud service simply fetches using frontend calls.   
 **Download Services** - Service classes for downloading tracks from platforms. This uses the yt-dlp library to download tracks from youtube (for spotify) or soundcloud. A base download service acts as a parent class for the platform download service classes to inherit from.  

@@ -1,114 +1,55 @@
-# Development Setup Guide
+# Technical Readme
 
-Follow these steps to set up your development environment.
+This project was primarily built as a learning project to expand my fullstack abilities, as well as to practice building and documenting a software with non-technical end user experience in mind
 
----
+# Tech Stack
+<!-- <div style="display: flex; justify-content: space-between;">
+<div>
 
-## Prerequisites
+### Frontend
+- JavaScript
+- React
+- React Query
 
-Ensure the following tools are installed on your system:
+</div>
+<div>
 
-1. **Node.js** (v16 or higher)
-   - [Download Node.js](https://nodejs.org/)
-   - Verify installation:
-     ```bash
-     node -v
-     npm -v
-     ```
+### Backend
+- Python
+- Flask
+- SQLAlchemy
+- SQLite
 
-2. **Python** (v3.11)
-   - [Download Python](https://www.python.org/downloads/)
-   - Verify installation:
-     ```bash
-     python --version
-     pip --version
-     ```
+</div>
+<div>
 
-3. **Docker** (Optional, for Docker-based setup)
-   - [Download Docker](https://www.docker.com/products/docker-desktop)
-   - Verify installation:
-     ```bash
-     docker --version
-     docker-compose --version
-     ```
-
-4. **Git**
-   - [Download Git](https://git-scm.com/)
-   - Verify installation:
-     ```bash
-     git --version
-     ```
-
-5. **Full Command**:
-    ```bash
-    node -v
-    npm -v
-    python --version
-    pip --version     
-    ```
-
----
-
-## Installation Steps
-
-1. **Clone the Repository**
-   ```bash
-   git clone https://github.com/your-repo/PySync-Hub.git
-   cd PySync-Hub
-   ```
-
-2. **Install Node.js Dependencies**
-   ```bash
-   cd src
-   npm install
-   cd frontend-react
-   npm install
-   cd ../..
-   ```
-
-3. **Install Python Dependencies**
-   ```bash
-   cd src/backend-flask
-   pip install -r requirements.txt
-   cd ../..
-   ```
-
-4. **Install FFmpeg and FFprobe** 
-   - Follow the instructions in [src/ffmpeg/ReadMe.md](src\ffmpeg\ReadMe.md) to download and place the binaries in the `src/ffmpeg/` directory.
-
-5. **Full Command**:
-    ```bash
-    cd src
-    npm install
-    cd frontend-react
-    npm install
-    cd ../..
-    
-    cd src/backend-flask
-    pip install -r requirements.txt
-    cd ../..
-    ```
-
----
+### DevOps
+- Docker
+- GitHub Actions
+- Electronjs Bundler
 
 
-### Run In Development Mode
+</div>
+<div></div>
+</div> -->
 
-1. Start the Flask Server:
-   ```bash
-   cd src/backend-flask
-   python -m flask run --debug
-   ```
+## [Frontend](/src/frontend-react/Readme.md)
+- JavaScript
+- React
+- React Query
 
-2. Build the React frontend:
-    ```bash
-    cd src/frontend-react
-    npm run start
-    cd ../..
-    ```
+[Read More Here](/src/frontend-react/Readme.md)
 
----
 
-## Additional Notes
+## [Backend](/src/backend-flask/Readme.md)
+- Python
+- Flask
+- SQLAlchemy
+- SQLite
 
-- For CI/CD setup, refer to the `.github/workflows/` directory.
+[Read More Here](/src/backend-flask/Readme.md)
+
+## DevOps and Other
+- Docker
+- GitHub Actions
+- Electronjs Bundler
