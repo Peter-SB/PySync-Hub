@@ -5,7 +5,28 @@ Instead of running the program with the platform native executable, you can buil
 ```
 cd src/
 docker build -t pysync-hub-build .
->> docker run --name pysync-hub -p 5000:5000 pysync-hub-build
+docker run \\
+    --name pysync-hub \\
+    -p 5000:5000 \\
+    -v "${PWD}\..\music_downloads:/music_downloads" \\
+    -v "${PWD}\..\rekordbox_library_exports:/rekordbox_library_exports" \\
+    -v "${PWD}\..\database.db:/database.db" \\
+    pysync-hub-build
+```
+
+or
+
+```
+cd src/
+docker build -t pysync-hub-build .
+docker run `
+    --name pysync-hub `
+    -p 5000:5000 `
+    -v "${PWD}\..\music_downloads:/music_downloads" `
+    -v "${PWD}\..\rekordbox_library_exports:/rekordbox_library_exports" `
+    -v "${PWD}\..\database.db:/database.db" `
+    -v "${PWD}\..\settings.yml:/settings.yml" `
+    pysync-hub-build
 ```
 
 ## Notes
