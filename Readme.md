@@ -51,6 +51,8 @@ The exported playlists then now visible in Rekordbox:
 
 See Install and Update guide here: [Install](docs/Install.md)
 
+Alternatively PySync Hub can be run with a docker container, [docker instructions here](<How To Run Program in Docker.md>).
+
 ## How To Use
 
 See the Help Page for all usage instructions: [Help](docs/Help.md)

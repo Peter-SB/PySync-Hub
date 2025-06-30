@@ -17,7 +17,8 @@
  - - Investigate removing redundant invalidateQueries after RQ mutation
 
 ## Downloading
-- Add Quick Sync (That will not check file locations, only download new tracks without a location, maybe also not check playlist if track count hasnt changed. Use a check sum)
+- ✅ Add Quick Sync (That will not check file locations, only download new tracks without a location, 
+- - maybe also not check playlist if track count hasnt changed. Use a check sum incase songs added and removed?
 - Save a correct file type
 - Add metadata
 - - correct track artists
@@ -33,7 +34,7 @@
 - Proper Shutdown Backend.
 
 ## Docker
-- Fix. Broken during electron refactor.
+- ✅ Fix. Broken during electron refactor.
 
 ## Other
 - Further, investigate and fix any potential cors
