@@ -1,7 +1,7 @@
 # How To Install
 
 ## 1. Download  
-First choose which version you need to download. Pick either Windows or Mac. Then lite version or desktop.
+First choose which version you need to download. Pick either Windows or Mac. Then lite version or desktop. 
 
 The download can be found at [Releases](https://github.com/Peter-SB/PySync-Hub/releases) under Assets. 
 
@@ -15,6 +15,10 @@ Once downloaded, extract the .zip to a folder e.g "`PySync-Hub`". This folder ca
 
 ## 3. Run
 Either **run the shortcut** or go to application directly in the correct folder in `/dist`. \( e.g `/dist/PySync-Hub-win32-x64` or `/dist/pysync-hub-lite`.)
+
+## Docker
+
+Alternatively PySync Hub can be run with a docker container, [docker instructions here](<How To Run Program in Docker.md>).
 
 ## Troubleshooting
 **Windows protected your PC** Click "More info" and then "Run anyway"
