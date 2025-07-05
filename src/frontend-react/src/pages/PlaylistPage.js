@@ -173,7 +173,7 @@ function PlaylistPage() {
                                             handleRefreshClick();
                                         }}
                                         className="mr-1 p-2 rounded bg-gray-400 hover:bg-gray-500 text-white disabled:opacity-50 disabled:cursor-not-allowed"
-                                        title="Refresh playlist and tracks without downloading"
+                                        title="Refresh playlist and tracks information without downloading."
                                         disabled={refreshMutation.isPending}
                                     >
                                         <svg
