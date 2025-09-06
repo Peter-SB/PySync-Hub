@@ -4,6 +4,7 @@ from typing import List, Optional
 
 from app.extensions import db, socketio
 from app.models import Playlist, PlaylistTrack, Track
+from app.utils.db_utils import commit_with_retries
 
 logger = logging.getLogger(__name__)
 
@@ -18,7 +19,7 @@ class TrackRepository:
             ]
             for pt in pts_to_remove:
                 playlist.tracks.remove(pt)
-            db.session.commit()
+            commit_with_retries(db.session)
         return [pt.track for pt in playlist.tracks]
 
     @staticmethod

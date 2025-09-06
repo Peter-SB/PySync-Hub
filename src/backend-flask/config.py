@@ -2,6 +2,8 @@ import logging
 import os
 import sys
 import yaml
+from sqlalchemy import NullPool
+
 
 def get_base_path():
     if getattr(sys, 'frozen', False):
@@ -22,6 +24,14 @@ class Config:
     # Database
     SQLALCHEMY_DATABASE_URI = f"sqlite:///{os.path.join(BASE_PATH, 'database.db')}"
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    SQLALCHEMY_ENGINE_OPTIONS = {
+        "connect_args": {
+            "timeout": 30,            # seconds to wait for a lock
+            "check_same_thread": False
+        },
+        "poolclass": NullPool,       # avoid holding connections in some app designs
+        "pool_pre_ping": True
+    }
 
     # Flask
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'your-secret-key'

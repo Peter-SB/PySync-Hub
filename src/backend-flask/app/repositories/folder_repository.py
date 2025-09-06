@@ -4,6 +4,7 @@ from typing import List, Optional, Dict, Any, Tuple, Set
 
 from app.extensions import db, socketio
 from app.models import Playlist, PlaylistTrack, Track, Folder
+from app.utils.db_utils import commit_with_retries
 
 logger = logging.getLogger(__name__)
 
@@ -34,7 +35,7 @@ class FolderRepository:
         FolderRepository.recursively_set_disabled_state(folder, new_disabled_state)
             
         # Apply changes to database
-        db.session.commit()
+        commit_with_retries(db.session)
         
         return {
             'id': folder.id,
@@ -83,7 +84,7 @@ class FolderRepository:
         # Update the database if requested and state differs from current
         if update_state and folder.disabled != should_be_disabled:
             folder.disabled = should_be_disabled
-            db.session.commit()
+            commit_with_retries(db.session)
             
         return True, should_be_disabled
     

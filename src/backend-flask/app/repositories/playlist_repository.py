@@ -4,6 +4,7 @@ from typing import List
 
 from app.extensions import db, socketio
 from app.models import Playlist, PlaylistTrack, Track
+from app.utils.db_utils import commit_with_retries
 
 logger = logging.getLogger(__name__)
 
@@ -64,7 +65,7 @@ class PlaylistRepository:
         db.session.add(playlist)
 
         try:
-            db.session.commit()
+            commit_with_retries(db.session)
             logger.info("Added new %s playlist with external_id: %s", playlist_data['platform'],
                         playlist_data['external_id'])
         except Exception as e:
@@ -82,7 +83,7 @@ class PlaylistRepository:
         playlist.track_count = update_data.get('track_count', playlist.track_count)
         playlist.last_synced = datetime.utcnow()
         playlist.disabled = update_data.get('disabled', playlist.disabled)
-        db.session.commit()
+        commit_with_retries(db.session)
         logger.info("Updated playlist ID: %s", playlist.id)
         return playlist
 
@@ -91,14 +92,11 @@ class PlaylistRepository:
         PlaylistTrack.query.filter(PlaylistTrack.playlist_id.in_(playlist_ids)).delete(synchronize_session=False)
         Playlist.query.filter(Playlist.id.in_(playlist_ids)).delete(synchronize_session=False)
 
-        db.session.commit()
+        commit_with_retries(db.session)
         logger.info("Deleted playlists with IDs: %s", playlist_ids)
 
     @staticmethod
     def set_download_progress(playlist, progress):
-        playlist.download_progress = progress
-        db.session.commit()
-        
         socketio.emit("download_status", {
             "id": playlist.id,
             "status": "downloading",
@@ -115,7 +113,6 @@ class PlaylistRepository:
             playlist.download_status = 'queued'
         elif status == "downloading":
             playlist.download_status = 'downloading'
-            playlist.download_progress = 0
             socketio.emit("download_status", {"id": playlist.id, "status": "downloading", "progress": 0})
         else:
             logger.error("No status %s", status)
@@ -126,5 +123,4 @@ class PlaylistRepository:
     def reset_download_statuses_to_ready():
         for playlist in PlaylistRepository.get_all_playlists():
             playlist.download_status = "ready"
-            playlist.download_progress = 0
         db.session.commit()

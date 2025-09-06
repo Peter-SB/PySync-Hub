@@ -7,6 +7,7 @@ from app.extensions import db
 from app.models import Track
 from app.services.download_services.base_download_service import BaseDownloadService
 from app.utils.file_download_utils import FileDownloadUtils
+from app.utils.db_utils import commit_with_retries
 from config import Config
 
 logger = logging.getLogger(__name__)
@@ -39,7 +40,7 @@ class SpotifyDownloadService(BaseDownloadService):
             logger.info("Downloaded track '%s' to '%s'", track.name, file_path)
 
         db.session.add(track)
-        db.session.commit()
+        commit_with_retries(db.session)
         logger.info("Processed track '%s' with file '%s'", track.name, file_path)
 
     @classmethod

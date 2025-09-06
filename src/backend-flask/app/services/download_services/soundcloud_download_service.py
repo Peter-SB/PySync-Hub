@@ -7,6 +7,7 @@ from app.extensions import db
 from app.models import Track
 from app.services.download_services.base_download_service import BaseDownloadService
 from app.utils.file_download_utils import FileDownloadUtils
+from app.utils.db_utils import commit_with_retries
 from config import Config
 
 DOWNLOAD_SLEEP_TIME = 0.05  # To reduce bot detection
@@ -25,7 +26,7 @@ class SoundcloudDownloadService(BaseDownloadService):
             logger.error("No SoundCloud URL provided for track '%s'", track.name)
             track.notes_errors = "No SoundCloud URL provided"
             db.session.add(track)
-            db.session.commit()
+            commit_with_retries(db.session)
             return
 
         track_title = f"{track.name}"
@@ -50,4 +51,4 @@ class SoundcloudDownloadService(BaseDownloadService):
             logger.info("Downloaded track '%s' to '%s'", track.name, file_path)
 
         db.session.add(track)
-        db.session.commit()
+        commit_with_retries(db.session)

@@ -4,6 +4,7 @@ from flask import Blueprint, jsonify, request
 from sqlalchemy import desc
 from app.extensions import db
 from app.models import Folder, Playlist
+from app.utils.db_utils import commit_with_retries
 
 # todo: Move other routes to separate blueprints
 bp = Blueprint('folders', __name__, url_prefix='/api/folders')
@@ -64,7 +65,7 @@ def create_folder():
         )
         
         db.session.add(folder)
-        db.session.commit()
+        commit_with_retries(db.session)
         
         # todo: review, replace with folder.to_dict()? 
         return jsonify({
@@ -114,7 +115,7 @@ def delete_folder(folder_id):
         
         # Delete the folder
         db.session.delete(folder)
-        db.session.commit()
+        commit_with_retries(db.session)
         
         return jsonify({'message': 'Folder deleted successfully'}), 200
         
@@ -160,7 +161,7 @@ def update_folder(folder_id):
 
             folder.parent_id = parent_id
         
-        db.session.commit()
+        commit_with_retries(db.session)
         
         return jsonify({
             'id': folder.id,
@@ -226,7 +227,7 @@ def move_folder():
         # Update the parent_id
         folder.parent_id = new_parent_id
         
-        db.session.commit()
+        commit_with_retries(db.session)
         
         return jsonify({'message': 'Folder moved successfully'}), 200
         
@@ -270,7 +271,7 @@ def reorder_tree():
         # Process the tree structure starting at root level
         process_tree_items(data['items'], parent_id=None)
         
-        db.session.commit()
+        commit_with_retries(db.session)
         return jsonify({'message': 'Organization structure updated successfully'}), 200
         
     except Exception as e:
@@ -373,7 +374,7 @@ def batch_move_items():
         if playlist_updates:
             db.session.bulk_update_mappings(Playlist, playlist_updates)
 
-        db.session.commit()
+        commit_with_retries(db.session)
         return jsonify({'message': 'Items moved successfully'}), 200
 
     except Exception as e:

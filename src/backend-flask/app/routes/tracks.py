@@ -12,6 +12,7 @@ from app.routes import api
 from app.services.export_services.export_itunesxml_service import ExportItunesXMLService
 from app.services.playlist_manager_service import PlaylistManagerService
 from app.utils.file_download_utils import FileDownloadUtils
+from app.utils.db_utils import commit_with_retries
 from config import Config
 
 logger = logging.getLogger(__name__)
@@ -58,7 +59,7 @@ def update_track(track_id):
         if 'download_location' in data:
             track.set_download_location(data['download_location'])
 
-        db.session.commit()
+        commit_with_retries(db.session)
         return jsonify(track.to_dict()), 200
     except Exception as e:
         logger.error("Error updating track: %s", e, exc_info=True)

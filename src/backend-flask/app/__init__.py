@@ -13,6 +13,14 @@ from app.workers.download_worker import DownloadManager
 from app.database_migrator import DatabaseMigrator
 from config import Config
 
+def set_sqlite_pragmas(db):
+    # Set PRAGMA settings to reduce locking issues
+    from sqlalchemy import text
+    with db.engine.connect() as conn:
+        conn.execute(text("PRAGMA journal_mode=WAL;"))
+        conn.execute(text("PRAGMA synchronous=NORMAL;"))
+        conn.execute(text("PRAGMA busy_timeout=3000;"))
+
 def create_app(app_config=Config):
     app = Flask(__name__, static_folder='../build', static_url_path='')
     app.config.from_object(app_config)
@@ -33,6 +41,10 @@ def create_app(app_config=Config):
     db.init_app(app)
     migrate.init_app(app, db)  # Initialize Flask-Migrate
     socketio.init_app(app)
+
+    # Set SQLite PRAGMAs after db is initialized
+    with app.app_context():
+        set_sqlite_pragmas(db)
 
     # Configure Logging
     logging.basicConfig(

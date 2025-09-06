@@ -97,7 +97,7 @@ class Playlist(db.Model):
             'downloaded_track_count': self.downloaded_track_count,
             'download_status': self.download_status,
             'disabled': self.disabled,
-            'download_progress': self.download_progress,
+            'download_progress': 0, #self.download_progress,
             'date_limit': self.date_limit.isoformat() if self.date_limit else None,
             'track_limit': self.track_limit,
             'folder_id': self.folder_id,

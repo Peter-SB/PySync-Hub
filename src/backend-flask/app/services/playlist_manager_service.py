@@ -13,6 +13,7 @@ from app.services.platform_services.platform_services_factory import PlatformSer
 from app.services.platform_services.soundcloud_service import SoundcloudService
 from app.services.platform_services.spotify_service import SpotifyService
 from app.services.track_manager_service import TrackManagerService
+from app.utils.db_utils import commit_with_retries
 
 logger = logging.getLogger(__name__)
 
@@ -51,7 +52,7 @@ class PlaylistManagerService:
                 logger.error("Failed to sync playlist ID %s: %s", playlist.id, e, exc_info=True)
 
         try:
-            db.session.commit()
+            commit_with_retries(db.session)
             logger.info("Database commit successful after syncing playlists")
         except Exception as e:
             logger.error("Database commit failed during sync: %s", e, exc_info=True)

@@ -14,6 +14,7 @@ from app.services.export_services.export_itunesxml_service import ExportItunesXM
 from app.services.playlist_manager_service import PlaylistManagerService
 from config import Config
 from app.routes import api
+from app.utils.db_utils import commit_with_retries
 
 logger = logging.getLogger(__name__)
 
@@ -235,7 +236,7 @@ def update_playlist(playlist_id):
     else:
         playlist.track_limit = None
 
-    db.session.commit()
+    commit_with_retries(db.session)
 
     return jsonify(playlist.to_dict()), 200
 
@@ -295,7 +296,7 @@ def move_playlist():
         # Update the folder_id
         playlist.folder_id = new_folder_id
         
-        db.session.commit()
+        commit_with_retries(db.session)
         
         return jsonify({
             'message': 'Playlist moved successfully',

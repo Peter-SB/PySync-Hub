@@ -2,6 +2,7 @@ from app.models import *
 from app.repositories.playlist_repository import PlaylistRepository
 from app.services.platform_services.soundcloud_service import SoundcloudService
 from app.services.platform_services.spotify_service import SpotifyService
+from app.utils.db_utils import commit_with_retries
 from datetime import datetime
 
 logger = logging.getLogger(__name__)
@@ -82,7 +83,7 @@ class TrackManagerService:
                         existing_entry.track_order = index
                         db.session.add(existing_entry)
 
-            db.session.commit()
+            commit_with_retries(db.session)
             logger.info("Successfully synced tracks for playlist: %s", playlist.name)
             return "Tracks synced successfully"
 

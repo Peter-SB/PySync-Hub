@@ -12,6 +12,7 @@ from app.extensions import db, emit_error_message
 from app.models import Playlist, Track
 from app.repositories.playlist_repository import PlaylistRepository
 from app.utils.file_download_utils import FileDownloadUtils
+from app.utils.db_utils import commit_with_retries
 from config import Config
 
 DOWNLOAD_SLEEP_TIME = 0.05  # To reduce bot detection
@@ -80,7 +81,7 @@ class BaseDownloadService(ABC):
 
         track.notes_errors = ""
         db.session.add(track)
-        db.session.commit()
+        commit_with_retries(db.session)
 
         if track.is_downloaded():
             logger.info("Track '%s' already downloaded, skipping.", track.name)
@@ -92,7 +93,7 @@ class BaseDownloadService(ABC):
             logger.error("Error downloading track '%s - %s`: %s", track.name, track.artist, e, exc_info=True)
             track.notes_errors = str(e)
             db.session.add(track)
-            db.session.commit()
+            commit_with_retries(db.session)
             # todo: display frontend error            
             raise e
 
