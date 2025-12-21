@@ -4,7 +4,7 @@ from flask import Blueprint, jsonify, request
 from sqlalchemy import desc
 from app.extensions import db
 from app.models import Folder, Playlist
-from app.utils.db_utils import commit_with_retries
+from app.utils.sqlite_utils import commit_with_retries
 
 # todo: Move other routes to separate blueprints
 bp = Blueprint('folders', __name__, url_prefix='/api/folders')
@@ -455,7 +455,7 @@ def toggle_expand_folder(folder_id):
                 
         # Toggle the folder's expanded state
         folder.expanded = not folder.expanded
-        db.session.commit()
+        commit_with_retries(db.session)
             
         return jsonify({
             'message': f"Folder {'collapsed' if not folder.expanded else 'expanded'} successfully",

@@ -4,7 +4,7 @@ from typing import List
 
 from app.extensions import db, socketio
 from app.models import Playlist, PlaylistTrack, Track
-from app.utils.db_utils import commit_with_retries
+from app.utils.sqlite_utils import commit_with_retries
 
 logger = logging.getLogger(__name__)
 
@@ -117,10 +117,10 @@ class PlaylistRepository:
         else:
             logger.error("No status %s", status)
 
-        db.session.commit()
+        commit_with_retries(db.session)
 
     @staticmethod
     def reset_download_statuses_to_ready():
         for playlist in PlaylistRepository.get_all_playlists():
             playlist.download_status = "ready"
-        db.session.commit()
+        commit_with_retries(db.session)

@@ -14,7 +14,7 @@ from app.services.export_services.export_itunesxml_service import ExportItunesXM
 from app.services.playlist_manager_service import PlaylistManagerService
 from config import Config
 from app.routes import api
-from app.utils.db_utils import commit_with_retries
+from app.utils.sqlite_utils import commit_with_retries
 
 logger = logging.getLogger(__name__)
 
@@ -83,7 +83,7 @@ def sync_playlists():
     for playlist in playlists:
         playlist.download_status = "queued"
         socketio.emit("download_status", {"id": playlist.id, "status": "queued"})
-    db.session.commit()
+    commit_with_retries(db.session)
 
     # Sync playlists and queue them for download
     for playlist in playlists:
@@ -140,8 +140,8 @@ def toggle_playlist():
 
     # Convert the value to a boolean
     playlist.disabled = True if str(disabled_value).lower() == 'true' else False
-    db.session.commit()
-    
+    commit_with_retries(db.session)
+
     # After toggling the playlist, recursively update parent folders' disabled states
     if playlist.folder_id:
         folder_id = playlist.folder_id
@@ -185,9 +185,9 @@ def toggle_multiple_playlists():
             # Add the folder ID to the affected set if the playlist is in a folder
             if playlist.folder_id:
                 affected_folder_ids.add(playlist.folder_id)
-        
-        db.session.commit()
-        
+
+        commit_with_retries(db.session)
+
         # Update all affected folders and their ancestors
         for folder_id in affected_folder_ids:
             # Update the immediate parent folder first
