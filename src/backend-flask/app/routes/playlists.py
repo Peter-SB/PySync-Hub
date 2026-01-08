@@ -14,7 +14,7 @@ from app.services.export_services.export_itunesxml_service import ExportItunesXM
 from app.services.playlist_manager_service import PlaylistManagerService
 from config import Config
 from app.routes import api
-from app.utils.sqlite_utils import commit_with_retries
+from app.utils.db_utils import commit_with_retries
 
 logger = logging.getLogger(__name__)
 

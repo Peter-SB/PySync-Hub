@@ -4,7 +4,7 @@ from typing import List
 
 from app.extensions import db, socketio
 from app.models import Playlist, PlaylistTrack, Track
-from app.utils.sqlite_utils import commit_with_retries
+from app.utils.db_utils import commit_with_retries
 
 logger = logging.getLogger(__name__)
 

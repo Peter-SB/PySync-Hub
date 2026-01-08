@@ -4,7 +4,7 @@ from flask import Blueprint, jsonify, request
 from sqlalchemy import desc
 from app.extensions import db
 from app.models import Folder, Playlist
-from app.utils.sqlite_utils import commit_with_retries
+from app.utils.db_utils import commit_with_retries
 
 # todo: Move other routes to separate blueprints
 bp = Blueprint('folders', __name__, url_prefix='/api/folders')
