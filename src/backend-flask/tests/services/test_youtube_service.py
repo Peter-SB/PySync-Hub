@@ -191,6 +191,15 @@ class TestYouTubePlaylistImport:
             assert track.name is not None
             assert track.artist is not None
             assert track.download_url is not None
-            assert "youtube.com" in track.download_url or "youtu.be" in track.download_url
+            # Verify YouTube URL using proper parsing to avoid sanitization issues
+            from urllib.parse import urlparse
+            parsed_url = urlparse(track.download_url)
+            hostname = (parsed_url.hostname or "").lower()
+            # Check if hostname is exactly youtube.com/youtu.be or a subdomain
+            valid_youtube_domain = (
+                hostname == "youtube.com" or hostname.endswith(".youtube.com") or
+                hostname == "youtu.be" or hostname.endswith(".youtu.be")
+            )
+            assert valid_youtube_domain, f"Invalid YouTube URL: {track.download_url}"
             # YouTube doesn't have album info
             assert track.album is None
