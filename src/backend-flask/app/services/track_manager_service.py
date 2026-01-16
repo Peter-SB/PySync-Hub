@@ -2,6 +2,7 @@ from app.models import *
 from app.repositories.playlist_repository import PlaylistRepository
 from app.services.platform_services.soundcloud_service import SoundcloudService
 from app.services.platform_services.spotify_service import SpotifyService
+from app.services.platform_services.youtube_service import YouTubeService
 from app.utils.db_utils import commit_with_retries
 from datetime import datetime
 
@@ -21,7 +22,7 @@ class TrackManagerService:
             logger.error("Playlist with id %s not found", playlist_id)
             return "Playlist not found"
 
-        if playlist.platform not in ('spotify', 'soundcloud'):
+        if playlist.platform not in ('spotify', 'soundcloud', 'youtube'):
             logger.error("Playlist platform %s not supported for track syncing", playlist.platform)
             return "Platform not supported for track syncing"
 
@@ -30,6 +31,8 @@ class TrackManagerService:
                 tracks_data = SpotifyService.get_playlist_tracks(playlist.url)
             elif playlist.platform == 'soundcloud':
                 tracks_data = SoundcloudService.get_playlist_tracks(playlist.url)
+            elif playlist.platform == 'youtube':
+                tracks_data = YouTubeService.get_playlist_tracks(playlist.url)
 
             logger.info("Fetched %d tracks for playlist %s", len(tracks_data), playlist.name)
 
