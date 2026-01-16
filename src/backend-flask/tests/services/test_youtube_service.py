@@ -1,4 +1,5 @@
 import pytest
+from urllib.parse import urlparse
 
 from app.models import Playlist
 from app.repositories.playlist_repository import PlaylistRepository
@@ -192,7 +193,6 @@ class TestYouTubePlaylistImport:
             assert track.artist is not None
             assert track.download_url is not None
             # Verify YouTube URL using proper parsing to avoid sanitization issues
-            from urllib.parse import urlparse
             parsed_url = urlparse(track.download_url)
             hostname = (parsed_url.hostname or "").lower()
             # Check if hostname is exactly youtube.com/youtu.be or a subdomain

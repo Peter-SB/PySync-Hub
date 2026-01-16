@@ -48,9 +48,9 @@ class PlatformServiceFactory:
             elif trusted_youtube:
                 return YouTubeService
             else:
-                raise ValueError(f"URL Doesnt Look Right. Please try again with a valid URL.")
+                raise ValueError(f"URL Doesn't Look Right. Please try again with a valid URL.")
         except ValueError:
             raise
         except Exception as e:
             logger.error("Error parsing URL: %s", e)
-            raise ValueError(f"URL Doesnt Look Right. Please try again with a valid URL.")
+            raise ValueError(f"URL Doesn't Look Right. Please try again with a valid URL.")
