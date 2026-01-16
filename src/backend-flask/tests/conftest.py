@@ -1,5 +1,6 @@
 import os
 import sys
+import logging
 
 import pytest
 from app import create_app, SpotifyService
@@ -11,6 +12,8 @@ from tests.mocks.mock_spotify_client import MockSpotifyClient
 from tests.mocks.mock_soundcloud_service import MockSoundcloudService
 from tests.mocks.mock_youtube_service import MockYouTubeService
 from tests.mocks.mock_ytdl import MockYoutubeDL
+
+logger = logging.getLogger(__name__)
 
 
 @pytest.fixture(scope="session")
@@ -70,7 +73,7 @@ def mock_ytdlp(monkeypatch):
 @pytest.fixture(autouse=True)
 def mock_youtube_service(monkeypatch):
     """Automatically replace YouTubeService for all tests"""
-    print("Mocking YouTubeService")
+    logger.info("Mocking YouTubeService")
     # Patch the class methods directly for the YouTube service
     from app.services.platform_services.youtube_service import YouTubeService
     monkeypatch.setattr(YouTubeService, "get_playlist_data", MockYouTubeService.get_playlist_data)

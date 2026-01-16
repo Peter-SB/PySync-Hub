@@ -109,7 +109,7 @@ class TestYouTubePlaylistImport:
         
         assert response.status_code == 400
         error_message = response.get_json().get("error")
-        assert "URL Doesnt Look Right" in error_message or "error" in error_message.lower()
+        assert "URL Doesn't Look Right" in error_message or "error" in error_message.lower()
 
     def test_add_youtube_playlist_already_exists(self, client):
         """
@@ -162,15 +162,8 @@ class TestYouTubePlaylistImport:
         """
         # Test standard playlist URL
         url1 = "https://www.youtube.com/playlist?list=PLrAXtmErZgOeiKm4sgNOknGvNjby9efdf"
-        response1 = client.post('/api/playlists', json={"url_or_id": url1})
-        assert response1.status_code == 201
-        
-        # Clean up
-        playlists = Playlist.query.all()
-        for p in playlists:
-            from app.extensions import db
-            db.session.delete(p)
-            db.session.commit()
+        response = client.post('/api/playlists', json={"url_or_id": url1})
+        assert response.status_code == 201
         
         # Test youtu.be short URL format (if supported)
         url2 = "https://youtu.be/playlist?list=PLrAXtmErZgOeiKm4sgNOknGvNjby9efdf"

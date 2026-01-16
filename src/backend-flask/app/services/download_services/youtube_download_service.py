@@ -14,7 +14,16 @@ logger = logging.getLogger(__name__)
 
 
 class YouTubeDownloadService(BaseDownloadService):
-    """Service for downloading YouTube tracks using yt-dlp."""
+    """
+    Service for downloading YouTube tracks using yt-dlp.
+    
+    Uses the base _generate_yt_dlp_options method since YouTube downloads work
+    well with the standard options. The base method already configures:
+    - bestaudio format selection
+    - FFmpeg audio extraction to MP3
+    - Proper output templates
+    Unlike Spotify, YouTube URLs don't require searching, so no override needed.
+    """
 
     @classmethod
     def download_track_with_ytdlp(cls, track: Track) -> None:
