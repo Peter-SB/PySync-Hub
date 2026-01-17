@@ -122,3 +122,35 @@ class FileDownloadUtils:
             
         # Join with the download folder to get the absolute path
         return os.path.join(Config.DOWNLOAD_FOLDER, relative_path)
+    
+
+    @staticmethod
+    def strip_junk_tags_from_title(title: str) -> str:
+        """
+        Removes common "Free Download","Out Now", and other junk from the track title.
+
+        :param title: Original track title
+        :return: Cleaned track title
+        """
+        patterns = [
+            r'\s*-\s*Free Download\s*',
+            r'\s*\[Free Download\]\s*',
+            r'\s*\(Free Download\)\s*',
+            r'\s*FREE DOWNLOAD\s*',
+            r'\s*-\s*FREE DOWNLOAD\s*',
+            r'\s*\[FREE DL\]\s*',
+            r'\s*\(FREE DL\)\s*',
+            r'\s*FREE DL\s*',
+            r'\s*-\s*FREE DL\s*',
+            r'\s*-\s*Out Now\s*',
+            r'\s*\[Out Now\]\s*',
+            r'\s*\(Out Now\)\s*',
+        ]
+
+        cleaned_title = title
+        for pattern in patterns:
+            cleaned_title = re.sub(pattern, ' ', cleaned_title, flags=re.IGNORECASE)
+
+        # Collapse multiple spaces and trim
+        cleaned_title = re.sub(r'\s+', ' ', cleaned_title).strip()
+        return cleaned_title

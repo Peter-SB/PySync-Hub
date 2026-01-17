@@ -3,6 +3,7 @@ import re
 from typing import Optional
 
 from yt_dlp import YoutubeDL
+from app.utils.file_download_utils import FileDownloadUtils
 
 logger = logging.getLogger(__name__)
 
@@ -134,6 +135,9 @@ class YouTubeService:
         # Extract artist and title from video title
         title = entry.get('title', 'Unknown Title')
         artist = entry.get('uploader', 'Unknown Artist')
+
+        # Remove "Free Download" or similar tags from title
+        title = FileDownloadUtils.strip_junk_tags_from_title(title)
         
         # Try to parse "Artist - Title" format if present
         if ' - ' in title:
@@ -141,7 +145,6 @@ class YouTubeService:
             artist = parts[0].strip()
             title = parts[1].strip()
         
-        # todo: remove "Free Download" or similar tags from title
 
         # Get the best thumbnail
         thumbnails = entry.get('thumbnails', [])
