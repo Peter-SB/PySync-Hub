@@ -55,7 +55,7 @@ class FileDownloadUtils:
         # Adding cover art
         if track_cover_imgs:
             response = requests.get(track_cover_imgs)
-            logger.info(f"Track image: {track_cover_imgs}, response {response.status_code}")
+            logger.debug(f"Track image: %s, response: %s", track_cover_imgs, response.status_code)
             if response.status_code == 200:
                 audio['APIC'] = APIC(
                     encoding=3,
