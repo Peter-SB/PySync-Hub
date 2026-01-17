@@ -24,7 +24,7 @@ class MockYouTubeService:
         if "unavailable" in url:
             return {
                 'name': 'Test YouTube Playlist with Unavailable Videos',
-                'external_id': 'PLrAXtmErZgOeiKm4sgNOknGvNjby9efdf',
+                'external_id': 'PLaL5A3VjmybdLqd12jLWBoLCXfZDpYs3j',
                 'image_url': 'https://i.ytimg.com/vi/dQw4w9WgXcQ/hqdefault.jpg',
                 'track_count': 2,  # Only 2 available out of 3
                 'url': url,
@@ -34,7 +34,7 @@ class MockYouTubeService:
         # Default valid playlist
         return {
             'name': 'Test YouTube Playlist',
-            'external_id': 'PLrAXtmErZgOeiKm4sgNOknGvNjby9efdf',
+            'external_id': 'PLaL5A3VjmybdLqd12jLWBoLCXfZDpYs3j',
             'image_url': 'https://i.ytimg.com/vi/dQw4w9WgXcQ/hqdefault.jpg',
             'track_count': 3,
             'url': url,
@@ -119,4 +119,4 @@ class MockYouTubeService:
         """Mock implementation of _extract_playlist_id."""
         if "list=" in url:
             return url.split("list=")[1].split("&")[0]
-        return "PLrAXtmErZgOeiKm4sgNOknGvNjby9efdf"
+        return "PLaL5A3VjmybdLqd12jLWBoLCXfZDpYs3j"

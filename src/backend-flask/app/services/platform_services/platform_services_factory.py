@@ -32,8 +32,6 @@ class PlatformServiceFactory:
             parsed = urlparse(url)
             hostname = (parsed.hostname or "").lower()
             
-            # Validate hostname is exactly one of the trusted domains or a subdomain
-            # This prevents attacks like "evil.com?url=youtube.com"
             trusted_soundcloud = hostname == "soundcloud.com" or hostname.endswith(".soundcloud.com")
             trusted_spotify = hostname == "spotify.com" or hostname.endswith(".spotify.com")
             trusted_youtube = (

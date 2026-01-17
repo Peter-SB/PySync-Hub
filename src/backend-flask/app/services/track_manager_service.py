@@ -27,6 +27,7 @@ class TrackManagerService:
             return "Platform not supported for track syncing"
 
         try:
+            # todo: comeback and refactor with some class polymorphism 
             if playlist.platform == 'spotify':
                 tracks_data = SpotifyService.get_playlist_tracks(playlist.url)
             elif playlist.platform == 'soundcloud':

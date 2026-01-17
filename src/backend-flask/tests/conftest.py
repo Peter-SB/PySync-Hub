@@ -71,11 +71,16 @@ def mock_ytdlp(monkeypatch):
     monkeypatch.setattr("app.services.download_services.youtube_download_service.YoutubeDL", MockYoutubeDL)
 
 @pytest.fixture(autouse=True)
-def mock_youtube_service(monkeypatch):
+def mock_youtube_service(monkeypatch, request):
     """Automatically replace YouTubeService for all tests"""
+    if request.node.get_closest_marker("no_youtube_mock"):
+        yield  
+        return
+
     logger.info("Mocking YouTubeService")
     # Patch the class methods directly for the YouTube service
     from app.services.platform_services.youtube_service import YouTubeService
     monkeypatch.setattr(YouTubeService, "get_playlist_data", MockYouTubeService.get_playlist_data)
     monkeypatch.setattr(YouTubeService, "get_playlist_tracks", MockYouTubeService.get_playlist_tracks)
     monkeypatch.setattr(YouTubeService, "_extract_playlist_id", MockYouTubeService._extract_playlist_id)
+    yield

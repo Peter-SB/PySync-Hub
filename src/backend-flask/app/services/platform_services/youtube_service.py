@@ -15,22 +15,24 @@ class YouTubeService:
         """
         Fetches metadata for a YouTube playlist.
         
-        :param url: YouTube playlist URL
+        :param playlist_url: YouTube playlist URL
         :return: Dictionary containing playlist metadata
         :raises Exception: If playlist cannot be fetched or is invalid
         """
         try:
             playlist_id = YouTubeService._extract_playlist_id(url)
+            playlist_url = f"https://www.youtube.com/playlist?list={playlist_id}"
             
             ydl_opts = {
                 'quiet': True,
                 'extract_flat': True,
                 'force_generic_extractor': False,
+                'ignoreerrors': True,  # Skip unavailable videos
             }
             
             with YoutubeDL(ydl_opts) as ydl:
-                logger.info("Fetching YouTube playlist data for: %s", url)
-                info = ydl.extract_info(url, download=False)
+                logger.info("Fetching YouTube playlist data for: %s", playlist_url)
+                info = ydl.extract_info(playlist_url, download=False)
                 
                 if not info:
                     raise Exception("Failed to fetch playlist information")
@@ -58,7 +60,7 @@ class YouTubeService:
                     'external_id': playlist_id,
                     'image_url': image_url,
                     'track_count': len(available_entries),
-                    'url': url,
+                    'url': playlist_url,
                     'platform': 'youtube'
                 }
                 
@@ -70,25 +72,26 @@ class YouTubeService:
             raise e
 
     @staticmethod
-    def get_playlist_tracks(url: str) -> list[dict]:
+    def get_playlist_tracks(playlist_url: str) -> list[dict]:
         """
         Fetches all tracks from a YouTube playlist.
         
-        :param url: YouTube playlist URL
+        :param playlist_url: YouTube playlist URL
         :return: List of track dictionaries
         :raises Exception: If tracks cannot be fetched
         """
         try:
-            logger.info("Fetching tracks for YouTube playlist: %s", url)
+            logger.info("Fetching tracks for YouTube playlist: %s", playlist_url)
             
             ydl_opts = {
                 'quiet': True,
                 'extract_flat': False,
                 'force_generic_extractor': False,
+                'ignoreerrors': True,  # Skip unavailable videos
             }
             
             with YoutubeDL(ydl_opts) as ydl:
-                info = ydl.extract_info(url, download=False)
+                info = ydl.extract_info(playlist_url, download=False)
                 
                 if not info or info.get('_type') != 'playlist':
                     raise Exception("Invalid playlist")
@@ -106,6 +109,7 @@ class YouTubeService:
                     if not entry.get('id'):
                         logger.debug("Skipping entry without ID")
                         continue
+                    
                     
                     track_data = YouTubeService._format_track_data(entry)
                     tracks_data.append(track_data)
@@ -161,8 +165,8 @@ class YouTubeService:
         """
         # Match various YouTube playlist URL formats
         patterns = [
-            r'[?&]list=([a-zA-Z0-9_-]+)',  # Standard format
-            r'youtube\.com/playlist\?list=([a-zA-Z0-9_-]+)',  # Explicit playlist URL
+            r'[?&]list=([a-zA-Z0-9_-]+)', 
+            r'youtube\.com/playlist\?list=([a-zA-Z0-9_-]+)',
         ]
         
         for pattern in patterns:
