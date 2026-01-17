@@ -151,6 +151,13 @@ function PlaylistPage() {
                                                 className="w-7 h-7 p-0.5 ml-3 mb-1 inline"
                                             />
                                         )}
+                                        {playlist.platform === "youtube" && (
+                                            <img
+                                                src="./icons/youtube.svg"
+                                                alt="YouTube"
+                                                className="w-8 h-8 ml-3 mb-1 inline"
+                                            />
+                                        )}
                                     </h1>
                                     <div className="text-sm text-gray-600">
                                         {playlist.last_synced
