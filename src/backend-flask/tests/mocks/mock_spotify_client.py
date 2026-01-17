@@ -60,3 +60,54 @@ class MockSpotifyClient:
             "next": None
         }
 
+    def current_user_recently_played(self, limit=50):
+        """Mock method for recently played tracks"""
+        return {
+            "items": [
+                {
+                    "track": {
+                        "id": "track1",
+                        "name": "Recently Played Song 1",
+                        "artists": [{"name": "Artist One"}],
+                        "album": {
+                            "name": "Album One",
+                            "images": [{"url": "http://example.com/album1.png"}]
+                        }
+                    },
+                    "played_at": "2024-01-01T12:00:00Z"
+                },
+                {
+                    "track": {
+                        "id": "track2",
+                        "name": "Recently Played Song 2",
+                        "artists": [{"name": "Artist Two"}],
+                        "album": {
+                            "name": "Album Two",
+                            "images": [{"url": "http://example.com/album2.png"}]
+                        }
+                    },
+                    "played_at": "2024-01-01T11:30:00Z"
+                },
+                {
+                    "track": {
+                        "id": "track3",
+                        "name": "Recently Played Song 3",
+                        "artists": [{"name": "Artist Three"}],
+                        "album": {
+                            "name": "Album Three",
+                            "images": [{"url": "http://example.com/album3.png"}]
+                        }
+                    },
+                    "played_at": "2024-01-01T11:00:00Z"
+                }
+            ]
+        }
+
+    def current_user_saved_tracks(self):
+        """Mock method for saved tracks"""
+        return {
+            "items": [],
+            "next": None,
+            "total": 0
+        }
+

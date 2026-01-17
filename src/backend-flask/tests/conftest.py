@@ -49,9 +49,10 @@ def client(app):
 
 @pytest.fixture(autouse=True)
 def mock_spotify_client(monkeypatch):
-    """Automatically replace SpotifyService.get_client for all tests"""
-    print("Mocking SpotifyService.get_client")
+    """Automatically replace SpotifyService.get_client and get_auth_client for all tests"""
+    print("Mocking SpotifyService.get_client and get_auth_client")
     monkeypatch.setattr(SpotifyService, "get_client", lambda: MockSpotifyClient())
+    monkeypatch.setattr(SpotifyService, "get_auth_client", lambda redirect_uri=None: MockSpotifyClient())
 
 @pytest.fixture(autouse=True)
 def mock_soundcloud_client(monkeypatch):
