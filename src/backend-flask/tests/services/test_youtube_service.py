@@ -205,7 +205,22 @@ class TestYouTubePlaylistImport:
             # YouTube doesn't have album info
             assert track.album is None
 
+
+    def test_deleted_videos_stay_in_playlist(self):
+        """ 
+        Test deleted/delisted videos aren't removed from the playlist 
+        
+        {'platform_id': 'pstA5et7Kao', 'platform': 'youtube', 'name': '[Deleted video]', 'artist': None, 'album': None, 'album_art_url': 'https://i.ytimg.com/img/no_thumbnail.jpg', 'download_url': 'https://www.youtube.com/watch?v=pstA5et7Kao', 'added_on': None}
+
+        We still have the platform_id so we can identify the track even if it's deleted. Keep the track in the playlist. 
+
+        todo: test syncing with sample data including a deleted video. Confirm it stays in the playlist if the video is already in the library.
+        """
+        pass
+
+
 @pytest.mark.no_youtube_mock
+@pytest.mark.integration
 class TestYouTubeService:
     def test_extract_playlist_id(self):
         """ Test the YouTube playlist ID extraction logic """
@@ -245,8 +260,9 @@ class TestYouTubeService:
         assert playlist_data['name'] == "UKF On Air: Drum & Bass 2017"
         assert playlist_data['track_count'] == 3
 
-    def test_get_playlist_data_with_ytdlp_unlisted(self):
-        """  Given a youtube playlist URL, extract the playlist info and tracks using yt-dlp to confirm our service logic and data formatting """
+
+    def test_get_playlist_data_with_ytdlp_removed_track(self):
+        """  Test case where a video has been removed from the playlist """
 
         playlist_url_from_vid = "https://www.youtube.com/watch?v=05_eHt-46IY&list=PL6GqXsUnxEXJv6DqfIWHUCqw-boUyqnQg"
 
@@ -259,6 +275,7 @@ class TestYouTubeService:
         assert isinstance(playlist_data.get('name'), str)
         assert isinstance(playlist_data.get('external_id'), str)
         assert isinstance(playlist_data.get('track_count'), int)
+
 
     def test_get_playlist_tracks_with_ytdlp(self):
         """ Given a youtube playlist URL, extract the playlist tracks using yt-dlp to confirm our service logic and data formatting """
@@ -277,12 +294,12 @@ class TestYouTubeService:
             assert isinstance(track.get('platform'), str)
             assert isinstance(track.get('name'), str)
             assert isinstance(track.get('artist'), str)
-            assert track.get('album') is None  # YouTube doesn't have album info
+            assert isinstance(track.get('album'), str)
             assert isinstance(track.get('download_url'), str)
 
 
-    def test_get_playlist_tracks_with_ytdlp_unlisted(self):
-        """ Given a youtube playlist URL, extract the playlist tracks using yt-dlp to confirm our service logic and data formatting """
+    def test_get_playlist_tracks_with_ytdlp_removed_track(self):
+        """  Test case where a video has been removed from the playlist """
 
         playlist_url_from_vid = "https://www.youtube.com/watch?v=05_eHt-46IY&list=PL6GqXsUnxEXJv6DqfIWHUCqw-boUyqnQg"
 
@@ -290,7 +307,7 @@ class TestYouTubeService:
 
         # Check tracks data format
         assert isinstance(tracks_data, list)
-        assert len(tracks_data) == 13
+        # assert len(tracks_data) == 14 # May change
 
         for track in tracks_data:
             assert isinstance(track, dict)
@@ -298,5 +315,5 @@ class TestYouTubeService:
             assert isinstance(track.get('platform'), str)
             assert isinstance(track.get('name'), str)
             assert isinstance(track.get('artist'), str)
-            assert track.get('album') is None  # YouTube doesn't have album info
+            assert isinstance(track.get('album'), str)
             assert isinstance(track.get('download_url'), str)

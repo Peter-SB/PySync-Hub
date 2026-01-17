@@ -7,6 +7,15 @@ from yt_dlp import YoutubeDL
 logger = logging.getLogger(__name__)
 
 
+YDL_OPTIONS = {
+    'quiet': True,
+    'extract_flat': 'in_playlist', # True,
+    'skip_download': True,  
+    'force_generic_extractor': False,
+    'ignoreerrors': True,  # Skip unavailable videos
+    'dump_single_json': True,
+}
+
 class YouTubeService:
     """Service for fetching YouTube playlist data and tracks."""
 
@@ -23,14 +32,9 @@ class YouTubeService:
             playlist_id = YouTubeService._extract_playlist_id(url)
             playlist_url = f"https://www.youtube.com/playlist?list={playlist_id}"
             
-            ydl_opts = {
-                'quiet': True,
-                'extract_flat': True,
-                'force_generic_extractor': False,
-                'ignoreerrors': True,  # Skip unavailable videos
-            }
+
             
-            with YoutubeDL(ydl_opts) as ydl:
+            with YoutubeDL(YDL_OPTIONS) as ydl:
                 logger.info("Fetching YouTube playlist data for: %s", playlist_url)
                 info = ydl.extract_info(playlist_url, download=False)
                 
@@ -83,14 +87,7 @@ class YouTubeService:
         try:
             logger.info("Fetching tracks for YouTube playlist: %s", playlist_url)
             
-            ydl_opts = {
-                'quiet': True,
-                'extract_flat': False,
-                'force_generic_extractor': False,
-                'ignoreerrors': True,  # Skip unavailable videos
-            }
-            
-            with YoutubeDL(ydl_opts) as ydl:
+            with YoutubeDL(YDL_OPTIONS) as ydl:
                 info = ydl.extract_info(playlist_url, download=False)
                 
                 if not info or info.get('_type') != 'playlist':
@@ -104,14 +101,19 @@ class YouTubeService:
                     if entry is None:
                         logger.debug("Skipping unavailable video in playlist")
                         continue
-                    
+
                     # Skip if essential data is missing
                     if not entry.get('id'):
                         logger.debug("Skipping entry without ID")
                         continue
-                    
-                    
+
+                    # Skip deleted/delisted videos
+                    if entry.get('title') == '[Deleted video]' or entry.get('title') is None: 
+                        logger.debug("Skipping deleted or delisted video in playlist, id: %s", entry.get('id'))
+                        continue                    
+
                     track_data = YouTubeService._format_track_data(entry)
+                    track_data["album"] = info.get("title")  # Use playlist title as album
                     tracks_data.append(track_data)
                 
                 logger.info("Fetched %d tracks from YouTube playlist", len(tracks_data))
@@ -139,6 +141,8 @@ class YouTubeService:
             artist = parts[0].strip()
             title = parts[1].strip()
         
+        # todo: remove "Free Download" or similar tags from title
+
         # Get the best thumbnail
         thumbnails = entry.get('thumbnails', [])
         album_art_url = thumbnails[-1].get('url') if thumbnails else None
@@ -148,7 +152,7 @@ class YouTubeService:
             'platform': 'youtube',
             'name': title,
             'artist': artist,
-            'album': None,  # YouTube doesn't have album info
+            'album': None, 
             'album_art_url': album_art_url,
             'download_url': entry.get('webpage_url') or f"https://www.youtube.com/watch?v={entry.get('id')}",
             'added_on': None,
