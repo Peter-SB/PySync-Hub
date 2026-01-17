@@ -52,8 +52,10 @@ def settings():
             'ENABLE_SPOTIFY_RECENTLY_PLAYED': data.get('enable_spotify_recently_played', False)
         }
         
-        # Get old setting value to detect changes
-        old_enable_recently_played = Config.ENABLE_SPOTIFY_RECENTLY_PLAYED
+        # Get old setting value by reading from file to avoid race conditions
+        with open(settings_path, 'r') as f:
+            old_settings = yaml.safe_load(f)
+        old_enable_recently_played = old_settings.get('ENABLE_SPOTIFY_RECENTLY_PLAYED', False)
         new_enable_recently_played = new_settings['ENABLE_SPOTIFY_RECENTLY_PLAYED']
         
         with open(settings_path, 'w') as f:
@@ -71,7 +73,9 @@ def settings():
             
             if not existing:
                 logger.info("Adding recently played playlist")
-                PlaylistManagerService.add_playlists("https://open.spotify.com/recently-played")
+                error = PlaylistManagerService.add_playlists("https://open.spotify.com/recently-played")
+                if error:
+                    logger.error("Failed to add recently played playlist: %s", error)
         elif not new_enable_recently_played and old_enable_recently_played:
             # Toggle turned OFF - remove the playlist
             existing = Playlist.query.filter_by(
@@ -81,7 +85,10 @@ def settings():
             
             if existing:
                 logger.info("Removing recently played playlist")
-                PlaylistManagerService.delete_playlists([existing.id])
+                try:
+                    PlaylistManagerService.delete_playlists([existing.id])
+                except Exception as e:
+                    logger.error("Failed to delete recently played playlist: %s", e)
 
         return jsonify({'message': 'Settings updated successfully'}), 200
 

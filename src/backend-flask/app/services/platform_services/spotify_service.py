@@ -218,7 +218,7 @@ class SpotifyService:
     @staticmethod
     def _get_recently_played_tracks():
         """
-        Retrieves the current user's recently played tracks using SpotifyOAuth.
+        Retrieves the current user's recently played tracks using the authenticated Spotify client.
         Only returns tracks that are already downloaded (exist in database with download_location).
         
         :return: A list of dictionaries, each representing a recently played track that's already downloaded.
