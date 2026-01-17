@@ -16,7 +16,8 @@ def settings():
     DEFAULT_SETTINGS = {
         'SPOTIFY_CLIENT_ID': '',
         'SPOTIFY_CLIENT_SECRET': '',
-        'SOUNDCLOUD_CLIENT_ID': ''
+        'SOUNDCLOUD_CLIENT_ID': '',
+        'ENABLE_SPOTIFY_RECENTLY_PLAYED': False
     }
     logger.info("Settings endpoint hit")
 
@@ -34,20 +35,53 @@ def settings():
         return jsonify({
             'spotify_client_id': settings_data.get('SPOTIFY_CLIENT_ID', ''),
             'spotify_client_secret': settings_data.get('SPOTIFY_CLIENT_SECRET', ''),
-            'soundcloud_client_id': settings_data.get('SOUNDCLOUD_CLIENT_ID', '')
+            'soundcloud_client_id': settings_data.get('SOUNDCLOUD_CLIENT_ID', ''),
+            'enable_spotify_recently_played': settings_data.get('ENABLE_SPOTIFY_RECENTLY_PLAYED', False)
         }), 200
 
     elif request.method == 'POST':
+        from app.models import Playlist
+        from app.repositories.playlist_repository import PlaylistRepository
+        from app.services.playlist_manager_service import PlaylistManagerService
+        
         data = request.get_json() or {}
         new_settings = {
             'SPOTIFY_CLIENT_ID': data.get('spotify_client_id'),
             'SPOTIFY_CLIENT_SECRET': data.get('spotify_client_secret'),
-            'SOUNDCLOUD_CLIENT_ID': data.get('soundcloud_client_id')
+            'SOUNDCLOUD_CLIENT_ID': data.get('soundcloud_client_id'),
+            'ENABLE_SPOTIFY_RECENTLY_PLAYED': data.get('enable_spotify_recently_played', False)
         }
+        
+        # Get old setting value to detect changes
+        old_enable_recently_played = Config.ENABLE_SPOTIFY_RECENTLY_PLAYED
+        new_enable_recently_played = new_settings['ENABLE_SPOTIFY_RECENTLY_PLAYED']
+        
         with open(settings_path, 'w') as f:
             yaml.safe_dump(new_settings, f)
 
         Config.load_settings()
+        
+        # Handle recently played playlist based on toggle
+        if new_enable_recently_played and not old_enable_recently_played:
+            # Toggle turned ON - add the playlist
+            existing = Playlist.query.filter_by(
+                external_id="recently-played",
+                platform="spotify"
+            ).first()
+            
+            if not existing:
+                logger.info("Adding recently played playlist")
+                PlaylistManagerService.add_playlists("https://open.spotify.com/recently-played")
+        elif not new_enable_recently_played and old_enable_recently_played:
+            # Toggle turned OFF - remove the playlist
+            existing = Playlist.query.filter_by(
+                external_id="recently-played",
+                platform="spotify"
+            ).first()
+            
+            if existing:
+                logger.info("Removing recently played playlist")
+                PlaylistManagerService.delete_playlists([existing.id])
 
         return jsonify({'message': 'Settings updated successfully'}), 200
 

@@ -57,6 +57,9 @@ class SpotifyService:
         try:
             if "collection/tracks" in url:
                 return SpotifyService._get_saved_tracks_playlist()
+            
+            if "recently-played" in url:
+                return SpotifyService._get_recently_played_playlist()
 
             playlist_id = SpotifyService._extract_playlist_id(url)
 
@@ -97,6 +100,29 @@ class SpotifyService:
         return data
 
     @staticmethod
+    def _get_recently_played_playlist():
+        """Create a playlist that will represent the user's recently played tracks."""
+        client = SpotifyService.get_auth_client()
+        
+        try:
+            response = client.current_user_recently_played(limit=50)
+            track_count = len(response.get('items', []))
+        except Exception as e:
+            logger.error("Error fetching recently played count: %s", e)
+            track_count = 0
+        
+        data = {
+            'name': "Your Recently Played Spotify Songs",
+            'external_id': "recently-played",
+            'image_url': "https://misc.scdn.co/liked-songs/liked-songs-300.jpg",
+            'track_count': track_count,
+            'url': "https://open.spotify.com/recently-played",
+            'platform': 'spotify'
+        }
+        
+        return data
+
+    @staticmethod
     def get_playlist_tracks(url):
         """
         Fetches the tracks for a given Spotify playlist.
@@ -106,6 +132,9 @@ class SpotifyService:
             logger.info("Fetching tracks for playlist %s", url)
             if "collection/tracks" in url:
                 return SpotifyService._get_saved_tracks()
+            
+            if "recently-played" in url:
+                return SpotifyService._get_recently_played_tracks()
 
             playlist_id = SpotifyService._extract_playlist_id(url)
             client = SpotifyService.get_client()
@@ -184,6 +213,46 @@ class SpotifyService:
             return liked_songs[:track_limit]
         except Exception as e:
             logger.error("Error retrieving liked tracks: %s", e)
+            return []
+
+    @staticmethod
+    def _get_recently_played_tracks():
+        """
+        Retrieves the current user's recently played tracks using SpotifyOAuth.
+        Only returns tracks that are already downloaded (exist in database with download_location).
+        
+        :return: A list of dictionaries, each representing a recently played track that's already downloaded.
+        """
+        from app.models import Track
+        
+        client = SpotifyService.get_auth_client()
+        
+        recently_played_tracks = []
+        try:
+            # Fetch up to 50 recently played tracks (API limit)
+            results = client.current_user_recently_played(limit=50)
+            
+            for item in results.get("items", []):
+                track = item.get('track')
+                played_at = item.get('played_at', None)
+                
+                if not track or track.get('id') is None:
+                    continue  # Skip items that aren't valid tracks (e.g., episodes, missing tracks)
+                
+                # Check if track exists in database and is downloaded
+                existing_track = Track.query.filter_by(
+                    platform='spotify',
+                    platform_id=track['id']
+                ).first()
+                
+                # Only include if track exists and is downloaded
+                if existing_track and existing_track.download_location:
+                    track_data = SpotifyService._format_track_data(track, played_at)
+                    recently_played_tracks.append(track_data)
+            
+            return recently_played_tracks
+        except Exception as e:
+            logger.error("Error retrieving recently played tracks: %s", e)
             return []
 
     @staticmethod

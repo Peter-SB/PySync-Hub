@@ -42,10 +42,11 @@ class Config:
 
     SPOTIFY_CLIENT_ID = None
     SPOTIFY_CLIENT_SECRET = None
-    SPOTIFY_OAUTH_SCOPE = 'user-library-read playlist-read-private'
+    SPOTIFY_OAUTH_SCOPE = 'user-library-read playlist-read-private user-read-recently-played'
     SPOTIFY_REDIRECT_URI = 'http://localhost:5000/api/spotify_auth/callback'
     SPOTIFY_TOKEN_CACHE = '.spotipyoauthcache'
     SPOTIFY_PORT_NUMBER = 8888
+    ENABLE_SPOTIFY_RECENTLY_PLAYED = False
 
     SOUNDCLOUD_CLIENT_ID = None
 
@@ -53,7 +54,8 @@ class Config:
         default_settings = {
             "SPOTIFY_CLIENT_ID": "",
             "SPOTIFY_CLIENT_SECRET": "",
-            "SOUNDCLOUD_CLIENT_ID": ""
+            "SOUNDCLOUD_CLIENT_ID": "",
+            "ENABLE_SPOTIFY_RECENTLY_PLAYED": False
         }
         with open(SETTINGS_PATH, 'w') as f:
             yaml.safe_dump(default_settings, f, default_flow_style=False)
@@ -64,6 +66,7 @@ class Config:
     SPOTIFY_CLIENT_ID = settings.get('SPOTIFY_CLIENT_ID')
     SPOTIFY_CLIENT_SECRET = settings.get('SPOTIFY_CLIENT_SECRET')
     SOUNDCLOUD_CLIENT_ID = settings.get('SOUNDCLOUD_CLIENT_ID')
+    ENABLE_SPOTIFY_RECENTLY_PLAYED = settings.get('ENABLE_SPOTIFY_RECENTLY_PLAYED', False)
 
     @classmethod
     def load_settings(cls):
@@ -72,6 +75,7 @@ class Config:
         cls.SPOTIFY_CLIENT_ID = settings.get('SPOTIFY_CLIENT_ID')
         cls.SPOTIFY_CLIENT_SECRET = settings.get('SPOTIFY_CLIENT_SECRET')
         cls.SOUNDCLOUD_CLIENT_ID = settings.get('SOUNDCLOUD_CLIENT_ID')
+        cls.ENABLE_SPOTIFY_RECENTLY_PLAYED = settings.get('ENABLE_SPOTIFY_RECENTLY_PLAYED', False)
 
 
 #Config.load_settings()

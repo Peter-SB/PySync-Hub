@@ -5,6 +5,7 @@ function SettingsPage() {
   const [spotifyClientId, setSpotifyClientId] = useState('');
   const [spotifyClientSecret, setSpotifyClientSecret] = useState('');
   const [soundcloudClientId, setSoundcloudClientId] = useState('');
+  const [enableSpotifyRecentlyPlayed, setEnableSpotifyRecentlyPlayed] = useState(false);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
 
@@ -16,6 +17,7 @@ function SettingsPage() {
         setSpotifyClientId(data.spotify_client_id);
         setSpotifyClientSecret(data.spotify_client_secret);
         setSoundcloudClientId(data.soundcloud_client_id);
+        setEnableSpotifyRecentlyPlayed(data.enable_spotify_recently_played || false);
       })
       .catch(() => setError('Error fetching settings'));
   }, []);
@@ -33,7 +35,8 @@ function SettingsPage() {
       body: JSON.stringify({
         spotify_client_id: spotifyClientId,
         spotify_client_secret: spotifyClientSecret,
-        soundcloud_client_id: soundcloudClientId
+        soundcloud_client_id: soundcloudClientId,
+        enable_spotify_recently_played: enableSpotifyRecentlyPlayed
       })
     })
       .then(response => response.json())
@@ -148,6 +151,23 @@ function SettingsPage() {
             <img src="./icons/spotify.svg" alt="Spotify" className="w-6 h-6 mr-2 grayscale brightness-0 filter invert" />
             Login
           </button>
+        </div>
+      </div>
+      {/* Recently Played Toggle */}
+      <div className="py-3 border-b-2">
+        <div className="mb-4">
+          <label className="flex items-center">
+            <input
+              type="checkbox"
+              checked={enableSpotifyRecentlyPlayed}
+              onChange={(e) => setEnableSpotifyRecentlyPlayed(e.target.checked)}
+              className="mr-2 h-5 w-5"
+            />
+            <span className="font-medium">Enable Spotify Recently Played Playlist</span>
+          </label>
+          <p className="mt-2 text-sm text-gray-600">
+            When enabled, creates a playlist with your recently played Spotify songs (up to 50 tracks). Only includes songs already downloaded in your library.
+          </p>
         </div>
       </div>
       <p className='py-2 mt-5'>Note, you may need to restart after making changes to settings.</p>
