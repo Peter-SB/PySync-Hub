@@ -8,6 +8,7 @@ from app.extensions import emit_error_message
 from app.repositories.playlist_repository import PlaylistRepository
 from app.services.download_services.spotify_download_service import SpotifyDownloadService
 from app.services.download_services.soundcloud_download_service import SoundcloudDownloadService
+from app.services.download_services.youtube_download_service import YouTubeDownloadService
 
 logger = logging.getLogger(__name__)
 
@@ -50,6 +51,8 @@ class DownloadManager:
                         SpotifyDownloadService.download_playlist(playlist, quick_sync, self.cancellation_flags)
                     elif playlist.platform == "soundcloud":
                         SoundcloudDownloadService.download_playlist(playlist, quick_sync, self.cancellation_flags)
+                    elif playlist.platform == "youtube":
+                        YouTubeDownloadService.download_playlist(playlist, quick_sync, self.cancellation_flags)
                     else:
                         error_msg = f"Unsupported platform: {playlist.platform}"
                         logger.error(error_msg)

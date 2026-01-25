@@ -94,6 +94,10 @@ def re_download_track(track_id):
         elif track.platform.lower() == "soundcloud":
             from app.services.download_services.soundcloud_download_service import SoundcloudDownloadService
             SoundcloudDownloadService.download_track(track)
+        elif track.platform.lower() == "youtube":
+            from app.services.download_services.youtube_download_service import YouTubeDownloadService
+            YouTubeDownloadService.download_track(track)
+
         else:
             return jsonify({'error': 'Platform not supported for downloading'}), 400
         logger.info("Re-downloaded track %s", Track.query.get(track_id).to_dict())

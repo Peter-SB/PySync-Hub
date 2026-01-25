@@ -1,6 +1,9 @@
+import io
 import logging
 import os
 import re
+from tkinter import Image
+from PIL import Image as PILImage
 
 import requests
 from mutagen.id3 import APIC, ID3, TALB, TIT2, TPE1
@@ -54,18 +57,49 @@ class FileDownloadUtils:
 
         # Adding cover art
         if track_cover_imgs:
-            response = requests.get(track_cover_imgs)
-            logger.info(f"Track image: {track_cover_imgs}, response {response.status_code}")
-            if response.status_code == 200:
-                audio['APIC'] = APIC(
-                    encoding=3,
-                    mime='image/jpeg',
-                    type=3,  # Cover image
-                    desc=u'Cover',
-                    data=response.content
-                )
+            FileDownloadUtils._set_track_cover(audio, track_cover_imgs)
 
         audio.save()
+
+    @staticmethod
+    def _set_track_cover(audio, track_cover_imgs: str) -> None:
+        response = requests.get(track_cover_imgs)
+        logger.debug(f"Track image: %s, response: %s", track_cover_imgs, response.status_code)
+
+        if response.status_code != 200:
+                return
+
+        try:
+            img = PILImage.open(io.BytesIO(response.content))
+            img.load()
+
+            # --- Center crop to 1:1 ---
+            width, height = img.size
+            side = min(width, height)
+
+            left = (width - side) // 2
+            top = (height - side) // 2
+            right = left + side
+            bottom = top + side
+
+            img = img.crop((left, top, right, bottom))
+
+            # --- Convert to JPEG ---
+            with io.BytesIO() as output:
+                img.convert('RGB').save(output, format='JPEG', quality=95)
+                img_data = output.getvalue()
+
+        except Exception as e:
+            logger.error(f"Failed to process track image: {e}")
+            return
+
+        audio['APIC'] = APIC(
+            encoding=3,
+            mime='image/jpeg',
+            type=3,  # Cover image
+            desc='Cover',
+            data=img_data
+        )
 
     @staticmethod
     def sanitize_filename(s: str, max_length: int = 255) -> str:
@@ -122,3 +156,36 @@ class FileDownloadUtils:
             
         # Join with the download folder to get the absolute path
         return os.path.join(Config.DOWNLOAD_FOLDER, relative_path)
+    
+
+    @staticmethod
+    def strip_junk_tags_from_title(title: str) -> str:
+        """
+        Removes common "Free Download","Out Now", and other junk from the track title.
+
+        not  r'\s*-\s*Out Now\s*', because sometimes "Out Now" is part of the actual title.
+
+        :param title: Original track title
+        :return: Cleaned track title
+        """
+        patterns = [
+            r'\s*-\s*Free Download\s*',
+            r'\s*\[Free Download\]\s*',
+            r'\s*\(Free Download\)\s*',
+            r'\s*FREE DOWNLOAD\s*',
+            r'\s*-\s*FREE DOWNLOAD\s*',
+            r'\s*\[FREE DL\]\s*',
+            r'\s*\(FREE DL\)\s*',
+            r'\s*FREE DL\s*',
+            r'\s*-\s*FREE DL\s*',
+            r'\s*\[Out Now\]\s*',
+            r'\s*\(Out Now\)\s*',
+        ]
+
+        cleaned_title = title
+        for pattern in patterns:
+            cleaned_title = re.sub(pattern, ' ', cleaned_title, flags=re.IGNORECASE)
+
+        # Collapse multiple spaces and trim
+        cleaned_title = re.sub(r'\s+', ' ', cleaned_title).strip()
+        return cleaned_title

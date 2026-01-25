@@ -106,6 +106,9 @@ function PlaylistItem({ id, isSelected, onSelectChange, style, draggable = false
             {playlist.platform === "soundcloud" && (
               <img src="./icons/soundcloud.svg" alt="SoundCloud" className="w-4 h-4 p-0.5 ml-2" />
             )}
+            {playlist.platform === "youtube" && (
+              <img src="./icons/youtube.svg" alt="YouTube" className="w-4 h-4 ml-2 inline" />
+            )}
           </h3>
           <div className="text-sm text-gray-600">
             {playlist.last_synced

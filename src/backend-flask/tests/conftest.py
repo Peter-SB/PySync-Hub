@@ -1,14 +1,19 @@
 import os
 import sys
+import logging
 
 import pytest
 from app import create_app, SpotifyService
 from app.services.platform_services.soundcloud_service import SoundcloudService
+from app.services.platform_services.youtube_service import YouTubeService
 from config import TestConfig
 from app.extensions import db
 from tests.mocks.mock_spotify_client import MockSpotifyClient
 from tests.mocks.mock_soundcloud_service import MockSoundcloudService
+from tests.mocks.mock_youtube_service import MockYouTubeService
 from tests.mocks.mock_ytdl import MockYoutubeDL
+
+logger = logging.getLogger(__name__)
 
 
 @pytest.fixture(scope="session")
@@ -61,5 +66,21 @@ def mock_soundcloud_client(monkeypatch):
 
 @pytest.fixture(autouse=True)
 def mock_ytdlp(monkeypatch):
-    # Patch the YoutubeDL used in SpotifyDownloadService so that all calls use DummyYoutubeDL.
+    # Patch the YoutubeDL used in download services so that all calls use DummyYoutubeDL.
     monkeypatch.setattr("app.services.download_services.spotify_download_service.YoutubeDL", MockYoutubeDL)
+    monkeypatch.setattr("app.services.download_services.youtube_download_service.YoutubeDL", MockYoutubeDL)
+
+@pytest.fixture(autouse=True)
+def mock_youtube_service(monkeypatch, request):
+    """Automatically replace YouTubeService for all tests"""
+    if request.node.get_closest_marker("no_youtube_mock"):
+        yield  
+        return
+
+    logger.info("Mocking YouTubeService")
+    # Patch the class methods directly for the YouTube service
+    from app.services.platform_services.youtube_service import YouTubeService
+    monkeypatch.setattr(YouTubeService, "get_playlist_data", MockYouTubeService.get_playlist_data)
+    monkeypatch.setattr(YouTubeService, "get_playlist_tracks", MockYouTubeService.get_playlist_tracks)
+    monkeypatch.setattr(YouTubeService, "_extract_playlist_id", MockYouTubeService._extract_playlist_id)
+    yield
