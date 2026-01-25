@@ -174,13 +174,13 @@ class TestAddPlaylist:
 
         assert response.status_code == 400
         error_message = response.get_json().get("error")
-        assert error_message == "Error Adding Playlist: URL Doesnt Look Right. Please try again with a valid URL."
+        assert error_message == "Error Adding Playlist: URL Doesn't Look Right. Please try again with a valid URL."
 
     def test_add_playlist_id(self, client, monkeypatch):
         response = client.post('/api/playlists', json={"url_or_id": "12345"})
         assert response.status_code == 400
         error_message = response.get_json().get("error")
-        assert error_message == "Error Adding Playlist: URL Doesnt Look Right. Please try again with a valid URL."
+        assert error_message == "Error Adding Playlist: URL Doesn't Look Right. Please try again with a valid URL."
 
 @pytest.mark.usefixtures("client", "init_database")
 class TestUpdatePlaylist:

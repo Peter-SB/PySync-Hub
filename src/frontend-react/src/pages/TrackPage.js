@@ -116,6 +116,13 @@ function TrackPage() {
                         className="w-3 h-3 ml-2 inline"
                       />
                     )}
+                    {track.platform === "youtube" && (
+                      <img
+                        src="./icons/youtube.svg"
+                        alt="YouTube"
+                        className="w-4 h-4 ml-2 inline"
+                      />
+                    )}
                   </div>
                   <div className="flex flex-row items-end justify-end">
                     {track.notes_errors && (

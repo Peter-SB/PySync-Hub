@@ -9,6 +9,7 @@ from bs4 import BeautifulSoup
 
 from app.models import Track
 from app.repositories.playlist_repository import PlaylistRepository
+from app.utils.file_download_utils import FileDownloadUtils
 from config import Config
 
 logger = logging.getLogger(__name__)
@@ -245,8 +246,11 @@ class SoundcloudService:
                 first_track = data.get('tracks')[0]
                 image_url = first_track.get('artwork_url')
 
+            # Remove "Free Download" or similar tags from title
+            title = FileDownloadUtils.strip_junk_tags_from_title(data.get('title'))
+
             playlist_data = {
-                'name': data.get('title'),
+                'name': title,
                 'external_id': str(data.get('id')),
                 'image_url': image_url,
                 'track_count': data.get('track_count'),
