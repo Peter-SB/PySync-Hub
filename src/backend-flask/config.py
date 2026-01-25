@@ -48,12 +48,14 @@ class Config:
     SPOTIFY_PORT_NUMBER = 8888
 
     SOUNDCLOUD_CLIENT_ID = None
+    DOWNLOAD_PATH_PATTERN = 'shared'  # Options: 'shared', 'artist', 'playlist'
 
     if not os.path.exists(SETTINGS_PATH) and not TESTING:
         default_settings = {
             "SPOTIFY_CLIENT_ID": "",
             "SPOTIFY_CLIENT_SECRET": "",
-            "SOUNDCLOUD_CLIENT_ID": ""
+            "SOUNDCLOUD_CLIENT_ID": "",
+            "DOWNLOAD_PATH_PATTERN": "shared"
         }
         with open(SETTINGS_PATH, 'w') as f:
             yaml.safe_dump(default_settings, f, default_flow_style=False)
@@ -64,6 +66,7 @@ class Config:
     SPOTIFY_CLIENT_ID = settings.get('SPOTIFY_CLIENT_ID')
     SPOTIFY_CLIENT_SECRET = settings.get('SPOTIFY_CLIENT_SECRET')
     SOUNDCLOUD_CLIENT_ID = settings.get('SOUNDCLOUD_CLIENT_ID')
+    DOWNLOAD_PATH_PATTERN = settings.get('DOWNLOAD_PATH_PATTERN', 'shared')
 
     @classmethod
     def load_settings(cls):
@@ -72,6 +75,7 @@ class Config:
         cls.SPOTIFY_CLIENT_ID = settings.get('SPOTIFY_CLIENT_ID')
         cls.SPOTIFY_CLIENT_SECRET = settings.get('SPOTIFY_CLIENT_SECRET')
         cls.SOUNDCLOUD_CLIENT_ID = settings.get('SOUNDCLOUD_CLIENT_ID')
+        cls.DOWNLOAD_PATH_PATTERN = settings.get('DOWNLOAD_PATH_PATTERN', 'shared')
 
 
 #Config.load_settings()
