@@ -16,7 +16,8 @@ def settings():
     DEFAULT_SETTINGS = {
         'SPOTIFY_CLIENT_ID': '',
         'SPOTIFY_CLIENT_SECRET': '',
-        'SOUNDCLOUD_CLIENT_ID': ''
+        'SOUNDCLOUD_CLIENT_ID': '',
+        'DOWNLOAD_PATH_PATTERN': 'shared'
     }
     logger.info("Settings endpoint hit")
 
@@ -34,7 +35,9 @@ def settings():
         return jsonify({
             'spotify_client_id': settings_data.get('SPOTIFY_CLIENT_ID', ''),
             'spotify_client_secret': settings_data.get('SPOTIFY_CLIENT_SECRET', ''),
-            'soundcloud_client_id': settings_data.get('SOUNDCLOUD_CLIENT_ID', '')
+            'soundcloud_client_id': settings_data.get('SOUNDCLOUD_CLIENT_ID', ''),
+            'download_path_pattern': settings_data.get('DOWNLOAD_PATH_PATTERN', 'shared'),
+            'download_folder': Config.DOWNLOAD_FOLDER
         }), 200
 
     elif request.method == 'POST':
@@ -42,7 +45,8 @@ def settings():
         new_settings = {
             'SPOTIFY_CLIENT_ID': data.get('spotify_client_id'),
             'SPOTIFY_CLIENT_SECRET': data.get('spotify_client_secret'),
-            'SOUNDCLOUD_CLIENT_ID': data.get('soundcloud_client_id')
+            'SOUNDCLOUD_CLIENT_ID': data.get('soundcloud_client_id'),
+            'DOWNLOAD_PATH_PATTERN': data.get('download_path_pattern', 'shared')
         }
         with open(settings_path, 'w') as f:
             yaml.safe_dump(new_settings, f)

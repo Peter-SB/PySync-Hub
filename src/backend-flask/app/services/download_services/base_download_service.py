@@ -57,7 +57,7 @@ class BaseDownloadService(ABC):
                     break
 
                 try:
-                    cls.download_track(track)
+                    cls.download_track(track, playlist)
                 except Exception as e:
                     logger.warning("Error downloading track '%s': %s", track.name, e)
                     error_message = f"Error downloading playlist '{playlist.name}': {str(e)}"
@@ -75,7 +75,7 @@ class BaseDownloadService(ABC):
             raise e
 
     @classmethod
-    def download_track(cls, track: Track):
+    def download_track(cls, track: Track, playlist: Playlist = None):
         """ Download a single track. """
         logger.debug(f"Download Track location: %s", track.download_location)
 
@@ -88,7 +88,7 @@ class BaseDownloadService(ABC):
             return
 
         try:
-            cls.download_track_with_ytdlp(track)
+            cls.download_track_with_ytdlp(track, playlist)
         except Exception as e:
             logger.error("Error downloading track '%s - %s`: %s", track.name, track.artist, e, exc_info=True)
             track.notes_errors = str(e)
@@ -98,14 +98,18 @@ class BaseDownloadService(ABC):
             raise e
 
     @classmethod
-    def _generate_yt_dlp_options(cls, query: str, filename: str = None):
+    def _generate_yt_dlp_options(cls, query: str, filename: str = None, subfolder: str = ""):
         """Generate yt-dlp options using a sanitized filename from the YouTube title."""
         if not filename:
             filename = FileDownloadUtils.sanitize_filename(query)
 
-        output_template = os.path.join(
-                                       Config.DOWNLOAD_FOLDER,
-                                       f"{filename}.%(ext)s")  # Ensure correct filename format
+        # Build output path with optional subfolder
+        if subfolder:
+            output_dir = os.path.join(Config.DOWNLOAD_FOLDER, subfolder)
+        else:
+            output_dir = Config.DOWNLOAD_FOLDER
+            
+        output_template = os.path.join(output_dir, f"{filename}.%(ext)s")
 
         return {
             'format': 'bestaudio/best',
@@ -125,7 +129,7 @@ class BaseDownloadService(ABC):
 
     @classmethod
     @abstractmethod
-    def download_track_with_ytdlp(cls, track: Track) -> None:
+    def download_track_with_ytdlp(cls, track: Track, playlist: Playlist = None) -> None:
         """Handle the actual yt-dlp download logic."""
         pass
 

@@ -122,3 +122,38 @@ class FileDownloadUtils:
             
         # Join with the download folder to get the absolute path
         return os.path.join(Config.DOWNLOAD_FOLDER, relative_path)
+    
+    @staticmethod
+    def get_download_path_for_track(track, playlist=None):
+        """Get the download path for a track based on the current download path pattern.
+        
+        Args:
+            track: Track object with name, artist, etc.
+            playlist: Optional Playlist object (needed for playlist pattern)
+            
+        Returns:
+            Tuple of (directory, filename) where both are relative to DOWNLOAD_FOLDER
+        """
+        from config import Config
+        
+        pattern = Config.DOWNLOAD_PATH_PATTERN
+        filename = FileDownloadUtils.sanitize_filename(f"{track.artist} - {track.name}")
+        
+        if pattern == 'artist':
+            # Downloads organized by artist folder
+            artist_folder = FileDownloadUtils.sanitize_filename(track.artist)
+            return artist_folder, filename
+        elif pattern == 'playlist':
+            # Downloads organized by playlist folder
+            # For playlist pattern, we need the playlist parameter
+            if playlist:
+                playlist_folder = FileDownloadUtils.sanitize_filename(playlist.name)
+                # For playlist pattern, append playlist ID to filename to make it unique
+                unique_filename = f"{filename}_{playlist.id}"
+                return playlist_folder, unique_filename
+            else:
+                # Fallback to shared if no playlist provided
+                return "", filename
+        else:  # 'shared' or default
+            # All downloads in the same folder (current behavior)
+            return "", filename
