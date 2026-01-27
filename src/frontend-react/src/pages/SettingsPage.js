@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import './SettingsPage.css';
 import { backendUrl } from '../config';
 
 function SettingsPage() {
@@ -23,10 +24,10 @@ function SettingsPage() {
 
   // Save the updated settings.
   const handleSave = () => {
-    if (!spotifyClientId || !spotifyClientSecret || !soundcloudClientId) {
-      setError('Spotify Client ID, Spotify Client Secret, and SoundCloud Client ID are required.');
-      return;
-    }
+    // if (!spotifyClientId || !spotifyClientSecret || !soundcloudClientId) {
+    //   setError('Spotify Client ID, Spotify Client Secret, and SoundCloud Client ID are required.');
+    //   return;
+    // }
 
     fetch(`${backendUrl}/api/settings`, {
       method: 'POST',
@@ -73,14 +74,14 @@ function SettingsPage() {
     setIsRefreshing(true);
     setError('');
     setMessage('');
-    
+
     try {
       const response = await fetch(`${backendUrl}/api/soundcloud/fetch_client_id`);
       const data = await response.json();
-      
+
       if (response.ok && data.client_id) {
         setSoundcloudClientId(data.client_id);
-        setMessage('SoundCloud Client ID refreshed successfully');
+        // setMessage('SoundCloud Client ID refreshed successfully');
       } else {
         setError(data.error || 'Failed to fetch SoundCloud Client ID');
       }
@@ -138,6 +139,12 @@ function SettingsPage() {
               </button>
             </div>
           </div>
+          {/* Popup note if Spotify creds missing */}
+          {(!spotifyClientId || !spotifyClientSecret) && (
+            <div className="mb-4 p-3 bg-yellow-100 border-l-4 border-yellow-400 text-yellow-800 rounded shadow-sm">
+              <span className="font-semibold">Tip:</span> For better speed and more features, use the Spotify API by providing your credentials. <a href="https://github.com/Peter-SB/PySync-Hub/blob/master/docs/Install.md#how-to-get-api-keys" target="_blank" rel="noopener noreferrer" className="underline text-blue-700">Read here for more ...</a>
+            </div>
+          )}
         </div>
         {/* SoundCloud Settings */}
         <div className="mb-6">
@@ -153,10 +160,29 @@ function SettingsPage() {
               <button
                 onClick={handleRefreshSoundcloudId}
                 disabled={isRefreshing}
-                className={`ml-2 px-3 py-2 rounded ${isRefreshing ? 'bg-gray-300 cursor-not-allowed' : 'bg-blue-500 text-white hover:bg-blue-600'}`}
+                className={`ml-2 px-3 py-1 rounded flex items-center justify-center ${isRefreshing ? 'bg-gray-300 cursor-not-allowed' : 'bg-blue-500 text-white hover:bg-blue-600'}`}
+                style={{ width: '32px', height: '32px' }}
                 title="Automatically fetch SoundCloud Client ID"
               >
-                {isRefreshing ? 'Refreshing...' : '🔄 Refresh'}
+                {isRefreshing ? (
+                  <img
+                    src="/icons/refresh.svg"
+                    alt="Refreshing"
+                    width={26}
+                    height={26}
+                    className="refresh-scaled refresh-white animate-spin"
+                    style={{ display: 'block' }}
+                  />
+                ) : (
+                  <img
+                    src="/icons/refresh.svg"
+                    alt="Refresh"
+                    width={26}
+                    height={26}
+                    className="refresh-scaled refresh-white"
+                    style={{ display: 'block' }}
+                  />
+                )}
               </button>
               <button
                 onClick={() => showHelp('soundcloud')}

@@ -5,6 +5,7 @@ from app.services.platform_services.spotify_service import SpotifyService
 from app.services.platform_services.youtube_service import YouTubeService
 from app.utils.db_utils import commit_with_retries
 from datetime import datetime
+from app.services.platform_services.platform_services_factory import PlatformServiceFactory
 
 logger = logging.getLogger(__name__)
 
@@ -27,13 +28,9 @@ class TrackManagerService:
             return "Platform not supported for track syncing"
 
         try:
-            # todo: comeback and refactor with some class polymorphism 
-            if playlist.platform == 'spotify':
-                tracks_data = SpotifyService.get_playlist_tracks(playlist.url)
-            elif playlist.platform == 'soundcloud':
-                tracks_data = SoundcloudService.get_playlist_tracks(playlist.url)
-            elif playlist.platform == 'youtube':
-                tracks_data = YouTubeService.get_playlist_tracks(playlist.url)
+            # Use PlatformServiceFactory to get the appropriate service class
+            service_cls = PlatformServiceFactory.get_service(playlist.platform)
+            tracks_data = service_cls.get_playlist_tracks(playlist.url)
 
             logger.info("Fetched %d tracks for playlist %s", len(tracks_data), playlist.name)
 

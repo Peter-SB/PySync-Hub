@@ -8,3 +8,5 @@ logger = logging.getLogger(__name__)
 
 # Re-export for backward compatibility
 __all__ = ['SpotifyService']
+
+# todo: remove SpotifyService alias in future major release

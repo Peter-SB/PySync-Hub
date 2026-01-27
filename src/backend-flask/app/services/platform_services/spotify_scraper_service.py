@@ -6,6 +6,7 @@ from spotify_scraper.utils.common import SpotifyBulkOperations
 
 from app.repositories.playlist_repository import PlaylistRepository
 from app.services.platform_services.base_spotify_service import BaseSpotifyService
+from app.extensions import emit_error_message
 
 logger = logging.getLogger(__name__)
 
@@ -30,10 +31,9 @@ class SpotifyScraperService(BaseSpotifyService):
         try:
             # Check for private playlists - not supported with scraper
             if "collection/tracks" in url:
-                raise ValueError(
-                    "Private playlists (Liked Songs) are not supported without Spotify API credentials. "
-                    "Please add your Spotify API keys in Settings."
-                )
+                error = "Private playlists (Liked Songs) are not supported without Spotify API credentials. Please add your Spotify API keys in Settings."
+                emit_error_message(url, error)
+                raise ValueError(error)
 
             client = SpotifyScraperService._get_scraper_client()
             
@@ -89,14 +89,14 @@ class SpotifyScraperService(BaseSpotifyService):
     def get_playlist_tracks(url: str) -> List[Dict[str, Any]]:
         """
         Fetches the tracks for a given Spotify playlist using the scraper.
+        Only scrapes tracks not already in the database.
         Returns a list of dictionaries with track information.
         
         Raises:
             ValueError: If the playlist is a private/saved tracks playlist
         """
         try:
-            logger.info("Fetching tracks for playlist %s using scraper", url)
-            
+            logger.info("Fetching tracks for playlist %s using scraper (skip existing)", url)
             # Check for private playlists - not supported with scraper
             if "collection/tracks" in url:
                 raise ValueError(
@@ -109,62 +109,70 @@ class SpotifyScraperService(BaseSpotifyService):
             date_limit = playlist.to_dict().get('date_limit', None)
 
             client = SpotifyScraperService._get_scraper_client()
-            
             try:
                 # Get basic playlist info to get track URIs
                 playlist_info = client.get_playlist_info(url)
-                
                 if not playlist_info.get('tracks'):
                     logger.info("Playlist has no tracks")
                     return []
-                
-                # Extract track URLs for bulk fetching
-                track_urls = []
+
+                # Extract track IDs and URLs for bulk fetching
+                track_id_url_map = {}
                 for track in playlist_info['tracks']:
                     track_uri = track.get('uri', '')
                     if track_uri and track_uri.startswith('spotify:track:'):
                         track_id = track_uri.split(':')[-1]
-                        track_urls.append(f"https://open.spotify.com/track/{track_id}")
-                
-                if not track_urls:
+                        track_url = f"https://open.spotify.com/track/{track_id}"
+                        track_id_url_map[track_id] = track_url
+
+                if not track_id_url_map:
                     logger.info("No valid track URIs found")
                     return []
-                
+
                 # Apply track limit if specified
-                if track_limit and track_limit < len(track_urls):
-                    track_urls = track_urls[:track_limit]
-                
+                track_ids = list(track_id_url_map.keys())
+                if track_limit and track_limit < len(track_ids):
+                    track_ids = track_ids[:track_limit]
+
+                # Query DB for existing tracks by platform_id (track_id)
+                # Assumes PlaylistRepository or TrackRepository has a method to check for existing track IDs
+                from app.repositories.track_repository import TrackRepository
+                existing_ids = set(TrackRepository.get_existing_spotify_ids(track_ids))
+
+                # Only scrape tracks not in DB
+                new_track_ids = [tid for tid in track_ids if tid not in existing_ids]
+                new_track_urls = [track_id_url_map[tid] for tid in new_track_ids]
+
+                logger.info("%d/%d tracks already in DB, scraping %d new tracks", len(existing_ids), len(track_ids), len(new_track_urls))
+
+                if not new_track_urls:
+                    logger.info("No new tracks to scrape")
+                    return []
+
                 # Fetch full track info using bulk operations (faster than individual requests)
                 bulk = SpotifyBulkOperations()
-                results = bulk.process_urls(track_urls, operation="info")
-                
+                results = bulk.process_urls(new_track_urls, operation="info")
+
                 # Transform scraped data to match API format
                 tracks_data = []
                 for track_url, result_data in results.get('results', {}).items():
                     if 'info' not in result_data:
                         continue
-                    
                     track_info = result_data['info']
-                    
                     # Transform to standard format
                     track_data = SpotifyScraperService._format_track_data_from_scraper(track_info)
-                    
-                    # Apply date limit if specified
-                    # Note: Scraper doesn't provide added_at, so we can't filter by date
+                    # Apply date limit if specified (not supported by scraper)
                     if date_limit is not None:
                         logger.warning(
                             "Date filtering is not supported with Spotify scraper. "
                             "Please use Spotify API credentials for this feature."
                         )
-                    
                     tracks_data.append(track_data)
-                
-                logger.info("Fetched %d tracks for playlist using scraper", len(tracks_data))
+
+                logger.info("Fetched %d new tracks for playlist using scraper", len(tracks_data))
                 return tracks_data
-                
             finally:
                 client.close()
-
         except ValueError:
             # Re-raise ValueError for private playlists
             raise

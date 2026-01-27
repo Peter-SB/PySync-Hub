@@ -10,6 +10,21 @@ logger = logging.getLogger(__name__)
 
 
 class TrackRepository:
+
+    @staticmethod
+    def get_existing_spotify_ids(track_ids: List[str]) -> List[str]:
+        """
+        Given a list of Spotify track IDs, return those that already exist in the DB (platform_id, platform='spotify').
+        """
+        if not track_ids:
+            return []
+        existing = (
+            db.session.query(Track.platform_id)
+            .filter(Track.platform == 'spotify', Track.platform_id.in_(track_ids))
+            .all()
+        )
+        # .all() returns list of tuples, extract first element
+        return [row[0] for row in existing]
     @staticmethod
     def remove_tracks_before_date(playlist, date_limit) -> List[Track]:
         if date_limit:
