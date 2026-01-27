@@ -1,3 +1,4 @@
+import json
 import logging
 from typing import List, Dict, Any
 
@@ -55,9 +56,17 @@ class SpotifyScraperService(BaseSpotifyService):
                     # Fallback to first image if no 300x300 found
                     if not image_url and playlist_info['images']:
                         image_url = playlist_info['images'][0].get('url')
-                
-                # If no playlist cover, we'll use the first track's album art later if needed
-                # This is handled in the application layer
+                else:
+                    # If no playlist cover, we'll use the first track's album
+                    track =  playlist_info.get('tracks', [None])[0]
+                    print(f"part {json.dumps(track)}")
+                    track_id = track.get('uri').split(':')[-1]
+                    track_url = SpotifyScraperService._get_track_url_from_id(track_id)
+                    if track_full := client.get_track_info(track_url):
+                        print(f"full track: {json.dumps(track_full)}")
+                        if track_full.get('album', {}).get('images'):
+                            image_url = track_full['album']['images'][1].get('url')
+
                 
                 data = {
                     'name': playlist_info.get('name', 'Unknown Playlist'),
@@ -122,7 +131,7 @@ class SpotifyScraperService(BaseSpotifyService):
                     track_uri = track.get('uri', '')
                     if track_uri and track_uri.startswith('spotify:track:'):
                         track_id = track_uri.split(':')[-1]
-                        track_url = f"https://open.spotify.com/track/{track_id}"
+                        track_url = SpotifyScraperService._get_track_url_from_id(track_id)
                         track_id_url_map[track_id] = track_url
 
                 if not track_id_url_map:
@@ -179,6 +188,10 @@ class SpotifyScraperService(BaseSpotifyService):
         except Exception as e:
             logger.error("Error fetching tracks for playlist %s: %s", url, e, exc_info=True)
             raise
+
+    @staticmethod
+    def _get_track_url_from_id(track_id):
+        return f"https://open.spotify.com/track/{track_id}"
 
     @staticmethod
     def _format_track_data_from_scraper(track_info: Dict[str, Any]) -> Dict[str, Any]:
