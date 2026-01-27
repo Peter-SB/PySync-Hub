@@ -3,7 +3,8 @@ import sys
 import logging
 
 import pytest
-from app import create_app, SpotifyService
+from app import create_app
+from app.services.platform_services.spotify_api_service import SpotifyAPIService
 from app.services.platform_services.soundcloud_service import SoundcloudService
 from app.services.platform_services.youtube_service import YouTubeService
 from config import TestConfig
@@ -54,9 +55,9 @@ def client(app):
 
 @pytest.fixture(autouse=True)
 def mock_spotify_client(monkeypatch):
-    """Automatically replace SpotifyService.get_client for all tests"""
-    print("Mocking SpotifyService.get_client")
-    monkeypatch.setattr(SpotifyService, "get_client", lambda: MockSpotifyClient())
+    """Automatically replace SpotifyAPIService.get_client for all tests"""
+    print("Mocking SpotifyAPIService.get_client")
+    monkeypatch.setattr(SpotifyAPIService, "get_client", lambda: MockSpotifyClient())
 
 @pytest.fixture(autouse=True)
 def mock_soundcloud_client(monkeypatch):
