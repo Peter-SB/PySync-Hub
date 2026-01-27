@@ -7,6 +7,7 @@ function SettingsPage() {
   const [soundcloudClientId, setSoundcloudClientId] = useState('');
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   // Fetch settings when the component mounts.
   useEffect(() => {
@@ -65,6 +66,29 @@ function SettingsPage() {
 
   const handleLoginClick = () => {
     window.open(`${backendUrl}/api/spotify_auth/login`, '_blank');
+  };
+
+  // Fetch SoundCloud client ID automatically
+  const handleRefreshSoundcloudId = async () => {
+    setIsRefreshing(true);
+    setError('');
+    setMessage('');
+    
+    try {
+      const response = await fetch(`${backendUrl}/api/soundcloud/fetch_client_id`);
+      const data = await response.json();
+      
+      if (response.ok && data.client_id) {
+        setSoundcloudClientId(data.client_id);
+        setMessage('SoundCloud Client ID refreshed successfully');
+      } else {
+        setError(data.error || 'Failed to fetch SoundCloud Client ID');
+      }
+    } catch (err) {
+      setError('Error fetching SoundCloud Client ID: ' + err.message);
+    } finally {
+      setIsRefreshing(false);
+    }
   };
 
   // Check if the save button should be disabled
@@ -126,6 +150,14 @@ function SettingsPage() {
                 onChange={(e) => setSoundcloudClientId(e.target.value)}
                 className="flex-1 p-2 border rounded"
               />
+              <button
+                onClick={handleRefreshSoundcloudId}
+                disabled={isRefreshing}
+                className={`ml-2 px-3 py-2 rounded ${isRefreshing ? 'bg-gray-300 cursor-not-allowed' : 'bg-blue-500 text-white hover:bg-blue-600'}`}
+                title="Automatically fetch SoundCloud Client ID"
+              >
+                {isRefreshing ? 'Refreshing...' : '🔄 Refresh'}
+              </button>
               <button
                 onClick={() => showHelp('soundcloud')}
                 className="ml-2 px-3 py-1 bg-gray-300 rounded"
