@@ -170,7 +170,7 @@ class SpotifyScraperService(BaseSpotifyService):
             raise
         except Exception as e:
             logger.error("Error fetching tracks for playlist %s: %s", url, e, exc_info=True)
-            raise e
+            raise
 
     @staticmethod
     def _format_track_data_from_scraper(track_info: Dict[str, Any]) -> Dict[str, Any]:

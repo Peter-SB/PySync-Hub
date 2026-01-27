@@ -163,7 +163,7 @@ class SpotifyAPIService(BaseSpotifyService):
                     track = item.get('track')
                     track_added_on = item.get('added_at', None)
                     if not track or track.get('id') is None:
-                        return  # Skip items that aren't valid tracks (e.g., episodes, missing tracks)
+                        continue  # Skip items that aren't valid tracks (e.g., episodes, missing tracks)
 
                     track_data = SpotifyAPIService._format_track_data(track, track_added_on)
                     liked_songs.append(track_data)
