@@ -58,6 +58,20 @@ def mock_spotify_client(monkeypatch):
     """Automatically replace SpotifyAPIService.get_client for all tests"""
     print("Mocking SpotifyAPIService.get_client")
     monkeypatch.setattr(SpotifyAPIService, "get_client", lambda: MockSpotifyClient())
+    
+    # Force the factory to use API service for tests (unless explicitly testing scraper)
+    from config import Config
+    from app.services.platform_services.platform_services_factory import PlatformServiceFactory
+    original_get_service = PlatformServiceFactory._get_spotify_service
+    
+    def mock_get_spotify_service():
+        # Check if we're explicitly testing the scraper (by checking if scraper client is mocked)
+        if hasattr(Config, '_test_use_scraper') and Config._test_use_scraper:
+            return original_get_service()
+        # Default to API service for existing tests
+        return SpotifyAPIService
+    
+    monkeypatch.setattr(PlatformServiceFactory, "_get_spotify_service", staticmethod(mock_get_spotify_service))
 
 @pytest.fixture(autouse=True)
 def mock_soundcloud_client(monkeypatch):

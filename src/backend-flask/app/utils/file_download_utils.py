@@ -2,7 +2,6 @@ import io
 import logging
 import os
 import re
-from tkinter import Image
 from PIL import Image as PILImage
 
 import requests

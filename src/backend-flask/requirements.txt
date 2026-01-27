@@ -60,7 +60,7 @@ simple-websocket==1.1.0
 six==1.17.0
 soupsieve==2.6
 spotipy==2.25.0
-spotify-scraper==1.1.1
+git+https://github.com/AliAkhtari78/SpotifyScraper.git
 SQLAlchemy==2.0.38
 sqlcipher3-wheels==0.5.4
 tldextract==5.1.3
