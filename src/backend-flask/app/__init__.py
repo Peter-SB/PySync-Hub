@@ -64,7 +64,7 @@ def create_app(app_config=Config):
     # todo: refactor to a setup_database function
     # Run database migrations
     db_path = app_config.SQLALCHEMY_DATABASE_URI.replace('sqlite:///', '')
-    if os.path.exists(db_path):
+    if os.path.exists(db_path) and not app.config.get("TESTING"):
         logger.info(f"Running database migrations on {db_path}")
         DatabaseMigrator.run_migrations(db_path)
     

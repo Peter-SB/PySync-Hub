@@ -8,6 +8,8 @@ from spotify_scraper.utils.common import SpotifyBulkOperations
 from app.repositories.playlist_repository import PlaylistRepository
 from app.services.platform_services.base_spotify_service import BaseSpotifyService
 from app.extensions import emit_error_message
+from app.repositories.track_repository import TrackRepository
+
 
 logger = logging.getLogger(__name__)
 
@@ -57,15 +59,16 @@ class SpotifyScraperService(BaseSpotifyService):
                     if not image_url and playlist_info['images']:
                         image_url = playlist_info['images'][0].get('url')
                 else:
-                    # If no playlist cover, we'll use the first track's album
-                    track =  playlist_info.get('tracks', [None])[0]
-                    print(f"part {json.dumps(track)}")
-                    track_id = track.get('uri').split(':')[-1]
-                    track_url = SpotifyScraperService._get_track_url_from_id(track_id)
-                    if track_full := client.get_track_info(track_url):
-                        print(f"full track: {json.dumps(track_full)}")
-                        if track_full.get('album', {}).get('images'):
-                            image_url = track_full['album']['images'][1].get('url')
+                    # If no playlist cover, we'll use the first track's album if available
+                    tracks = playlist_info.get('tracks', [])
+                    track = tracks[0] if tracks else None
+                    if track:
+                        track_id = track.get('uri').split(':')[-1]
+                        track_url = SpotifyScraperService._get_track_url_from_id(track_id)
+                        if track_full := client.get_track_info(track_url):
+                            if track_full.get('album', {}).get('images'):
+                                image_url = track_full['album']['images'][1].get('url')
+                    # If no track, image_url remains None
 
                 
                 data = {
@@ -121,31 +124,40 @@ class SpotifyScraperService(BaseSpotifyService):
             try:
                 # Get basic playlist info to get track URIs
                 playlist_info = client.get_playlist_info(url)
+                logger.debug(f"playlist_info: {json.dumps(playlist_info, indent=2)}")
                 if not playlist_info.get('tracks'):
-                    logger.info("Playlist has no tracks")
+                    if track:
+                        track_id = track.get('uri').split(':')[-1]
+                        track_url = SpotifyScraperService._get_track_url_from_id(track_id)
+                        if track_full := client.get_track_info(track_url):
+                            if track_full.get('album', {}).get('images'):
+                                image_url = track_full['album']['images'][1].get('url')
+                    else:
+                        track_id = None
+                        # No track available, so image_url remains None or handle as needed
                     return []
 
                 # Extract track IDs and URLs for bulk fetching
                 track_id_url_map = {}
-                for track in playlist_info['tracks']:
+                for track in playlist_info.get('tracks', []):
                     track_uri = track.get('uri', '')
                     if track_uri and track_uri.startswith('spotify:track:'):
                         track_id = track_uri.split(':')[-1]
                         track_url = SpotifyScraperService._get_track_url_from_id(track_id)
                         track_id_url_map[track_id] = track_url
-
+                
                 if not track_id_url_map:
                     logger.info("No valid track URIs found")
                     return []
 
                 # Apply track limit if specified
                 track_ids = list(track_id_url_map.keys())
+                logger.info(f"Total tracks in playlist: {len(track_id_url_map)}, e.g . applying track limit: {track_limit}")
                 if track_limit and track_limit < len(track_ids):
                     track_ids = track_ids[:track_limit]
 
                 # Query DB for existing tracks by platform_id (track_id)
                 # Assumes PlaylistRepository or TrackRepository has a method to check for existing track IDs
-                from app.repositories.track_repository import TrackRepository
                 existing_ids = set(TrackRepository.get_existing_spotify_ids(track_ids))
 
                 # Only scrape tracks not in DB
@@ -154,31 +166,39 @@ class SpotifyScraperService(BaseSpotifyService):
 
                 logger.info("%d/%d tracks already in DB, scraping %d new tracks", len(existing_ids), len(track_ids), len(new_track_urls))
 
-                if not new_track_urls:
-                    logger.info("No new tracks to scrape")
-                    return []
-
                 # Fetch full track info using bulk operations (faster than individual requests)
-                bulk = SpotifyBulkOperations()
-                results = bulk.process_urls(new_track_urls, operation="info")
-
-                # Transform scraped data to match API format
                 tracks_data = []
-                for track_url, result_data in results.get('results', {}).items():
-                    if 'info' not in result_data:
-                        continue
-                    track_info = result_data['info']
-                    # Transform to standard format
-                    track_data = SpotifyScraperService._format_track_data_from_scraper(track_info)
-                    # Apply date limit if specified (not supported by scraper)
-                    if date_limit is not None:
-                        logger.warning(
-                            "Date filtering is not supported with Spotify scraper. "
-                            "Please use Spotify API credentials for this feature."
-                        )
-                    tracks_data.append(track_data)
+                
+                if new_track_urls:
+                    bulk = SpotifyBulkOperations()
+                    results = bulk.process_urls(new_track_urls, operation="info")
 
-                logger.info("Fetched %d new tracks for playlist using scraper", len(tracks_data))
+                    # Transform scraped data to match API format
+                    for track_url, result_data in results.get('results', {}).items():
+                        if 'info' not in result_data:
+                            continue
+                        track_info = result_data['info']
+                        # Transform to standard format
+                        track_data = SpotifyScraperService._format_track_data_from_scraper(track_info)
+                        # Apply date limit if specified (not supported by scraper)
+                        if date_limit is not None:
+                            logger.warning(
+                                "Date filtering is not supported with Spotify scraper. "
+                                "Please use Spotify API credentials for this feature."
+                            )
+                        tracks_data.append(track_data)
+                    logger.info("Scraped %d new tracks for playlist", len(tracks_data))
+                else:
+                    logger.info("No new tracks to scrape")
+
+                # Fetch existing tracks from database
+                if existing_ids:
+                    existing_tracks = TrackRepository.get_tracks_by_spotify_ids(list(existing_ids))
+                    existing_tracks_data = [track.to_dict() for track in existing_tracks]
+                    tracks_data.extend(existing_tracks_data)
+                    logger.info("Added %d existing tracks from database", len(existing_tracks_data))
+
+                logger.info("Returning %d total tracks for playlist", len(tracks_data))
                 return tracks_data
             finally:
                 client.close()

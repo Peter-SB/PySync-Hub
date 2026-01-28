@@ -339,3 +339,70 @@ class TestTrackRepository:
         
         # Verify no index is returned
         assert track_index is None 
+
+    def test_get_existing_spotify_ids_happy_path(self, init_database):
+        # Arrange: create spotify and non-spotify tracks
+        spotify_tracks = [
+            Track(platform_id="sp_1", platform="spotify", name="Track 1", artist="Artist 1"),
+            Track(platform_id="sp_2", platform="spotify", name="Track 2", artist="Artist 2"),
+        ]
+        other_track = Track(
+            platform_id="yt_1",
+            platform="youtube",
+            name="YT Track 1",
+            artist="YT Artist 1",
+        )
+        db.session.add_all(spotify_tracks + [other_track])
+        db.session.commit()
+
+        track_ids = ["sp_1", "sp_2", "sp_3"]
+
+        # Act
+        existing_ids = TrackRepository.get_existing_spotify_ids(track_ids)
+
+        # Assert
+        assert set(existing_ids) == {"sp_1", "sp_2"}
+
+    def test_get_existing_spotify_ids_empty_input(self, init_database):
+        # Arrange
+        track_ids = []
+
+        # Act
+        existing_ids = TrackRepository.get_existing_spotify_ids(track_ids)
+
+        # Assert
+        assert existing_ids == []
+
+    def test_get_existing_spotify_ids_no_matches(self, init_database):
+        # Arrange: create spotify tracks not in query
+        tracks = [
+            Track(platform_id="sp_10", platform="spotify", name="Track 10", artist="Artist 10"),
+            Track(platform_id="sp_11", platform="spotify", name="Track 11", artist="Artist 11"),
+        ]
+        db.session.add_all(tracks)
+        db.session.commit()
+
+        track_ids = ["sp_1", "sp_2"]
+
+        # Act
+        existing_ids = TrackRepository.get_existing_spotify_ids(track_ids)
+
+        # Assert
+        assert existing_ids == []
+
+    def test_get_existing_spotify_ids_ignores_other_platforms(self, init_database):
+        # Arrange: only non-spotify tracks exist
+        tracks = [
+            Track(platform_id="sp_1", platform="youtube", name="YT 1", artist="A1"),
+            Track(platform_id="sp_2", platform="soundcloud", name="SC 2", artist="A2"),
+        ]
+        db.session.add_all(tracks)
+        db.session.commit()
+
+        track_ids = ["sp_1", "sp_2"]
+
+        # Act
+        existing_ids = TrackRepository.get_existing_spotify_ids(track_ids)
+
+        # Assert
+        assert existing_ids == []
