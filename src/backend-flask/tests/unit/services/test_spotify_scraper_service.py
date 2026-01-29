@@ -17,7 +17,7 @@ class TestSpotifyScraperService:
         from app.extensions import db
 
         # Load the mock playlist JSON
-        json_path = os.path.join(os.path.dirname(__file__), '../mock_data/spotify_scraper_jumpup_playlist.json')
+        json_path = os.path.join(os.path.dirname(__file__), '../../mock_data/spotify_scraper_jumpup_playlist.json')
         with open(json_path, encoding='utf-8') as f:
             playlist_data = json.load(f)
 
