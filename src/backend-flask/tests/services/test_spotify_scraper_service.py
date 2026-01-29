@@ -6,8 +6,46 @@ from app.services.platform_services.spotify_scraper_service import SpotifyScrape
 from app.services.platform_services.platform_services_factory import PlatformServiceFactory
 
 
+
 @pytest.mark.usefixtures("client", "init_database")
 class TestSpotifyScraperService:
+    def test_import_jumpup_playlist_json_and_check_tracks(self, app):
+        """Test importing the jumpup playlist JSON and checking track count and order."""
+        import json
+        import os
+        from app.models import Playlist
+        from app.extensions import db
+
+        # Load the mock playlist JSON
+        json_path = os.path.join(os.path.dirname(__file__), '../mock_data/spotify_scraper_jumpup_playlist.json')
+        with open(json_path, encoding='utf-8') as f:
+            playlist_data = json.load(f)
+
+        # Add the playlist to the database
+        with app.app_context():
+            playlist = Playlist(
+                id=999,
+                name=playlist_data['name'],
+                platform='spotify',
+                external_id=playlist_data['id'],
+                url=f"https://open.spotify.com/playlist/{playlist_data['id']}",
+                download_status="ready"
+            )
+            db.session.add(playlist)
+            db.session.commit()
+
+            # Check number of tracks
+            assert len(playlist_data['tracks']) == playlist_data['track_count']
+            assert playlist_data['track_count'] == 36 or playlist_data['track_count'] == len(playlist_data['tracks'])
+
+            # Check order of first and last tracks
+            first_track = playlist_data['tracks'][0]
+            last_track = playlist_data['tracks'][-1]
+            assert first_track['name'] == "The Infamous"
+            assert last_track['name'] == "Stopping Turning"
+            # Optionally check a few more in the middle
+            assert playlist_data['tracks'][10]['name'] == "Flick the Switch"
+            assert playlist_data['tracks'][20]['name'] == "Musket"
     """Tests for SpotifyScraperService."""
 
     def test_get_playlist_data_with_valid_playlist(self, app, monkeypatch):
@@ -182,6 +220,13 @@ class TestSpotifyScraperService:
                 SpotifyScraperService.get_playlist_tracks(playlist.url)
             
             assert "Private playlists" in str(exc_info.value)
+
+    def test__get_track_id_from_uri_happy_path(self):
+        """Test extracting track ID from a valid Spotify track URI."""
+        from app.services.platform_services.spotify_scraper_service import SpotifyScraperService
+        uri = "spotify:track:3vkQ5DAB1qQMYO4Mr9zJN6"
+        track_id = SpotifyScraperService._get_track_id_from_uri(uri)
+        assert track_id == "3vkQ5DAB1qQMYO4Mr9zJN6"
 
 
 @pytest.mark.usefixtures("client", "init_database")

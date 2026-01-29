@@ -128,6 +128,41 @@ class TestAddPlaylist:
 
         assert len(added_playlist.tracks) == 14
 
+    def test_add_playlist_preserves_track_order(self, client, monkeypatch):
+        """Test that adding a playlist via endpoint preserves the correct track order."""
+        # Add a Spotify playlist
+        response = client.post('/api/playlists',
+                               json={"url_or_id": "https://open.spotify.com/playlist/3bL14BgPXekKHep3RRdwGZ"})
+
+        assert response.status_code == 201
+
+        # Fetch the added playlist from the database
+        added_playlist = Playlist.query.filter_by(external_id="3bL14BgPXekKHep3RRdwGZ").first()
+        assert added_playlist is not None
+
+        # Get playlist tracks through the relationship (which is ordered by track_order)
+        playlist_tracks = added_playlist.tracks
+        assert len(playlist_tracks) == 2
+
+        # Verify the tracks are in the correct order
+        # The mock data returns "Song One" first, then "Song Two"
+        assert playlist_tracks[0].track.name == "Song One"
+        assert playlist_tracks[0].track.artist == "Artist One"
+        assert playlist_tracks[0].track_order == 0
+
+        assert playlist_tracks[1].track.name == "Song Two"
+        assert playlist_tracks[1].track.artist == "Artist Two"
+        assert playlist_tracks[1].track_order == 1
+
+        # Also verify via the API endpoint
+        track_response = client.get(f'/api/playlist/{added_playlist.id}/tracks')
+        assert track_response.status_code == 200
+        tracks_data = track_response.get_json()
+        
+        assert len(tracks_data) == 2
+        assert tracks_data[0]["name"] == "Song One"
+        assert tracks_data[1]["name"] == "Song Two"
+
     def test_add_playlist_soundcloud_likes(self, client, monkeypatch):
         response = client.post('/api/playlists', json={"url_or_id": "https://soundcloud.com/subfocus/likes"})
 
@@ -142,9 +177,8 @@ class TestAddPlaylist:
 
         assert len(added_playlist.tracks) == 10  # Only 10 tracks are added in test data
 
-    def test_add_playlist_already_added_spotify(self, client, monkeypatch):
-        response1 = client.post('/api/playlists',
-                                json={"url_or_id": "https://open.spotify.com/playlist/3bL14BgPXekKHep3RRdwGZ"})
+    def test_add_playlist_already_added_spotify(self, client, monkeypatch):       
+        response1 = client.post('/api/playlists', json={"url_or_id": "https://open.spotify.com/playlist/3bL14BgPXekKHep3RRdwGZ"})
         assert response1.status_code == 201
 
         response2 = client.post('/api/playlists',

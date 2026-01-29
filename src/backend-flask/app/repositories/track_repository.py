@@ -22,11 +22,23 @@ class TrackRepository:
             .filter(Track.platform == 'spotify', Track.platform_id.in_(track_ids))
             .all()
         )
+    
+    @staticmethod
+    def get_track_by_platform_id(track_id: str) -> Optional[Track]:
+        if not track_id:
+            return None
+        return (
+            db.session.query(Track)
+            .filter(Track.platform_id == track_id)
+            .first()
+        )
 
     @staticmethod
     def get_existing_spotify_ids(track_ids: List[str]) -> List[str]:
         """
         Given a list of Spotify track IDs, return those that already exist in the DB (platform_id, platform='spotify').
+
+        todo: check this not same at get_tracks_by_spotify_ids
         """
         if not track_ids:
             return []

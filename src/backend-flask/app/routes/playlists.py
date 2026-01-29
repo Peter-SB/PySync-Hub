@@ -57,11 +57,13 @@ def add_playlist():
     date_limit = data.get('date_limit', None)
     track_limit = data.get('track_limit', None)
     if not url_or_id:
+        logger.error("Error adding playlist: No URL or ID provided")
         return jsonify({'error': 'No URL or ID provided'}), 400
 
     logger.info(f"Adding playlist: {url_or_id}")
     error = PlaylistManagerService.add_playlists(url_or_id, date_limit, track_limit)
     if error:
+        logger.error(f"Error adding playlist: {error}")
         return jsonify({'error': error}), 400
 
     # Return updated playlists
