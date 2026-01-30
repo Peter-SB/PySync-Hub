@@ -32,7 +32,7 @@ Config.SOUNDCLOUD_CLIENT_ID = os.environ.get("SOUNDCLOUD_CLIENT_ID", Config.SOUN
 
 SPOTIFY_TEST_PLAYLIST_URL = os.environ.get(
     "SPOTIFY_TEST_PLAYLIST_URL",
-    "https://open.spotify.com/playlist/37i9dQZF1DXcBWIGoYBM5M",
+    "https://open.spotify.com/playlist/3bL14BgPXekKHep3RRdwGZ?si=758a3108ca1e4909",
 )
 SOUNDCLOUD_TEST_PLAYLIST_URL = os.environ.get(
     "SOUNDCLOUD_TEST_PLAYLIST_URL",
@@ -122,7 +122,7 @@ def test_add_playlist_spotify_api(client, tmp_path, monkeypatch):
         json={"url_or_id": SPOTIFY_TEST_PLAYLIST_URL, "track_limit": 5},
     )
 
-    assert response.status_code == 201
+    assert response.status_code == 201, "Error. {}".format(response.json) 
     db_path = tmp_path / "integration.db"
     _assert_db_rows(db_path, "spotify")
 

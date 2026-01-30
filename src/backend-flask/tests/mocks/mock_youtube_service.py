@@ -14,7 +14,7 @@ class MockYouTubeService:
         
         # Handle error case
         if "error" in url or "invalid" in url:
-            raise Exception("Playlist not found. Please check the playlist is public or try another URL.")
+            raise Exception("Youtube Playlist not found. Please check the playlist is public or try another URL.")
         
         # Handle empty playlist
         if "empty" in url:

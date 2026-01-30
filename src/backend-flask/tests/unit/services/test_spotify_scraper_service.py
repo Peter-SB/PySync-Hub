@@ -228,7 +228,6 @@ class TestSpotifyScraperService:
         track_id = SpotifyScraperService._get_track_id_from_uri(uri)
         assert track_id == "3vkQ5DAB1qQMYO4Mr9zJN6"
 
-
 @pytest.mark.usefixtures("client", "init_database")
 class TestPlatformServiceFactory:
     """Tests for PlatformServiceFactory Spotify service selection."""
@@ -268,7 +267,7 @@ class TestPlatformServiceFactory:
 
     def test_factory_by_url_with_spotify_url(self, app):
         """Test that factory returns correct service for Spotify URL."""
-        from app.services.platform_services.spotify_api_service import SpotifyAPIService
+        from app.services.platform_services.spotify_api_service import SpotifyApiService
         from app.services.platform_services.platform_services_factory import PlatformServiceFactory
         
         with app.app_context():
@@ -276,4 +275,4 @@ class TestPlatformServiceFactory:
             service = PlatformServiceFactory.get_service_by_url(
                 'https://open.spotify.com/playlist/1zfCA5tZu2QyWINEjpzDVd'
             )
-            assert service == SpotifyAPIService
+            assert service == SpotifyApiService

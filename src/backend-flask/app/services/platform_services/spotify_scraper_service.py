@@ -10,7 +10,7 @@ from spotify_scraper import SpotifyClient
 from spotify_scraper.utils.common import SpotifyBulkOperations
 
 from app.repositories.playlist_repository import PlaylistRepository
-from app.services.platform_services.base_spotify_service import BaseSpotifyService
+from app.services.platform_services.spotify_base_service import BaseSpotifyService
 from app.extensions import emit_error_message
 from app.repositories.track_repository import TrackRepository
 
@@ -59,24 +59,7 @@ class SpotifyScraperService(BaseSpotifyService):
         
         # Strategy 2: Try to scrape mosaic image from Spotify playlist page
         if not image_url:
-            try:
-                response = requests.get(playlist_url, headers={
-                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
-                }, timeout=10)
-                if response.status_code == 200:
-                    # Look for mosaic.scdn.co URL in the HTML
-                    # Pattern matches: https://mosaic.scdn.co/300/...
-                    mosaic_pattern = r'https://mosaic\.scdn\.co/300/[a-f0-9]+'
-                    match = re.search(mosaic_pattern, response.text)
-                    if match:
-                        image_url = match.group(0)
-                        logger.info("Found mosaic image: %s", image_url)
-                    else:
-                        logger.debug("No mosaic image found in Spotify page HTML")
-                else:
-                    logger.warning("Failed to fetch Spotify playlist page, status: %d", response.status_code)
-            except Exception as e:
-                logger.warning("Error scraping playlist page for mosaic image: %s", e)
+            image_url = SpotifyScraperService._scrape_mosaic_image_from_playlist_page(playlist_url)
         
         # Strategy 3: Fall back to first track's album art
         if not image_url:
@@ -303,3 +286,39 @@ class SpotifyScraperService(BaseSpotifyService):
             'download_url': None,
             'added_on': None,  # Scraper doesn't provide this info
         }
+
+
+    @staticmethod
+    def _scrape_mosaic_image_from_playlist_page(playlist_url: str) -> Optional[str]:
+        """
+        Scrape the mosaic image URL from the Spotify playlist page HTML.
+        
+        This method is extracted to allow easy stubbing in tests.
+        
+        Args:
+            playlist_url: URL of the Spotify playlist
+            
+        Returns:
+            Mosaic image URL or None
+        """
+        try:
+            response = requests.get(playlist_url, headers={
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+            }, timeout=10)
+            if response.status_code == 200:
+                # Look for mosaic.scdn.co URL in the HTML
+                # Pattern matches: https://mosaic.scdn.co/300/...
+                mosaic_pattern = r'https://mosaic\.scdn\.co/300/[a-f0-9]+'
+                match = re.search(mosaic_pattern, response.text)
+                if match:
+                    image_url = match.group(0)
+                    logger.info("Found mosaic image: %s", image_url)
+                    return image_url
+                else:
+                    logger.debug("No mosaic image found in Spotify page HTML")
+            else:
+                logger.warning("Failed to fetch Spotify playlist page, status: %d", response.status_code)
+        except Exception as e:
+            logger.warning("Error scraping playlist page for mosaic image: %s", e)
+        
+        return None

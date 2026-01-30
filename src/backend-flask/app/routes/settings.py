@@ -6,9 +6,9 @@ from flask import request, jsonify, session, redirect, url_for
 from spotipy import SpotifyOAuth
 import requests
 
-from app import SpotifyService
 from config import Config
 from app.routes import api
+from app.services.platform_services.spotify_api_service import SpotifyApiService
 
 logger = logging.getLogger(__name__)
 
@@ -80,7 +80,7 @@ def spotify_callback():
 
 @api.route('/api/spotify_auth/login')
 def spotify_login():
-    auth_client = SpotifyService.get_auth_client(Config.SPOTIFY_REDIRECT_URI).auth_manager
+    auth_client = SpotifyApiService.get_auth_client(Config.SPOTIFY_REDIRECT_URI).auth_manager
     auth_url = auth_client.get_authorize_url()
     logger.info("Logging in to Spotify")
     return redirect(auth_url)
@@ -88,7 +88,7 @@ def spotify_login():
 
 @api.route('/api/spotify_auth/logout')
 def spotify_logout():
-    auth_client = SpotifyService.get_auth_client().auth_manager
+    auth_client = SpotifyApiService.get_auth_client().auth_manager
     auth_client.cache_handler.delete_cached_token()
     logger.info("Logging out of Spotify")
     return jsonify({'message': 'Logged out of Spotify'}), 200

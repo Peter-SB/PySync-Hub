@@ -3,7 +3,7 @@ from typing import Type
 from urllib.parse import urlparse
 
 from app.services.platform_services.soundcloud_service import SoundcloudService
-from app.services.platform_services.spotify_api_service import SpotifyAPIService
+from app.services.platform_services.spotify_api_service import SpotifyApiService
 from app.services.platform_services.spotify_scraper_service import SpotifyScraperService
 from app.services.platform_services.youtube_service import YouTubeService
 from config import Config
@@ -23,20 +23,20 @@ class PlatformServiceFactory:
         )
 
     @staticmethod
-    def _get_spotify_service() -> Type[SpotifyAPIService | SpotifyScraperService]:
+    def _get_spotify_service() -> Type[SpotifyApiService | SpotifyScraperService]:
         """
         Returns the appropriate Spotify service based on credential availability.
         Falls back to SpotifyScraperService if no API credentials are configured.
         """
         if PlatformServiceFactory._has_spotify_credentials():
             logger.info("Using Spotify API Service (credentials found)")
-            return SpotifyAPIService
+            return SpotifyApiService
         else:
             logger.info("Using Spotify Scraper Service (no credentials found)")
             return SpotifyScraperService
 
     @staticmethod
-    def get_service(platform: str) -> Type[SoundcloudService | SpotifyAPIService | SpotifyScraperService | YouTubeService]:
+    def get_service(platform: str) -> Type[SoundcloudService | SpotifyApiService | SpotifyScraperService | YouTubeService]:
         """Returns the appropriate service instance based on the platform."""
         if platform == "soundcloud":
             return SoundcloudService
@@ -48,7 +48,7 @@ class PlatformServiceFactory:
             raise ValueError(f"Unsupported platform: {platform}")
 
     @staticmethod
-    def get_service_by_url(url: str) -> Type[SoundcloudService | SpotifyAPIService | SpotifyScraperService | YouTubeService]:
+    def get_service_by_url(url: str) -> Type[SoundcloudService | SpotifyApiService | SpotifyScraperService | YouTubeService]:
         """
         Returns the appropriate service instance based on the URL.
         Uses proper URL parsing to avoid substring sanitization vulnerabilities.

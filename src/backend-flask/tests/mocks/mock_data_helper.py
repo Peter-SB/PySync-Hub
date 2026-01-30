@@ -61,9 +61,7 @@ class MockPlaylistDataHelper:
 
         logger.info(f"Loading playlist data from {filename} into the database. playlist_data: {data.get('playlist')}")
 
-        # ----------------------------
         # Load Playlist Data
-        # ----------------------------
         playlist_data = data["playlist"]
         # Remove computed properties not needed for instantiation.
         playlist_data.pop("downloaded_track_count", None)
@@ -81,9 +79,7 @@ class MockPlaylistDataHelper:
         db.session.add(playlist)
         db.session.commit()  # commit so the playlist is available
 
-        # ----------------------------
         # Load Tracks Data
-        # ----------------------------
         tracks_map = {}
         for track_data in data["tracks"]:
             # Remove id from kwargs and set it manually.
@@ -95,9 +91,7 @@ class MockPlaylistDataHelper:
             tracks_map[saved_track_id] = track
         db.session.commit()
 
-        # ----------------------------
         # Load PlaylistTracks Data
-        # ----------------------------
         for pt_data in data["playlist_tracks"]:
             saved_track_id = pt_data["track_id"]
             # Use the saved playlist id and the new track id from our mapping.

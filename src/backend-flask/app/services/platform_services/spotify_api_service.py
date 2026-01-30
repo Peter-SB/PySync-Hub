@@ -7,7 +7,7 @@ from spotipy import Spotify
 from spotipy.oauth2 import SpotifyClientCredentials, SpotifyOAuth
 
 from app.repositories.playlist_repository import PlaylistRepository
-from app.services.platform_services.base_spotify_service import BaseSpotifyService
+from app.services.platform_services.spotify_base_service import BaseSpotifyService
 from config import Config
 
 logger = logging.getLogger(__name__)
@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 SPOTIPY_CALLBACK_URL = f'http://localhost:{Config.SPOTIFY_PORT_NUMBER}/callback'
 
 
-class SpotifyAPIService(BaseSpotifyService):
+class SpotifyApiService(BaseSpotifyService):
     """Spotify service using official Spotify API (requires API keys)."""
 
     @staticmethod
@@ -44,11 +44,11 @@ class SpotifyAPIService(BaseSpotifyService):
     def get_playlist_data(url: str) -> Dict[str, Any]:
         try:
             if "collection/tracks" in url:
-                return SpotifyAPIService._get_saved_tracks_playlist()
+                return SpotifyApiService._get_saved_tracks_playlist()
 
-            playlist_id = SpotifyAPIService._extract_playlist_id(url)
+            playlist_id = SpotifyApiService._extract_playlist_id(url)
 
-            client = SpotifyAPIService.get_client()
+            client = SpotifyApiService.get_client()
             response = client.playlist(playlist_id)
 
             logger.debug(response.get('tracks', []))
@@ -70,7 +70,7 @@ class SpotifyAPIService(BaseSpotifyService):
     @staticmethod
     def _get_saved_tracks_playlist():
         """ Create a playlist that will represent the user's liked tracks. """
-        client = SpotifyAPIService.get_auth_client()
+        client = SpotifyApiService.get_auth_client()
         response = client.current_user_saved_tracks()
 
         data = {
@@ -93,10 +93,10 @@ class SpotifyAPIService(BaseSpotifyService):
         try:
             logger.info("Fetching tracks for playlist %s", url)
             if "collection/tracks" in url:
-                return SpotifyAPIService._get_saved_tracks()
+                return SpotifyApiService._get_saved_tracks()
 
-            playlist_id = SpotifyAPIService._extract_playlist_id(url)
-            client = SpotifyAPIService.get_client()
+            playlist_id = SpotifyApiService._extract_playlist_id(url)
+            client = SpotifyApiService.get_client()
 
             playlist = PlaylistRepository.get_playlist_by_url(url)
             track_limit = playlist.to_dict().get('track_limit', None)
@@ -111,7 +111,7 @@ class SpotifyAPIService(BaseSpotifyService):
                 results = client.playlist_items(playlist_id, limit=limit, offset=offset)
 
                 for item in results.get('items', []):
-                    if not SpotifyAPIService._is_track_within_date_and_track_limit(playlist, item, track_limit,
+                    if not SpotifyApiService._is_track_within_date_and_track_limit(len(tracks_data), item, track_limit,
                                                                                 date_limit):
                         return tracks_data[:track_limit]
                     track_added_on = item.get('added_at', None)
@@ -119,7 +119,7 @@ class SpotifyAPIService(BaseSpotifyService):
                     if not track or track.get('id') is None:
                         continue  # Skip items that aren't valid tracks (e.g. episodes, missing tracks)
 
-                    track_data = SpotifyAPIService._format_track_data(track, track_added_on)
+                    track_data = SpotifyApiService._format_track_data(track, track_added_on)
                     tracks_data.append(track_data)
 
                 # Check if there are more pages to fetch. "URL to the next page of items. (null if none)"
@@ -143,7 +143,7 @@ class SpotifyAPIService(BaseSpotifyService):
 
         :return: A list of dictionaries, each representing a liked track.
         """
-        client = SpotifyAPIService.get_auth_client()
+        client = SpotifyApiService.get_auth_client()
 
         liked_playlist = PlaylistRepository.get_playlist_by_url("https://open.spotify.com/collection/tracks")
         track_limit = liked_playlist.to_dict().get('track_limit', None)
@@ -156,7 +156,7 @@ class SpotifyAPIService(BaseSpotifyService):
             while results:
                 for item in results["items"]:
 
-                    if not SpotifyAPIService._is_track_within_date_and_track_limit(liked_songs, item, track_limit,
+                    if not SpotifyApiService._is_track_within_date_and_track_limit(liked_songs, item, track_limit,
                                                                                 date_limit):
                         return liked_songs[:track_limit]
 
@@ -165,7 +165,7 @@ class SpotifyAPIService(BaseSpotifyService):
                     if not track or track.get('id') is None:
                         continue  # Skip items that aren't valid tracks (e.g., episodes, missing tracks)
 
-                    track_data = SpotifyAPIService._format_track_data(track, track_added_on)
+                    track_data = SpotifyApiService._format_track_data(track, track_added_on)
                     liked_songs.append(track_data)
 
                 results = client.next(results) if results.get('next') else None

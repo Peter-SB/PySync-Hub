@@ -8,7 +8,6 @@ from flask_migrate import upgrade, init, stamp
 
 from app.extensions import db, socketio, migrate
 from app.repositories.playlist_repository import PlaylistRepository
-from app.services.platform_services.spotify_service import SpotifyService
 from app.workers.download_worker import DownloadManager
 from app.database_migrator import DatabaseMigrator
 from config import Config

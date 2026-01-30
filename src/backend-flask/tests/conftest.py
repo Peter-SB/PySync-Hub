@@ -4,7 +4,7 @@ import logging
 
 import pytest
 from app import create_app
-from app.services.platform_services.spotify_api_service import SpotifyAPIService
+from app.services.platform_services.spotify_api_service import SpotifyApiService
 from app.services.platform_services.soundcloud_service import SoundcloudService
 from app.services.platform_services.youtube_service import YouTubeService
 from config import TestConfig
@@ -57,7 +57,7 @@ def client(app):
 def mock_spotify_client(monkeypatch):
     """Automatically replace SpotifyAPIService.get_client for all tests"""
     print("Mocking SpotifyAPIService.get_client")
-    monkeypatch.setattr(SpotifyAPIService, "get_client", lambda: MockSpotifyClient())
+    monkeypatch.setattr(SpotifyApiService, "get_client", lambda: MockSpotifyClient())
     
     # Force the factory to use API service for tests (to maintain backward compatibility with existing tests)
     # This ensures existing tests that expect API behavior continue to work
@@ -65,7 +65,7 @@ def mock_spotify_client(monkeypatch):
     monkeypatch.setattr(
         PlatformServiceFactory, 
         "_get_spotify_service", 
-        staticmethod(lambda: SpotifyAPIService)
+        staticmethod(lambda: SpotifyApiService)
     )
 
 @pytest.fixture(autouse=True)

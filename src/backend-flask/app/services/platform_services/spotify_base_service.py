@@ -57,24 +57,24 @@ class BaseSpotifyService(ABC):
         return playlist_id
 
     @staticmethod
-    def _is_track_within_date_and_track_limit(liked_songs, track, track_limit, date_limit) -> bool:
+    def _is_track_within_date_and_track_limit(playlist_length: int, track, track_limit, date_limit) -> bool:
         """
         Checks if the track should be included based on a date limit and track limit.
 
-        :param liked_songs: List of liked songs.
+        :param playlist_length: Number of songs already in playlist.
         :param track: Track data.
         """
         # If a date limit is specified, compare the track's added_at date.
         if date_limit is not None:
             try:
-                liked_songs_date_limit = parse(date_limit).date()
+                playlist_date_limit = parse(date_limit).date()
                 track_added_date = isoparse(track["added_at"]).date()
-                if track_added_date < liked_songs_date_limit:
+                if track_added_date < playlist_date_limit:
                     return False
             except Exception as e:
                 logger.error("Error parsing track dates: %s", e)
 
         if track_limit is not None:
-            return len(liked_songs) <= track_limit
+            return playlist_length <= track_limit
 
         return True
