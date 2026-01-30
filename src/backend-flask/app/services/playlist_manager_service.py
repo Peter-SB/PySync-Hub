@@ -74,7 +74,7 @@ class PlaylistManagerService:
         except Exception as e:
             logger.error("Error fetching playlist data for URL %s: %s", playlist_url, e, exc_info=True)
             if "404" in str(e):
-                return "playlist not found. Please check the playlist is public or try another URL."
+                return "Playlist not found. Please check the playlist is public or try another URL."
 
             return f"Error Adding Playlist: {e}"
 
