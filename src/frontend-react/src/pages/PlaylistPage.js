@@ -120,13 +120,17 @@ function PlaylistPage() {
                     <div>
                         <div className="flex flex-col sm:flex-row justify-between items-center w-full h-[100px]">
                             <div className="flex items-center">
-                                {playlist.image_url && (
-                                    <img
-                                        src={playlist.image_url}
-                                        alt="Playlist cover"
-                                        className="w-24 h-24 rounded-md object-cover mr-4 border border-gray-400"
-                                    />
-                                )}
+                                <div className="w-24 h-24 rounded-md mr-4 border border-gray-400 flex-shrink-0">
+                                    {playlist.image_url ? (
+                                        <img
+                                            src={playlist.image_url}
+                                            alt="Playlist cover"
+                                            className="w-full h-full rounded-md object-cover"
+                                        />
+                                    ) : (
+                                        <div className="w-full h-full bg-gray-200 rounded-md" />
+                                    )}
+                                </div>
                                 <div className="flex flex-col">
                                     <h1 className="text-3xl font-semibold text-gray-800 mb-1">
                                         <a

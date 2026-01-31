@@ -339,3 +339,21 @@ class TestTrackRepository:
         
         # Verify no index is returned
         assert track_index is None 
+
+
+    def test_get_track_by_platform_id_happy_path(self, init_database):
+        # Create and add a track
+        track = Track(
+            platform_id="sp_123",
+            platform="spotify",
+            name="Test Track",
+            artist="Test Artist"
+        )
+        db.session.add(track)
+        db.session.commit()
+
+        # Retrieve the track by platform_id
+        found = TrackRepository.get_track_by_platform_id("sp_123")
+        assert found is not None
+        assert found.platform_id == "sp_123"
+        assert found.name == "Test Track"

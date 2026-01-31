@@ -4,7 +4,7 @@ import os
 import pytest
 from spotipy import SpotifyException
 
-from app import SpotifyService
+from app.services.platform_services.spotify_api_service import SpotifyApiService
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 

@@ -55,6 +55,12 @@ if __name__ == '__main__':
     open_browser()
     socketio.run(app, debug=False)
 
-# python -m flask run --debug
-# pyinstaller --console --name pysync-hub-backend run.py
-# pyinstaller pysync-hub-backend.spec
+"""
+------------------
+Local Run Commands
+------------------
+python -m flask run --debug
+pyinstaller --console --name pysync-hub-backend run.py
+pyinstaller pysync-hub-backend.spec
+
+"""

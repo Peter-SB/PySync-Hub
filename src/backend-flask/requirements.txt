@@ -73,3 +73,4 @@ yt-dlp==2025.7.2.233055.dev0
 zope.event==5.0
 zope.interface==7.2
 pillow==12.1.0
+spotifyscraper==2.1.5

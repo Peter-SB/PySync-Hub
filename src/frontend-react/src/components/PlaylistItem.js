@@ -82,13 +82,17 @@ function PlaylistItem({ id, isSelected, onSelectChange, style, draggable = false
           onClick={(e) => e.stopPropagation()}
           onChange={(e) => onSelectChange(playlist.id, e.target.checked)}
         />
-        {playlist.image_url && (
-          <img
-            src={playlist.image_url}
-            alt="Playlist cover"
-            className="w-12 h-12 rounded-md object-cover mr-4 border border-gray-400"
-          />
-        )}
+        <div className="w-12 h-12 rounded-md mr-4 border border-gray-400 flex-shrink-0">
+          {playlist.image_url ? (
+            <img
+              src={playlist.image_url}
+              alt="Playlist cover"
+              className="w-full h-full rounded-md object-cover"
+            />
+          ) : (
+            <div className="w-full h-full bg-gray-200 rounded-md" />
+          )}
+        </div>
         <div className="flex-1">
           <h3 className="font-medium text-gray-900 flex items-center">
             <a
