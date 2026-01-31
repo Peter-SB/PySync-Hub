@@ -8,17 +8,18 @@ The program consists of three primary stages: adding playlists, downloading the 
 
 ## 1. Adding Playlists:
 
-Make sure you have set you API keys in `settings.py` before running the program. Without them the software cannot communicate with the relevant platform. You can get these keys by following the instructions in the instructions in the [Getting Started](../Readme.md#getting-started) guide.
+If you have the, be sure you have set you API keys in `settings.py` before running the program. Program will work without them but is slower. You can get these keys by following the instructions in the instructions in the [Getting Started](../Readme.md#getting-started) guide.
 
 To add a playlist, get the url of the playlist you want to add and paste it into the input box on the home page. The software will then communicate with the platform for the playlist information and keep it in a local database.
-Once added you will see, from left to right, a select box, the playlist image, the name, platform and sync status of the playlist. On the right you will see a downloaded/total track count. Then a Sync Playlist Button. Lastly a toggle playlist display button. Disabled playlists are not downloaded or added to the exported rekordbox file.
+Once added you will see, from left to right, a select box, the playlist image, the name, platform and sync status of the playlist. On the right you will see a downloaded/total track count. Then a Sync Playlist Button. Lastly, a toggle playlist display button. Disabled playlists are not downloaded or added to the exported rekordbox file.
 
 Playlists urls can look like:
 ```
-https://open.spotify.com/playlist/1sbpRux2JYEvosuikC01AY
-https://soundcloud.com/schmoot-point/sets/chill-liquid-dnb
+https://open.spotify.com/playlist/1sbpRux2JYvosuikC01AY
+https://soundcloud.com/tname/sets/chill-liquid-dnb
+https://www.youtube.com/playlist?list=PLMC9KNkIncKtPzgY-5rmhvj7fax8fdxoj
 ```
-Soundcloud users liked songs can be added: 
+Soundcloud users liked songs can be added if using spotify api keys like: 
 ```
 https://soundcloud.com/subfocus/likes                               
 ```
@@ -66,6 +67,9 @@ Enjoy!
 You can limit how many tracks are downloaded, this is particularly useful for liked songs. You can set these limits as a date limit, tracks up to that date. Or track limit, the number of tracks to download. This can be accessed by the dropdown arrow when adding playlists or on the playlist page under options.
 
 # Troubleshooting 
+
+### VPN
+If you are having trouble, try turn off any VPNs as this came get you detected as a robot by the websites.
 
 ### Troubleshooting Adding Playlists - 401 Unauthorized Error
 1. Make sure you have set your API keys in the settings page. Without them the software cannot communicate with the relevant platform. You can get these keys by following the instructions in the instructions in the [Getting Started](../Readme.md#getting-started) guide.

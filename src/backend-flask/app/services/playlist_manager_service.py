@@ -4,14 +4,11 @@ from typing import List, Optional
 
 import logging
 
-from spotipy import SpotifyException
-
 from app.extensions import db, emit_playlist_sync_update
 from app.models import Playlist
 from app.repositories.playlist_repository import PlaylistRepository
 from app.services.platform_services.platform_services_factory import PlatformServiceFactory
 from app.services.platform_services.soundcloud_service import SoundcloudService
-from app.services.platform_services.spotify_service import SpotifyService
 from app.services.track_manager_service import TrackManagerService
 from app.utils.db_utils import commit_with_retries
 

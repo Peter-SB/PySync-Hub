@@ -1,4 +1,5 @@
 alembic==1.14.1
+anyascii==0.3.2
 async-timeout==5.0.1
 beautifulsoup4==4.13.3
 bidict==0.23.1
@@ -24,6 +25,7 @@ Flask-SocketIO==5.5.1
 Flask-SQLAlchemy==3.1.1
 frida==16.6.6
 frida-tools==13.6.1
+ftfy==6.3.1
 future==1.0.0
 gevent==24.11.1
 greenlet==3.1.1
@@ -53,6 +55,7 @@ python-engineio==4.11.2
 python-socketio==5.12.1
 pytubefix==8.12.1
 PyYAML==6.0.2
+rapidfuzz==3.11.0
 redis==5.2.1
 requests==2.32.3
 requests-file==2.1.0
@@ -73,3 +76,4 @@ yt-dlp==2025.7.2.233055.dev0
 zope.event==5.0
 zope.interface==7.2
 pillow==12.1.0
+spotifyscraper==2.1.5

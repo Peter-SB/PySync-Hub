@@ -15,6 +15,8 @@ from app.services.playlist_manager_service import PlaylistManagerService
 from config import Config
 from app.routes import api
 from app.utils.db_utils import commit_with_retries
+from app.services.platform_services.soundcloud_service import SoundCloudAuthError
+
 
 logger = logging.getLogger(__name__)
 
@@ -55,11 +57,13 @@ def add_playlist():
     date_limit = data.get('date_limit', None)
     track_limit = data.get('track_limit', None)
     if not url_or_id:
+        logger.error("Error adding playlist: No URL or ID provided")
         return jsonify({'error': 'No URL or ID provided'}), 400
 
     logger.info(f"Adding playlist: {url_or_id}")
     error = PlaylistManagerService.add_playlists(url_or_id, date_limit, track_limit)
     if error:
+        logger.error(f"Error adding playlist: {error}")
         return jsonify({'error': error}), 400
 
     # Return updated playlists
@@ -74,24 +78,34 @@ def sync_playlists():
     selected_ids = data.get('playlist_ids', [])
     quick_sync = data.get('quick_sync', True)
 
-    # Get playlists in custom order and filter by selected IDs if provided.
-    playlists = FolderRepository.get_playlists_in_custom_order()
-    if selected_ids:
-        playlists = [playlist for playlist in playlists if playlist.id in selected_ids]
+    try:
+        # Get playlists in custom order and filter by selected IDs if provided.
+        playlists = FolderRepository.get_playlists_in_custom_order()
+        if selected_ids:
+            playlists = [playlist for playlist in playlists if playlist.id in selected_ids]
 
-    # Set download status and emit update via socketio
-    for playlist in playlists:
-        playlist.download_status = "queued"
-        socketio.emit("download_status", {"id": playlist.id, "status": "queued"})
-    commit_with_retries(db.session)
+        # Set download status and emit update via socketio
+        for playlist in playlists:
+            playlist.download_status = "queued"
+            socketio.emit("download_status", {"id": playlist.id, "status": "queued"})
+        commit_with_retries(db.session)
 
-    # Sync playlists and queue them for download
-    for playlist in playlists:
-        PlaylistManagerService.sync_playlists([playlist])
-        current_app.download_manager.add_to_queue(playlist.id, quick_sync)
+        # Sync playlists and queue them for download
+        for playlist in playlists:
+            try:
+                PlaylistManagerService.sync_playlists([playlist])
+            except Exception as e:
+                # Check for SoundCloudAuthError
+                if isinstance(e, SoundCloudAuthError):
+                    return jsonify({'error': 'Authentication Error. Please refresh your SoundCloud token in Settings.'}), 401
+                raise
+            current_app.download_manager.add_to_queue(playlist.id, quick_sync)
 
-    updated_playlists = [p.to_dict() for p in playlists]
-    return jsonify(updated_playlists), 200
+        updated_playlists = [p.to_dict() for p in playlists]
+        return jsonify(updated_playlists), 200
+    except Exception as e:
+        logger.error("Error syncing playlists: %s", e, exc_info=True)
+        return jsonify({'error': str(e)}), 500
 
 
 @api.route('/api/playlists', methods=['DELETE'])
