@@ -26,3 +26,5 @@ class TestSoundcloudClientIdFetchIntegration:
         
         # client_id should be alphanumeric (typical SoundCloud client_id format)
         assert data['client_id'].replace('_', '').isalnum()
+
+        print(f"Fetched SoundCloud client_id: {data['client_id']}")

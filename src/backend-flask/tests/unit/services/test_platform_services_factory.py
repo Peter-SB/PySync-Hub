@@ -7,6 +7,7 @@ from app.services.platform_services.spotify_api_service import SpotifyApiService
 from app.services.platform_services.spotify_scraper_service import SpotifyScraperService
 from app.services.platform_services.youtube_service import YouTubeService
 from app.services.platform_services.platform_services_factory import PlatformServiceFactory
+import app.services.platform_services.platform_services_factory as factory_module
 from config import Config
 
 
@@ -23,7 +24,6 @@ class TestPlatformServiceFactory:
     def test_get_service_spotify_with_credentials_returns_api_service(self, monkeypatch):
         """Test that get_service returns SpotifyAPIService when credentials are configured."""
         # Reload the module to get original implementation without conftest modifications
-        import app.services.platform_services.platform_services_factory as factory_module
         importlib.reload(factory_module)
         
         monkeypatch.setattr(Config, 'SPOTIFY_CLIENT_ID', 'test_client_id')
@@ -35,7 +35,6 @@ class TestPlatformServiceFactory:
     def test_get_service_spotify_without_credentials_returns_scraper_service(self, monkeypatch):
         """Test that get_service returns SpotifyScraperService when no credentials."""
         # Reload the module to get original implementation without conftest modifications
-        import app.services.platform_services.platform_services_factory as factory_module
         importlib.reload(factory_module)
         
         monkeypatch.setattr(Config, 'SPOTIFY_CLIENT_ID', '')
@@ -70,7 +69,6 @@ class TestPlatformServiceFactory:
     def test_get_service_by_url_spotify_with_credentials_returns_api_service(self, monkeypatch):
         """Test that get_service_by_url returns SpotifyAPIService for Spotify URLs with credentials."""
         # Reload the module to get original implementation without conftest modifications
-        import app.services.platform_services.platform_services_factory as factory_module
         importlib.reload(factory_module)
         
         monkeypatch.setattr(Config, 'SPOTIFY_CLIENT_ID', 'test_client_id')
@@ -88,7 +86,6 @@ class TestPlatformServiceFactory:
     def test_get_service_by_url_spotify_without_credentials_returns_scraper_service(self, monkeypatch):
         """Test that get_service_by_url returns SpotifyScraperService for Spotify URLs without credentials."""
         # Reload the module to get original implementation without conftest modifications
-        import app.services.platform_services.platform_services_factory as factory_module
         importlib.reload(factory_module)
         
         monkeypatch.setattr(Config, 'SPOTIFY_CLIENT_ID', '')

@@ -32,23 +32,6 @@ class TrackRepository:
             .filter(Track.platform_id == track_id)
             .first()
         )
-
-    @staticmethod
-    def get_existing_spotify_ids(track_ids: List[str]) -> List[str]:
-        """
-        Given a list of Spotify track IDs, return those that already exist in the DB (platform_id, platform='spotify').
-
-        todo: check this not same at get_tracks_by_spotify_ids
-        """
-        if not track_ids:
-            return []
-        existing = (
-            db.session.query(Track.platform_id)
-            .filter(Track.platform == 'spotify', Track.platform_id.in_(track_ids))
-            .all()
-        )
-        # .all() returns list of tuples, extract first element
-        return [row[0] for row in existing]
     
 
     @staticmethod

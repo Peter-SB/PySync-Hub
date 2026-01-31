@@ -42,6 +42,11 @@ class MockSpotifyClient:
 
         raise Exception(f"Mock data not found for playlist_id: {playlist_id}")
 
+    def _scrape_mosaic_image_from_playlist_page(self, url):
+        """Mock _scrape_mosaic_image_from_playlist_page method - never actually scrapes."""
+        # Return None to simulate no mosaic image found
+        return None
+
     def close(self):
         """Mock close method."""
         self.closed = True
