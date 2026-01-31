@@ -1,0 +1,7 @@
+/* Makes the refresh icon larger and white */
+.refresh-scaled {
+  transform: scale(2);
+}
+.refresh-white {
+  filter: brightness(0) invert(1);
+}

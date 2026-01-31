@@ -1,0 +1,647 @@
+{
+  "id": "5WWIc4WKOgFjn8Df5wjBTG",
+  "name": "Jump Up DnB",
+  "uri": "spotify:playlist:5WWIc4WKOgFjn8Df5wjBTG",
+  "type": "playlist",
+  "owner": {
+    "id": "",
+    "name": "Peter SB",
+    "uri": "",
+    "type": "user"
+  },
+  "images": [],
+  "tracks": [
+    {
+      "id": "",
+      "name": "The Infamous",
+      "uri": "spotify:track:4q5nXnuAGWppmU0gUr9kX5",
+      "type": "track",
+      "duration_ms": 242758,
+      "artists": [
+        {
+          "name": "Phibes",
+          "id": "",
+          "uri": "",
+          "type": "artist"
+        }
+      ]
+    },
+    {
+      "id": "",
+      "name": "Sinking",
+      "uri": "spotify:track:7FQpAFyAyYaQV3cVJ2Ce0x",
+      "type": "track",
+      "duration_ms": 341104,
+      "artists": [
+        {
+          "name": "Enei",
+          "id": "",
+          "uri": "",
+          "type": "artist"
+        }
+      ]
+    },
+    {
+      "id": "",
+      "name": "Hack It",
+      "uri": "spotify:track:3urNpB4QPCu8vuQKfZbuXY",
+      "type": "track",
+      "duration_ms": 329302,
+      "artists": [
+        {
+          "name": "K Motionz,\u00a0Duskee",
+          "id": "",
+          "uri": "",
+          "type": "artist"
+        }
+      ]
+    },
+    {
+      "id": "",
+      "name": "Wine Ya B",
+      "uri": "spotify:track:7bBMp7J5rlOrYuHj7EFI4t",
+      "type": "track",
+      "duration_ms": 263324,
+      "artists": [
+        {
+          "name": "Bou",
+          "id": "",
+          "uri": "",
+          "type": "artist"
+        }
+      ]
+    },
+    {
+      "id": "",
+      "name": "Grave",
+      "uri": "spotify:track:74Mv95qSm4oshN6tjRzu3M",
+      "type": "track",
+      "duration_ms": 274782,
+      "artists": [
+        {
+          "name": "Enei",
+          "id": "",
+          "uri": "",
+          "type": "artist"
+        }
+      ]
+    },
+    {
+      "id": "",
+      "name": "Fame",
+      "uri": "spotify:track:3d2nqaWnLXIBrnswpqxvKK",
+      "type": "track",
+      "duration_ms": 282056,
+      "artists": [
+        {
+          "name": "Enei,\u00a0Particle,\u00a0Jakes",
+          "id": "",
+          "uri": "",
+          "type": "artist"
+        }
+      ]
+    },
+    {
+      "id": "",
+      "name": "Voices",
+      "uri": "spotify:track:65xA56wh2oZPmLBsbtU9l0",
+      "type": "track",
+      "duration_ms": 301395,
+      "artists": [
+        {
+          "name": "Enei",
+          "id": "",
+          "uri": "",
+          "type": "artist"
+        }
+      ]
+    },
+    {
+      "id": "",
+      "name": "City Slickers - Skeptical Remix",
+      "uri": "spotify:track:5P51kp393l5zpEOqV49MQu",
+      "type": "track",
+      "duration_ms": 293023,
+      "artists": [
+        {
+          "name": "Break,\u00a0DLR,\u00a0Skeptical",
+          "id": "",
+          "uri": "",
+          "type": "artist"
+        }
+      ]
+    },
+    {
+      "id": "",
+      "name": "On Site",
+      "uri": "spotify:track:03szfRdQQmA2zwcAIr68Tj",
+      "type": "track",
+      "duration_ms": 269330,
+      "artists": [
+        {
+          "name": "T95,\u00a0DRS",
+          "id": "",
+          "uri": "",
+          "type": "artist"
+        }
+      ]
+    },
+    {
+      "id": "",
+      "name": "Home Grown - Phibes Remix - Edit",
+      "uri": "spotify:track:1xjmaFnqY00XahKl1RLBrG",
+      "type": "track",
+      "duration_ms": 211525,
+      "artists": [
+        {
+          "name": "Beat Assassins,\u00a0Phibes",
+          "id": "",
+          "uri": "",
+          "type": "artist"
+        }
+      ]
+    },
+    {
+      "id": "",
+      "name": "Flick the Switch",
+      "uri": "spotify:track:5mwU2KjUZNERDUnj5HEqAP",
+      "type": "track",
+      "duration_ms": 353022,
+      "artists": [
+        {
+          "name": "T>I,\u00a0Inja",
+          "id": "",
+          "uri": "",
+          "type": "artist"
+        }
+      ]
+    },
+    {
+      "id": "",
+      "name": "Going Ahead",
+      "uri": "spotify:track:60jAD9yvU9sNCXPLSC55Ta",
+      "type": "track",
+      "duration_ms": 272818,
+      "artists": [
+        {
+          "name": "Enei",
+          "id": "",
+          "uri": "",
+          "type": "artist"
+        }
+      ]
+    },
+    {
+      "id": "",
+      "name": "The Process",
+      "uri": "spotify:track:4DA3baC8Fqqeb63hl8KfL4",
+      "type": "track",
+      "duration_ms": 272855,
+      "artists": [
+        {
+          "name": "Enei,\u00a0DRS",
+          "id": "",
+          "uri": "",
+          "type": "artist"
+        }
+      ]
+    },
+    {
+      "id": "",
+      "name": "Metamorphosis",
+      "uri": "spotify:track:4oL7zVu2foSdHcw55Z7eCO",
+      "type": "track",
+      "duration_ms": 264916,
+      "artists": [
+        {
+          "name": "InsideInfo,\u00a0Miss Trouble",
+          "id": "",
+          "uri": "",
+          "type": "artist"
+        }
+      ]
+    },
+    {
+      "id": "",
+      "name": "Active",
+      "uri": "spotify:track:0HvIrvdOnxC3ns8eUoBah4",
+      "type": "track",
+      "duration_ms": 274482,
+      "artists": [
+        {
+          "name": "Turno,\u00a0Annix,\u00a0Flowdan",
+          "id": "",
+          "uri": "",
+          "type": "artist"
+        }
+      ]
+    },
+    {
+      "id": "",
+      "name": "Us",
+      "uri": "spotify:track:0gsSAPhBj4l9BdvqjLWxrh",
+      "type": "track",
+      "duration_ms": 271542,
+      "artists": [
+        {
+          "name": "Tesen",
+          "id": "",
+          "uri": "",
+          "type": "artist"
+        }
+      ]
+    },
+    {
+      "id": "",
+      "name": "DNB Religion",
+      "uri": "spotify:track:2bUsfVw3vastC6SEX27sil",
+      "type": "track",
+      "duration_ms": 275214,
+      "artists": [
+        {
+          "name": "Terrence & Phillip,\u00a0KT Kinga",
+          "id": "",
+          "uri": "",
+          "type": "artist"
+        }
+      ]
+    },
+    {
+      "id": "",
+      "name": "Flashlight",
+      "uri": "spotify:track:37o36P2LMs99SJbDlqurDm",
+      "type": "track",
+      "duration_ms": 222271,
+      "artists": [
+        {
+          "name": "Whiney,\u00a0Inja",
+          "id": "",
+          "uri": "",
+          "type": "artist"
+        }
+      ]
+    },
+    {
+      "id": "",
+      "name": "Transcend",
+      "uri": "spotify:track:1kL6yPur8rCHOahU3KUWNb",
+      "type": "track",
+      "duration_ms": 292117,
+      "artists": [
+        {
+          "name": "Tsuki",
+          "id": "",
+          "uri": "",
+          "type": "artist"
+        }
+      ]
+    },
+    {
+      "id": "",
+      "name": "Bad from Morning",
+      "uri": "spotify:track:4DavmWrcEf9d3sQKkfSTU6",
+      "type": "track",
+      "duration_ms": 265909,
+      "artists": [
+        {
+          "name": "Agro,\u00a0Flowdan",
+          "id": "",
+          "uri": "",
+          "type": "artist"
+        }
+      ]
+    },
+    {
+      "id": "",
+      "name": "Musket",
+      "uri": "spotify:track:7KnCR8HtLYdZ5GFwSJps9a",
+      "type": "track",
+      "duration_ms": 271000,
+      "artists": [
+        {
+          "name": "Skeptical",
+          "id": "",
+          "uri": "",
+          "type": "artist"
+        }
+      ]
+    },
+    {
+      "id": "",
+      "name": "Proud feat. Tiffanie Malvo - Enei Remix",
+      "uri": "spotify:track:6VAn8Mro4VqbreBe7nyZ2F",
+      "type": "track",
+      "duration_ms": 242727,
+      "artists": [
+        {
+          "name": "Sam Binga,\u00a0Rider Shafique,\u00a0Tiffanie Malvo,\u00a0Enei",
+          "id": "",
+          "uri": "",
+          "type": "artist"
+        }
+      ]
+    },
+    {
+      "id": "",
+      "name": "Be My Cure",
+      "uri": "spotify:track:1ZqphqGxPtEoDepGJ457hD",
+      "type": "track",
+      "duration_ms": 226285,
+      "artists": [
+        {
+          "name": "Inja,\u00a0Whiney",
+          "id": "",
+          "uri": "",
+          "type": "artist"
+        }
+      ]
+    },
+    {
+      "id": "",
+      "name": "Tech Priest",
+      "uri": "spotify:track:7gRPY14Fa6qAwBWf9z8bmv",
+      "type": "track",
+      "duration_ms": 272802,
+      "artists": [
+        {
+          "name": "QZB",
+          "id": "",
+          "uri": "",
+          "type": "artist"
+        }
+      ]
+    },
+    {
+      "id": "",
+      "name": "LA",
+      "uri": "spotify:track:11dDBAYvh97embjsF3qEK0",
+      "type": "track",
+      "duration_ms": 270024,
+      "artists": [
+        {
+          "name": "Ownglow",
+          "id": "",
+          "uri": "",
+          "type": "artist"
+        }
+      ]
+    },
+    {
+      "id": "",
+      "name": "Holy Moly",
+      "uri": "spotify:track:3U1tUppgzucnOnNVj57zRr",
+      "type": "track",
+      "duration_ms": 281379,
+      "artists": [
+        {
+          "name": "Document One",
+          "id": "",
+          "uri": "",
+          "type": "artist"
+        }
+      ]
+    },
+    {
+      "id": "",
+      "name": "Time Tripping",
+      "uri": "spotify:track:5CcT9KSH2IvTCtFg4frpFb",
+      "type": "track",
+      "duration_ms": 317140,
+      "artists": [
+        {
+          "name": "DJ Hazard",
+          "id": "",
+          "uri": "",
+          "type": "artist"
+        }
+      ]
+    },
+    {
+      "id": "",
+      "name": "Vanta Blackin",
+      "uri": "spotify:track:7MYBdEnL5hGkwpCouIT42I",
+      "type": "track",
+      "duration_ms": 325517,
+      "artists": [
+        {
+          "name": "Benny L,\u00a0Inja",
+          "id": "",
+          "uri": "",
+          "type": "artist"
+        }
+      ]
+    },
+    {
+      "id": "",
+      "name": "Reach Out",
+      "uri": "spotify:track:4I1JpkvHLWj3FuosGK4P1H",
+      "type": "track",
+      "duration_ms": 224985,
+      "artists": [
+        {
+          "name": "Inja,\u00a0Charlotte Haining",
+          "id": "",
+          "uri": "",
+          "type": "artist"
+        }
+      ]
+    },
+    {
+      "id": "",
+      "name": "Veilig - Data 3 Remix",
+      "uri": "spotify:track:4i5Nb1w82Op0qZGpamQ8Yy",
+      "type": "track",
+      "duration_ms": 345947,
+      "artists": [
+        {
+          "name": "Grey Code,\u00a0Data 3",
+          "id": "",
+          "uri": "",
+          "type": "artist"
+        }
+      ]
+    },
+    {
+      "id": "",
+      "name": "Walk Out",
+      "uri": "spotify:track:2MFj0olTpePUW4anoFNhqi",
+      "type": "track",
+      "duration_ms": 253793,
+      "artists": [
+        {
+          "name": "Fox,\u00a0DLR,\u00a0Alix Perez",
+          "id": "",
+          "uri": "",
+          "type": "artist"
+        }
+      ]
+    },
+    {
+      "id": "",
+      "name": "Tric City - Waeys Remix",
+      "uri": "spotify:track:1TmuTBzxqtnwk1YmYhiwg5",
+      "type": "track",
+      "duration_ms": 301470,
+      "artists": [
+        {
+          "name": "Data 3,\u00a0Waeys",
+          "id": "",
+          "uri": "",
+          "type": "artist"
+        }
+      ]
+    },
+    {
+      "id": "",
+      "name": "Atomic",
+      "uri": "spotify:track:6HqTAPKdXn9piZ9ojg07Ip",
+      "type": "track",
+      "duration_ms": 325517,
+      "artists": [
+        {
+          "name": "Data 3",
+          "id": "",
+          "uri": "",
+          "type": "artist"
+        }
+      ]
+    },
+    {
+      "id": "",
+      "name": "Tric City",
+      "uri": "spotify:track:1eQJG9z1LZe2Jj6CJ7i8EP",
+      "type": "track",
+      "duration_ms": 309481,
+      "artists": [
+        {
+          "name": "Data 3",
+          "id": "",
+          "uri": "",
+          "type": "artist"
+        }
+      ]
+    },
+    {
+      "id": "",
+      "name": "Never Tell Me",
+      "uri": "spotify:track:35eKaKmaM2lDg0JhizxOR3",
+      "type": "track",
+      "duration_ms": 277674,
+      "artists": [
+        {
+          "name": "Hyroglifics,\u00a0Enei",
+          "id": "",
+          "uri": "",
+          "type": "artist"
+        }
+      ]
+    },
+    {
+      "id": "",
+      "name": "Backhand",
+      "uri": "spotify:track:4NGABWd4u4mT4rLgVrQuwN",
+      "type": "track",
+      "duration_ms": 315862,
+      "artists": [
+        {
+          "name": "JOELY,\u00a0Madrush MC",
+          "id": "",
+          "uri": "",
+          "type": "artist"
+        }
+      ]
+    },
+    {
+      "id": "",
+      "name": "3 Dots",
+      "uri": "spotify:track:09iyiGsA1NJ8GCHiog5fyj",
+      "type": "track",
+      "duration_ms": 268800,
+      "artists": [
+        {
+          "name": "The Sauce,\u00a0Jakes",
+          "id": "",
+          "uri": "",
+          "type": "artist"
+        }
+      ]
+    },
+    {
+      "id": "",
+      "name": "Game Face (Stay Alert)",
+      "uri": "spotify:track:78aOWEePkm6unX8lYPQAaY",
+      "type": "track",
+      "duration_ms": 206035,
+      "artists": [
+        {
+          "name": "Whiney,\u00a0Inja",
+          "id": "",
+          "uri": "",
+          "type": "artist"
+        }
+      ]
+    },
+    {
+      "id": "",
+      "name": "Overthinking",
+      "uri": "spotify:track:3KWV5kY52CQ4KwunPeH9Mz",
+      "type": "track",
+      "duration_ms": 224914,
+      "artists": [
+        {
+          "name": "Bou,\u00a0Haribo",
+          "id": "",
+          "uri": "",
+          "type": "artist"
+        }
+      ]
+    },
+    {
+      "id": "",
+      "name": "Pond Affair",
+      "uri": "spotify:track:5wNM5Df6NQ59v454Pe0lXE",
+      "type": "track",
+      "duration_ms": 268800,
+      "artists": [
+        {
+          "name": "SMG",
+          "id": "",
+          "uri": "",
+          "type": "artist"
+        }
+      ]
+    },
+    {
+      "id": "",
+      "name": "If Not Me",
+      "uri": "spotify:track:3axVbbieYlTl0egPpvMkIw",
+      "type": "track",
+      "duration_ms": 226206,
+      "artists": [
+        {
+          "name": "Waeys,\u00a0Sylla",
+          "id": "",
+          "uri": "",
+          "type": "artist"
+        }
+      ]
+    },
+    {
+      "id": "",
+      "name": "Stopping Turning",
+      "uri": "spotify:track:3iI41e6oI4rgZFqqyLfgbM",
+      "type": "track",
+      "duration_ms": 245517,
+      "artists": [
+        {
+          "name": "Waeys",
+          "id": "",
+          "uri": "",
+          "type": "artist"
+        }
+      ]
+    }
+  ],
+  "track_count": 42,
+  "duration_ms": 11575620
+}

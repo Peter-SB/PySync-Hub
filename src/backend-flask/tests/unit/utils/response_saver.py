@@ -75,3 +75,26 @@ def _make_http_get_request_save_response(url: str, headers: dict,
         print("Error saving response JSON to file: %s", e)
 
     return response_json
+
+
+def save_spotify_scraper_response(url: str, response_data: dict, save_directory: str = "./captured_requests") -> None:
+    """Save scraper response to file for testing purposes.
+    Args:
+        url: The URL that was scraped
+        response_data: The response data to save
+        save_directory: Directory to save responses (default: ./captured_requests)
+    """
+    if not os.path.exists(save_directory):
+        os.makedirs(save_directory)
+
+    # Generate unique filename using MD5 hash of the URL
+    url_hash = hashlib.md5(url.encode("utf-8")).hexdigest()
+    filename = f"spotify_scraper_{url_hash}.json"
+    file_path = os.path.join(save_directory, filename)
+
+    try:
+        with open(file_path, 'w', encoding='utf-8') as f:
+            json.dump(response_data, f, indent=2)
+        print("Saved response JSON to: %s" % file_path)
+    except Exception as e:
+        print("Error saving response JSON to file: %s" % e)
