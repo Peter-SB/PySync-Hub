@@ -8,6 +8,8 @@ import DownloadPage from './pages/DownloadPage';
 import TrackPage from './pages/TrackPage';
 import PlaylistPage from './pages/PlaylistPage';
 import SettingsPage from './pages/SettingsPage';
+import TracklistsPage from './pages/TracklistsPage';
+import TracklistDetailPage from './pages/TracklistDetailPage';
 import { GlobalErrorProvider } from './contexts/GlobalErrorContext';
 
 
@@ -43,6 +45,8 @@ function AppContent() {
             <Route path="/" element={<DownloadPage />} />
             <Route path="/playlist/:playlistId" element={<PlaylistPage />} />
             <Route path="/tracks" element={<TrackPage />} />
+            <Route path="/tracklists" element={<TracklistsPage />} />
+            <Route path="/tracklist/:tracklistId" element={<TracklistDetailPage />} />
             <Route path="/settings" element={<SettingsPage />} />
           </Routes>
         </main>

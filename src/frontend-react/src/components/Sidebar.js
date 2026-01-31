@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FaMusic, FaCog, FaList, FaGithub, FaExclamationTriangle } from "react-icons/fa";
+import { FaMusic, FaCog, FaList, FaGithub, FaExclamationTriangle, FaClipboardList } from "react-icons/fa";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faQuestion } from "@fortawesome/free-solid-svg-icons";
 import { Link } from 'react-router-dom';
@@ -94,6 +94,12 @@ export default function Sidebar({ onExport }) {
               <Link to="/tracks" className="flex items-center space-x-3 p-3 rounded hover:bg-gray-700 hover:text-white">
                 <FaMusic className="text-xl" />
                 <span>Tracks</span>
+              </Link>
+            </li>
+            <li className="mb-4">
+              <Link to="/tracklists" className="flex items-center space-x-3 p-3 rounded hover:bg-gray-700 hover:text-white">
+                <FaClipboardList className="text-xl" />
+                <span>Tracklists</span>
               </Link>
             </li>
             <li className="mb-4">
