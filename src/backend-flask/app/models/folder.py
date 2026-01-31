@@ -22,6 +22,12 @@ class Folder(db.Model):
         cascade="all"
     )
 
+    tracklists = db.relationship(
+        'Tracklist',
+        back_populates='folder',
+        cascade="all"
+    )
+
     def children_count(self):
         return len(self.subfolders) + len(self.playlists)
 
