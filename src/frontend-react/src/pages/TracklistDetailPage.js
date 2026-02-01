@@ -77,13 +77,13 @@ function TracklistDetailPage() {
 
     const getConfidenceColor = (score) => {
         if (score >= 0.7) return 'text-green-600 bg-green-50';
-        if (score >= 0.5) return 'text-yellow-600 bg-yellow-50';
+        if (score >= 0.4) return 'text-yellow-600 bg-yellow-50';
         return 'text-red-600 bg-red-50';
     };
 
     const getConfidenceLabel = (score) => {
         if (score >= 0.7) return 'High';
-        if (score >= 0.5) return 'Medium';
+        if (score >= 0.4) return 'Medium';
         return 'Low';
     };
 
@@ -207,11 +207,8 @@ function TracklistDetailPage() {
                                         </td>
                                         <td className="px-4 py-3 text-sm">
                                             {(() => {
-                                                const topPrediction = entry.predicted_tracks && entry.predicted_tracks.length > 0
-                                                    ? entry.predicted_tracks[0]
-                                                    : null;
-                                                const track = topPrediction?.track;
-
+                                                // Prefer entry.predicted_track if present, else fallback to predicted_tracks[0]?.track
+                                                const track = entry.predicted_track || (entry.predicted_tracks && entry.predicted_tracks.length > 0 ? entry.predicted_tracks[0].track : null);
                                                 return track ? (
                                                     <div className="flex flex-col">
                                                         <span className="font-medium text-gray-900">

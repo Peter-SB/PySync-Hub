@@ -70,11 +70,12 @@ function TracklistsPage() {
                             >
                                 <div className="flex-1">
                                     <h3 className="text-lg font-semibold text-gray-800">
-                                        {tracklist.name || `Tracklist ${tracklist.id}`}
+                                        {tracklist.set_name || `Tracklist ${tracklist.id}`}
                                     </h3>
                                     <div className="flex items-center space-x-4 text-sm text-gray-600 mt-1">
                                         <span>
-                                            {tracklist.entries?.length || 0} entries
+                                            {tracklist.tracklist_entries?.length || 0} entries
+                                            {/*todo: add downloaded count  */}
                                         </span>
                                         {tracklist.created_at && (
                                             <span>

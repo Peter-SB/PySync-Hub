@@ -101,8 +101,6 @@ class TracklistRepository:
         """Create a new tracklist entry."""
         logger.debug(f"Creating tracklist entry for tracklist ID: {entry_data.get('tracklist_id')}")
         
-        print(entry_data)
-
         entry = TracklistEntry(
             tracklist_id=entry_data.get('tracklist_id'),
             full_tracklist_entry=entry_data.get('full_tracklist_entry'),
@@ -122,7 +120,6 @@ class TracklistRepository:
         
         db.session.add(entry)
         commit_with_retries(db.session)
-        
         return entry
     
     @staticmethod

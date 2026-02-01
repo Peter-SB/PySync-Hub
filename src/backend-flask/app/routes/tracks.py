@@ -7,13 +7,8 @@ from flask import Blueprint, request, jsonify, current_app
 
 from app.extensions import db, socketio
 from app.models import Track
-from app.repositories.playlist_repository import PlaylistRepository
 from app.routes import api
-from app.services.export_services.export_itunesxml_service import ExportItunesXMLService
-from app.services.playlist_manager_service import PlaylistManagerService
-from app.utils.file_download_utils import FileDownloadUtils
 from app.utils.db_utils import commit_with_retries
-from config import Config
 
 logger = logging.getLogger(__name__)
 

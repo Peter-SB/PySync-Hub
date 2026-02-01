@@ -101,6 +101,9 @@ example_artist_track_pairs = [
     ("Subsonic - Ascend", "Subsonic", "Ascend")
 ]
 
+edge_cases_to_test = [
+    ()"DRS & LSB - High As She (Break Remix) [FOOTNOTES]", "LSB, DRS, Break - High As She - Break Remix)")
+]
 
 def test_clean_track_pipeline():
     split_track_list = split_tracks(example_mixed_tracklist)

@@ -73,3 +73,48 @@ class TracklistImportService:
         entry.favourite = False
 
         return entry
+    
+    @staticmethod
+    def prepare_tracklist_response(tracklist_with_predictions: Tracklist) -> dict:
+        """ Prepare a tracklist dictionary response including entries for API output. """
+                # Convert to dictionary format for response
+        response = {
+            'set_name': tracklist_with_predictions.set_name,
+            'artist': tracklist_with_predictions.artist,
+            'tracklist_string': tracklist_with_predictions.tracklist_string,
+            'rating': tracklist_with_predictions.rating,
+            'image_url': tracklist_with_predictions.image_url,
+            'folder_id': tracklist_with_predictions.folder_id,
+            'tracklist_entries': []
+        }
+        
+        # Convert tracklist entries to dict format with predictions
+        for entry in tracklist_with_predictions.tracklist_entries:
+            entry_dict = {
+                'full_tracklist_entry': entry.full_tracklist_entry,
+                'artist': entry.artist,
+                'short_title': entry.short_title,
+                'full_title': entry.full_title,
+                'version': entry.version,
+                'version_artist': entry.version_artist,
+                'is_vip': entry.is_vip,
+                'unicode_cleaned_entry': entry.unicode_cleaned_entry,
+                'prefix_cleaned_entry': entry.prefix_cleaned_entry,
+                'is_unidentified': entry.is_unidentified,
+                'predicted_track_id': entry.predicted_track_id,
+                'confirmed_track_id': entry.confirmed_track_id,
+                'favourite': entry.favourite,
+                'predicted_tracks': []
+            }
+            
+            # Add predicted tracks with confidence scores
+            if hasattr(entry, 'predicted_tracks') and entry.predicted_tracks:
+                for track, confidence in entry.predicted_tracks:
+                    entry_dict['predicted_tracks'].append({
+                        'track': track.to_dict(),
+                        'confidence': confidence
+                    })
+            
+            response['tracklist_entries'].append(entry_dict)
+
+        return response

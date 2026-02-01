@@ -91,7 +91,7 @@ function AddTracklistModal({ onClose, onSuccess }) {
                                 id="name"
                                 value={name}
                                 onChange={(e) => setName(e.target.value)}
-                                placeholder="e.g., Boiler Room 2024"
+                                placeholder="e.g Tomorrowland 2016 Set"
                                 className="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 disabled={processMutation.isPending}
                             />
@@ -141,8 +141,8 @@ function AddTracklistModal({ onClose, onSuccess }) {
                                 value={tracklistString}
                                 onChange={(e) => setTracklistString(e.target.value)}
                                 placeholder={`Paste your tracklist here, one track per line:\n\n${isArtistFirst
-                                    ? 'Artist Name - Track Title\nAnother Artist - Another Track'
-                                    : 'Track Title - Artist Name\nAnother Track - Another Artist'
+                                    ? '1. (0:00) Artist Name - Track Title\n2. (1:23) Another Artist - Another Track'
+                                    : '1. (0:00) Track Title - Artist Name\n2. (1:23) Another Track - Another Artist'
                                     }`}
                                 className="w-full h-64 p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm resize-none"
                                 disabled={processMutation.isPending}

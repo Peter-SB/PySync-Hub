@@ -24,13 +24,19 @@ function TracklistPreviewModal({ data, onClose, onSaved }) {
             image_url: data.image_url,
             folder_id: data.folder_id,
             tracklist_entries: localEntries.map((entry, index) => ({
-                position: index + 1,
-                raw_text: entry.full_tracklist_entry,
+                full_tracklist_entry: entry.full_tracklist_entry,
                 artist: entry.artist,
-                track_title: entry.short_title || entry.full_title,
-                version: entry.version || '',
+                short_title: entry.short_title,
+                full_title: entry.full_title,
+                version: entry.version,
+                version_artist: entry.version_artist,
+                is_vip: entry.is_vip || false,
+                unicode_cleaned_entry: entry.unicode_cleaned_entry,
+                prefix_cleaned_entry: entry.prefix_cleaned_entry,
+                is_unidentified: entry.is_unidentified || false,
                 predicted_track_id: entry.predicted_track_id || (entry.predicted_tracks && entry.predicted_tracks[0]?.track?.id),
                 confirmed_track_id: entry.confirmed_track_id,
+                favourite: entry.favourite || false
             }))
         };
 
@@ -49,14 +55,14 @@ function TracklistPreviewModal({ data, onClose, onSaved }) {
     };
 
     const getConfidenceColor = (score) => {
-        if (score >= 0.75) return 'text-green-600 bg-green-50';
-        if (score >= 0.5) return 'text-yellow-600 bg-yellow-50';
+        if (score >= 0.7) return 'text-green-600 bg-green-50';
+        if (score >= 0.4) return 'text-yellow-600 bg-yellow-50';
         return 'text-red-600 bg-red-50';
     };
 
     const getConfidenceLabel = (score) => {
-        if (score >= 0.75) return 'High';
-        if (score >= 0.5) return 'Medium';
+        if (score >= 0.7) return 'High';
+        if (score >= 0.4) return 'Medium';
         return 'Low';
     };
 

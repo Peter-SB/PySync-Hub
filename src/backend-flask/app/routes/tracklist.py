@@ -34,7 +34,7 @@ def add_tracklist():
     Expects JSON body with:
     - tracklist_string: The raw tracklist text
     - set_name: Name of the set/tracklist
-    - artist: (Optional) Artist name
+    - Track Format (optional): whether artist - track, or track - artist
     
     Returns the processed tracklist with predicted track matches.
     """
@@ -46,7 +46,7 @@ def add_tracklist():
         
         logger.info(f"Processing tracklist: {data.get('set_name')}")
         
-        # Create a temporary Tracklist object (not saved to DB yet)
+        # Create Tracklist object and save
         tracklist = Tracklist(
             set_name=data.get('set_name'),
             artist=data.get('artist'),
@@ -60,47 +60,7 @@ def add_tracklist():
         database_tracks = Track.query.all()
         tracklist_with_predictions = TracklistImportService.process_and_predict_tracklist(tracklist, database_tracks)
 
-        
-        # Convert to dictionary format for response
-        response = {
-            'set_name': tracklist_with_predictions.set_name,
-            'artist': tracklist_with_predictions.artist,
-            'tracklist_string': tracklist_with_predictions.tracklist_string,
-            'rating': tracklist_with_predictions.rating,
-            'image_url': tracklist_with_predictions.image_url,
-            'folder_id': tracklist_with_predictions.folder_id,
-            'tracklist_entries': []
-        }
-        
-        # Convert tracklist entries to dict format with predictions
-        for entry in tracklist_with_predictions.tracklist_entries:
-            entry_dict = {
-                'full_tracklist_entry': entry.full_tracklist_entry,
-                'artist': entry.artist,
-                'short_title': entry.short_title,
-                'full_title': entry.full_title,
-                'version': entry.version,
-                'version_artist': entry.version_artist,
-                'is_vip': entry.is_vip,
-                'unicode_cleaned_entry': entry.unicode_cleaned_entry,
-                'prefix_cleaned_entry': entry.prefix_cleaned_entry,
-                'is_unidentified': entry.is_unidentified,
-                'predicted_track_id': entry.predicted_track_id,
-                'confirmed_track_id': entry.confirmed_track_id,
-                'favourite': entry.favourite,
-                'predicted_tracks': []
-            }
-            
-            # Add predicted tracks with confidence scores
-            if hasattr(entry, 'predicted_tracks') and entry.predicted_tracks:
-                for track, confidence in entry.predicted_tracks:
-                    entry_dict['predicted_tracks'].append({
-                        'track': track.to_dict(),
-                        'confidence': confidence
-                    })
-            
-            response['tracklist_entries'].append(entry_dict)
-        
+        response = TracklistImportService.prepare_tracklist_response(tracklist_with_predictions)
         logger.info(f"Successfully processed tracklist with {len(response['tracklist_entries'])} entries")
         return jsonify(response), 200
         
@@ -108,16 +68,11 @@ def add_tracklist():
         logger.error("Error processing tracklist: %s", e, exc_info=True)
         return jsonify({'error': 'Failed to process tracklist', 'message': str(e)}), 500
 
+
 @api.route('/api/tracklists', methods=['POST'])
 def save_tracklist():    
     """
-    Save a confirmed tracklist to the database.
-    
-    Expects JSON body with:
-    - set_name: Name of the set/tracklist
-    - artist: (Optional) Artist name
-    - tracklist_string: The raw tracklist text
-    - tracklist_entries: Array of tracklist entries with confirmed_track_id set by user
+    Save a confirmed tracklist to the database. Expects a JSON body to match the Tracklist and TracklistEntry models.
     """
     try:
         data = request.get_json()
@@ -174,6 +129,7 @@ def save_tracklist():
         db.session.rollback()
         return jsonify({'error': 'Failed to save tracklist', 'message': str(e)}), 500
 
+
 @api.route('/api/tracklists/<int:tracklist_id>', methods=['GET'])
 def get_tracklist(tracklist_id):
     """Get a specific tracklist by ID."""
@@ -186,6 +142,7 @@ def get_tracklist(tracklist_id):
     except Exception as e:
         logger.error("Error fetching tracklist: %s", e, exc_info=True)
         return jsonify({'error': 'Failed to fetch tracklist', 'message': str(e)}), 500
+
 
 @api.route('/api/tracklists/<int:tracklist_id>', methods=['PUT'])
 def update_tracklist(tracklist_id):
@@ -212,6 +169,7 @@ def update_tracklist(tracklist_id):
         logger.error("Error updating tracklist: %s", e, exc_info=True)
         db.session.rollback()
         return jsonify({'error': 'Failed to update tracklist', 'message': str(e)}), 500
+
 
 @api.route('/api/tracklists/<int:tracklist_id>', methods=['DELETE'])
 def delete_tracklist(tracklist_id):
