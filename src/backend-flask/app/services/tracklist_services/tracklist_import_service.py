@@ -46,7 +46,7 @@ class TracklistImportService:
         prefix_cleaned_entry = tracklist_cleaning_utils.clean_track_prefix(unicode_cleaned_entry)
         label_cleaned_entry = tracklist_cleaning_utils.remove_label_info(prefix_cleaned_entry)
         # 3. Extract artist and title
-        artist, full_title = tracklist_cleaning_utils.extract_artist_and_title(prefix_cleaned_entry)
+        artist, full_title = tracklist_cleaning_utils.extract_artist_and_title(label_cleaned_entry)
         # 4. Extract title and version
         short_title, version = tracklist_cleaning_utils.extract_title_and_version(full_title)
         # 5. Identified check

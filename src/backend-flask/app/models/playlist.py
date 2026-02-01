@@ -1,3 +1,4 @@
+from datetime import datetime
 from app.extensions import db
 from app.models.playlist_track import PlaylistTrack
 
@@ -8,7 +9,7 @@ class Playlist(db.Model):
     platform = db.Column(db.String(50), nullable=False)
     external_id = db.Column(db.String(255), nullable=False)
     last_synced = db.Column(db.DateTime)
-    created_at = db.Column(db.DateTime, default=db.func.utcnow())
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
     image_url = db.Column(db.String(500))
     url = db.Column(db.String)
     track_count = db.Column(db.Integer)

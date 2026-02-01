@@ -42,6 +42,7 @@ function TracklistDetailPage() {
                 raw_text: entry.full_tracklist_entry || entry.raw_text,
                 artist: entry.artist,
                 track_title: entry.short_title || entry.full_title || entry.track_title,
+                version: entry.version || '',
                 predicted_track_id: entry.predicted_track_id,
                 confirmed_track_id: entry.confirmed_track_id,
                 confidence_score: entry.confidence_score,
@@ -75,13 +76,13 @@ function TracklistDetailPage() {
     };
 
     const getConfidenceColor = (score) => {
-        if (score >= 0.8) return 'text-green-600 bg-green-50';
+        if (score >= 0.7) return 'text-green-600 bg-green-50';
         if (score >= 0.5) return 'text-yellow-600 bg-yellow-50';
         return 'text-red-600 bg-red-50';
     };
 
     const getConfidenceLabel = (score) => {
-        if (score >= 0.8) return 'High';
+        if (score >= 0.7) return 'High';
         if (score >= 0.5) return 'Medium';
         return 'Low';
     };
@@ -176,6 +177,9 @@ function TracklistDetailPage() {
                                         Track Title
                                     </th>
                                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
+                                        Version
+                                    </th>
+                                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
                                         Suggested Track
                                     </th>
                                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider w-32">
@@ -197,6 +201,9 @@ function TracklistDetailPage() {
                                         </td>
                                         <td className="px-4 py-3 text-sm text-gray-900">
                                             {entry.short_title || entry.full_title || entry.track_title || <span className="text-gray-400 italic">Unknown</span>}
+                                        </td>
+                                        <td className="px-4 py-3 text-sm text-gray-900">
+                                            {entry.version || <span className="text-gray-400 italic">—</span>}
                                         </td>
                                         <td className="px-4 py-3 text-sm">
                                             {(() => {

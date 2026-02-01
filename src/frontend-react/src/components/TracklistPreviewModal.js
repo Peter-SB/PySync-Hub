@@ -28,6 +28,7 @@ function TracklistPreviewModal({ data, onClose, onSaved }) {
                 raw_text: entry.full_tracklist_entry,
                 artist: entry.artist,
                 track_title: entry.short_title || entry.full_title,
+                version: entry.version || '',
                 predicted_track_id: entry.predicted_track_id || (entry.predicted_tracks && entry.predicted_tracks[0]?.track?.id),
                 confirmed_track_id: entry.confirmed_track_id,
             }))
@@ -115,6 +116,9 @@ function TracklistPreviewModal({ data, onClose, onSaved }) {
                                         Track Title
                                     </th>
                                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
+                                        Version
+                                    </th>
+                                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
                                         Suggested Track
                                     </th>
                                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider w-32">
@@ -144,6 +148,9 @@ function TracklistPreviewModal({ data, onClose, onSaved }) {
                                             </td>
                                             <td className="px-4 py-3 text-sm text-gray-900">
                                                 {entry.short_title || entry.full_title || <span className="text-gray-400 italic">Unknown</span>}
+                                            </td>
+                                            <td className="px-4 py-3 text-sm text-gray-900">
+                                                {entry.version || <span className="text-gray-400 italic">—</span>}
                                             </td>
                                             <td className="px-4 py-3 text-sm">
                                                 {track ? (

@@ -11,6 +11,7 @@ from app.models import Track
 from app.repositories.playlist_repository import PlaylistRepository
 from app.utils.file_download_utils import FileDownloadUtils
 from config import Config
+from app.extensions import emit_error_message
 
 logger = logging.getLogger(__name__)
 
@@ -51,7 +52,9 @@ class SoundcloudService:
                 raise PlaylistNotFoundException("Playlist not found. Could it be private or deleted?", 404)
 
             if response.status_code == 401:
+                emit_error_message(url, "Authentication Error. Please refresh your SoundCloud token in Settings.")
                 raise SoundCloudAuthError("Authentication Error. Try a new Soundcloud API Key. See Help for instructions.", 401)
+            
 
             raise Exception(f"HTTP GET error: {response.status_code} {response.text}")
 

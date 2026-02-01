@@ -63,7 +63,7 @@ export function useSocketPlaylistUpdates() {
             })
 
             // Display the error message globally
-            setError(`Error downloading playlist: ${data.error}`);
+            setError(`Error Syncing: ${data.error}`);
         })
 
         // Handle playlist sync updates

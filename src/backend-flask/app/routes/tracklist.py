@@ -25,6 +25,7 @@ def get_tracklists():
         logger.error("Error fetching tracklists: %s", e, exc_info=True)
         return jsonify({'error': str(e)}), 500
 
+
 @api.route('/api/tracklists/add', methods=['POST'])
 def add_tracklist():    
     """

@@ -68,6 +68,13 @@ class DatabaseMigrator:
                 conn.commit()
                 logger.info("Applied migration: convert_absolute_paths_to_relative")
             
+            # Add order_index to tracklist_entries if needed
+            if 'add_order_index_to_tracklist_entries' not in applied_migrations:
+                DatabaseMigrator._add_order_index_to_tracklist_entries(conn, cursor)
+                cursor.execute("INSERT INTO migration_history (migration_name) VALUES ('add_order_index_to_tracklist_entries')")
+                conn.commit()
+                logger.info("Applied migration: add_order_index_to_tracklist_entries")
+
             conn.close()
             logger.info("Database migration completed successfully")
             
@@ -201,3 +208,14 @@ class DatabaseMigrator:
         
         conn.commit()
         logger.info(f"Converted {tracks_updated} track paths from absolute to relative format")
+
+
+    @staticmethod
+    def _add_order_index_to_tracklist_entries(conn, cursor):
+        """Add order_index column to tracklist_entries table if it doesn't exist"""
+        cursor.execute("PRAGMA table_info(tracklist_entries)")
+        columns = {row[1] for row in cursor.fetchall()}
+        if 'order_index' not in columns:
+            cursor.execute("ALTER TABLE tracklist_entries ADD COLUMN order_index INTEGER")
+            conn.commit()
+            logger.info("Added order_index field to tracklist_entries table")

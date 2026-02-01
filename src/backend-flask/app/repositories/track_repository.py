@@ -11,6 +11,30 @@ logger = logging.getLogger(__name__)
 
 class TrackRepository:
     @staticmethod
+    def get_tracks_by_spotify_ids(track_ids: List[str]) -> List[Track]:
+        """
+        Given a list of Spotify track IDs, return Track objects that match (platform_id, platform='spotify').
+        """
+        if not track_ids:
+            return []
+        return (
+            db.session.query(Track)
+            .filter(Track.platform == 'spotify', Track.platform_id.in_(track_ids))
+            .all()
+        )
+    
+    @staticmethod
+    def get_track_by_platform_id(track_id: str) -> Optional[Track]:
+        if not track_id:
+            return None
+        return (
+            db.session.query(Track)
+            .filter(Track.platform_id == track_id)
+            .first()
+        )
+    
+
+    @staticmethod
     def remove_tracks_before_date(playlist, date_limit) -> List[Track]:
         if date_limit:
             pts_to_remove = [

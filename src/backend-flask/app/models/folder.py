@@ -1,4 +1,5 @@
 from app.extensions import db
+from datetime import datetime
 
 class Folder(db.Model):
     __tablename__ = 'folders'
@@ -6,7 +7,7 @@ class Folder(db.Model):
     name = db.Column(db.String(255), nullable=False)
     parent_id = db.Column(db.Integer, db.ForeignKey('folders.id'), nullable=True)
     custom_order = db.Column(db.Integer, nullable=False, default=0)
-    created_at = db.Column(db.DateTime, default=db.func.utcnow())
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
     disabled = db.Column(db.Boolean, default=True)
     expanded = db.Column(db.Boolean, default=True)
 
