@@ -8,9 +8,20 @@ function TracklistPreviewModal({ data, onClose, onSaved }) {
 
     const handleConfirmTrack = (entryIndex, trackId) => {
         const updatedEntries = [...localEntries];
+        const currentEntry = updatedEntries[entryIndex];
         updatedEntries[entryIndex] = {
-            ...updatedEntries[entryIndex],
-            confirmed_track_id: trackId,
+            ...currentEntry,
+            confirmed_track_id: currentEntry.confirmed_track_id === trackId ? null : trackId,
+        };
+        setLocalEntries(updatedEntries);
+    };
+
+    const handleToggleFavourite = (entryIndex) => {
+        const updatedEntries = [...localEntries];
+        const currentEntry = updatedEntries[entryIndex];
+        updatedEntries[entryIndex] = {
+            ...currentEntry,
+            favourite: !currentEntry.favourite,
         };
         setLocalEntries(updatedEntries);
     };
@@ -35,6 +46,9 @@ function TracklistPreviewModal({ data, onClose, onSaved }) {
                 prefix_cleaned_entry: entry.prefix_cleaned_entry,
                 is_unidentified: entry.is_unidentified || false,
                 predicted_track_id: entry.predicted_track_id || (entry.predicted_tracks && entry.predicted_tracks[0]?.track?.id),
+                predicted_track_confidence: typeof entry.predicted_track_confidence === 'number'
+                    ? entry.predicted_track_confidence
+                    : (entry.predicted_tracks && entry.predicted_tracks[0]?.confidence),
                 confirmed_track_id: entry.confirmed_track_id,
                 favourite: entry.favourite || false
             }))
@@ -141,7 +155,9 @@ function TracklistPreviewModal({ data, onClose, onSaved }) {
                                         ? entry.predicted_tracks[0]
                                         : null;
                                     const track = topPrediction?.track;
-                                    const confidence = topPrediction?.confidence;
+                                    const confidence = typeof entry.predicted_track_confidence === 'number'
+                                        ? entry.predicted_track_confidence
+                                        : topPrediction?.confidence;
                                     const predictedTrackId = entry.predicted_track_id || track?.id;
 
                                     return (
@@ -197,9 +213,24 @@ function TracklistPreviewModal({ data, onClose, onSaved }) {
                                             </td>
                                             <td className="px-4 py-3">
                                                 {entry.confirmed_track_id ? (
-                                                    <span className="px-2 py-1 bg-green-100 text-green-800 rounded text-xs font-medium">
-                                                        Confirmed
-                                                    </span>
+                                                    <div className="flex items-center space-x-2">
+                                                        <button
+                                                            onClick={() => handleConfirmTrack(index, entry.confirmed_track_id)}
+                                                            className="px-2 py-1 bg-green-100 text-green-800 rounded text-xs font-medium hover:bg-green-200 transition-colors"
+                                                            title="Click to unconfirm"
+                                                        >
+                                                            Confirmed
+                                                        </button>
+                                                        <button
+                                                            onClick={() => handleToggleFavourite(index)}
+                                                            className={`px-2 py-1 rounded text-xs font-medium transition-colors ${entry.favourite
+                                                                    ? 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200'
+                                                                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                                                }`}
+                                                        >
+                                                            {entry.favourite ? 'Favourited' : 'Favourite'}
+                                                        </button>
+                                                    </div>
                                                 ) : predictedTrackId ? (
                                                     <button
                                                         onClick={() => handleConfirmTrack(index, predictedTrackId)}

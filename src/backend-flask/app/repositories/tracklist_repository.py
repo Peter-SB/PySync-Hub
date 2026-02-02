@@ -52,8 +52,22 @@ class TracklistRepository:
         
         tracklist = Tracklist.query.get(tracklist_id)
         if not tracklist:
-            logger.error(f"Tracklist with ID {tracklist_id} not found")
-            return None
+            # Create if not found
+            tracklist = Tracklist(
+                set_name=update_data.get('set_name'),
+                artist=update_data.get('artist'),
+                tracklist_string=update_data.get('tracklist_string'),
+                rating=update_data.get('rating'),
+                disabled=update_data.get('disabled', False),
+                image_url=update_data.get('image_url'),
+                custom_order=update_data.get('custom_order', 0),
+                download_progress=update_data.get('download_progress', 0),
+                folder_id=update_data.get('folder_id')
+            )
+            db.session.add(tracklist)
+            commit_with_retries(db.session)
+            logger.info(f"Created tracklist with ID: {tracklist.id}")
+            return tracklist
         
         # Update fields if provided
         if 'set_name' in update_data:
@@ -114,6 +128,7 @@ class TracklistRepository:
             prefix_cleaned_entry=entry_data.get('prefix_cleaned_entry'),
             is_unidentified=entry_data.get('is_unidentified', False),
             predicted_track_id=entry_data.get('predicted_track_id'),
+            predicted_track_confidence=entry_data.get('predicted_track_confidence'),
             confirmed_track_id=entry_data.get('confirmed_track_id'),
             favourite=entry_data.get('favourite', False)
         )
@@ -135,6 +150,8 @@ class TracklistRepository:
         # Update fields if provided
         if 'predicted_track_id' in update_data:
             entry.predicted_track_id = update_data['predicted_track_id']
+        if 'predicted_track_confidence' in update_data:
+            entry.predicted_track_confidence = update_data['predicted_track_confidence']
         if 'confirmed_track_id' in update_data:
             entry.confirmed_track_id = update_data['confirmed_track_id']
         if 'favourite' in update_data:

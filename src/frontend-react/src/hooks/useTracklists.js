@@ -5,7 +5,8 @@ import {
     processTracklist,
     saveTracklist,
     updateTracklist,
-    deleteTracklist
+    deleteTracklist,
+    refreshTracklist
 } from '../api/tracklists';
 
 export function useTracklists() {
@@ -58,5 +59,11 @@ export function useDeleteTracklist() {
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['tracklists'] });
         },
+    });
+}
+
+export function useRefreshTracklist() {
+    return useMutation({
+        mutationFn: refreshTracklist,
     });
 }

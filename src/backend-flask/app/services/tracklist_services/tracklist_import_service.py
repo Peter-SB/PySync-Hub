@@ -31,6 +31,16 @@ class TracklistImportService:
         logger.info(f"Processed {len(tracklist.tracklist_entries)} tracks from tracklist.")
         return tracklist
     
+    @staticmethod
+    def search_for_track_on_platforms(tracklist_entry: TracklistEntry) -> list[Track]:
+        """ Search for a track across multiple platforms and return matching Track objects. """
+        found_tracks = []
+
+        # Create each platform service and search
+        
+        
+        return found_tracks
+    
 
     @staticmethod
     def pre_process_track(tracklist_entry: str) -> TracklistEntry:
@@ -75,10 +85,11 @@ class TracklistImportService:
         return entry
     
     @staticmethod
-    def prepare_tracklist_response(tracklist_with_predictions: Tracklist) -> dict:
+    def _prepare_tracklist_response(tracklist_with_predictions: Tracklist) -> dict:
         """ Prepare a tracklist dictionary response including entries for API output. """
                 # Convert to dictionary format for response
         response = {
+            'id': tracklist_with_predictions.id,
             'set_name': tracklist_with_predictions.set_name,
             'artist': tracklist_with_predictions.artist,
             'tracklist_string': tracklist_with_predictions.tracklist_string,
@@ -102,6 +113,7 @@ class TracklistImportService:
                 'prefix_cleaned_entry': entry.prefix_cleaned_entry,
                 'is_unidentified': entry.is_unidentified,
                 'predicted_track_id': entry.predicted_track_id,
+                'predicted_track_confidence': getattr(entry, 'predicted_track_confidence', None),
                 'confirmed_track_id': entry.confirmed_track_id,
                 'favourite': entry.favourite,
                 'predicted_tracks': []

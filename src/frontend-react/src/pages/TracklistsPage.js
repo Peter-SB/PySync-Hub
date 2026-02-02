@@ -2,14 +2,12 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTracklists, useDeleteTracklist } from '../hooks/useTracklists';
 import AddTracklistModal from '../components/AddTracklistModal';
-import TracklistPreviewModal from '../components/TracklistPreviewModal';
 
 function TracklistsPage() {
     const navigate = useNavigate();
-    const { data: tracklists = [], isLoading, error } = useTracklists();
+    const { data: tracklists = [], isLoading, error, refetch } = useTracklists();
     const deleteMutation = useDeleteTracklist();
     const [showAddModal, setShowAddModal] = useState(false);
-    const [previewData, setPreviewData] = useState(null);
 
     const handleTracklistClick = (tracklistId) => {
         navigate(`/tracklist/${tracklistId}`);
@@ -121,21 +119,13 @@ function TracklistsPage() {
             {showAddModal && (
                 <AddTracklistModal
                     onClose={() => setShowAddModal(false)}
-                    onSuccess={(processedData) => {
+                    onSuccess={(createdTracklist) => {
                         setShowAddModal(false);
-                        // Show preview modal with processed data
-                        setPreviewData(processedData);
-                    }}
-                />
-            )}
-
-            {previewData && (
-                <TracklistPreviewModal
-                    data={previewData}
-                    onClose={() => setPreviewData(null)}
-                    onSaved={(tracklistId) => {
-                        setPreviewData(null);
-                        navigate(`/tracklist/${tracklistId}`);
+                        if (createdTracklist?.id) {
+                            navigate(`/tracklist/${createdTracklist.id}`);
+                        } else {
+                            refetch();
+                        }
                     }}
                 />
             )}

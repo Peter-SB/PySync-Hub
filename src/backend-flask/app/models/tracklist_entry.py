@@ -23,6 +23,7 @@ class TracklistEntry(db.Model):
     is_unidentified = db.Column(db.Boolean, default=False)  # Whether the track is identified or marked as "ID"
     
     predicted_track_id = db.Column(db.Integer, db.ForeignKey('tracks.id'), nullable=True)  # Best predicted match
+    predicted_track_confidence = db.Column(db.Float, nullable=True)
     confirmed_track_id = db.Column(db.Integer, db.ForeignKey('tracks.id'), nullable=True)  # User-confirmed match
     
     favourite = db.Column(db.Boolean, default=False)
@@ -48,6 +49,7 @@ class TracklistEntry(db.Model):
             'prefix_cleaned_entry': self.prefix_cleaned_entry,
             'is_unidentified': self.is_unidentified,
             'predicted_track_id': self.predicted_track_id,
+            'predicted_track_confidence': self.predicted_track_confidence,
             'confirmed_track_id': self.confirmed_track_id,
             'favourite': self.favourite,
             'order_index': self.order_index,

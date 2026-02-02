@@ -19,8 +19,7 @@ function AddTracklistModal({ onClose, onSuccess }) {
 
         processMutation.mutate(payload, {
             onSuccess: (data) => {
-                // The backend returns the processed tracklist (without ID since it's not saved yet)
-                // Pass the entire data object to parent to handle navigation
+                // The backend returns the created tracklist including its ID.
                 if (data) {
                     onSuccess(data);
                 } else {

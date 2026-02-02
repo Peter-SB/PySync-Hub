@@ -38,3 +38,9 @@ export function deleteTracklist(id) {
         method: 'DELETE',
     });
 }
+
+export function refreshTracklist(id) {
+    return request(`/api/tracklists/${id}/refresh`, {
+        method: 'POST',
+    });
+}

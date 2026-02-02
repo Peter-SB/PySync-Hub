@@ -60,7 +60,11 @@ def add_tracklist():
         database_tracks = Track.query.all()
         tracklist_with_predictions = TracklistImportService.process_and_predict_tracklist(tracklist, database_tracks)
 
-        response = TracklistImportService.prepare_tracklist_response(tracklist_with_predictions)
+        # Save to db
+        db.session.add(tracklist_with_predictions)
+        commit_with_retries(db.session)
+
+        response = TracklistImportService._prepare_tracklist_response(tracklist_with_predictions)
         logger.info(f"Successfully processed tracklist with {len(response['tracklist_entries'])} entries")
         return jsonify(response), 200
         
@@ -69,11 +73,12 @@ def add_tracklist():
         return jsonify({'error': 'Failed to process tracklist', 'message': str(e)}), 500
 
 
-@api.route('/api/tracklists', methods=['POST'])
+# @api.route('/api/tracklists', methods=['POST'])
 def save_tracklist():    
     """
     Save a confirmed tracklist to the database. Expects a JSON body to match the Tracklist and TracklistEntry models.
     """
+    return
     try:
         data = request.get_json()
         
@@ -113,6 +118,7 @@ def save_tracklist():
                     'prefix_cleaned_entry': entry_data.get('prefix_cleaned_entry'),
                     'is_unidentified': entry_data.get('is_unidentified', False),
                     'predicted_track_id': entry_data.get('predicted_track_id'),
+                    'predicted_track_confidence': entry_data.get('predicted_track_confidence'),
                     'confirmed_track_id': entry_data.get('confirmed_track_id'),
                     'favourite': entry_data.get('favourite', False)
                 }
@@ -169,6 +175,109 @@ def update_tracklist(tracklist_id):
         logger.error("Error updating tracklist: %s", e, exc_info=True)
         db.session.rollback()
         return jsonify({'error': 'Failed to update tracklist', 'message': str(e)}), 500
+
+
+@api.route('/api/tracklists/<int:tracklist_id>/refresh', methods=['POST'])
+def refresh_tracklist(tracklist_id):
+    """Re-run predictions for unconfirmed entries in a tracklist."""
+    # todo: fix this to match closer to add logic. Maybe rerun the whole tracklist import process with confirmed tracks skipped/stripped from the string
+    try:
+        tracklist = TracklistRepository.get_tracklist_by_id(tracklist_id)
+        if not tracklist:
+            return jsonify({'error': 'Tracklist not found'}), 404
+
+        database_tracks = Track.query.all()
+        updated_entries = 0
+
+        # Attempt to reprocess the tracklist string to align entries by order
+        processed_entries = None
+        try:
+            temp_tracklist = Tracklist(
+                set_name=tracklist.set_name,
+                artist=tracklist.artist,
+                tracklist_string=tracklist.tracklist_string,
+                rating=tracklist.rating,
+                image_url=tracklist.image_url,
+                folder_id=tracklist.folder_id
+            )
+            processed = TracklistImportService.process_tracklist(temp_tracklist)
+            processed_entries = processed.tracklist_entries
+        except Exception as e:
+            logger.warning("Failed to reprocess tracklist string for %s: %s", tracklist_id, e)
+
+        entries = list(tracklist.tracklist_entries)
+        entries.sort(key=lambda entry: (entry.order_index is None, entry.order_index if entry.order_index is not None else entry.id))
+
+        if processed_entries and len(processed_entries) == len(entries):
+            for entry, processed_entry in zip(entries, processed_entries):
+                if entry.confirmed_track_id:
+                    continue
+
+                entry.full_tracklist_entry = processed_entry.full_tracklist_entry
+                entry.artist = processed_entry.artist
+                entry.short_title = processed_entry.short_title
+                entry.full_title = processed_entry.full_title
+                entry.version = processed_entry.version
+                entry.version_artist = processed_entry.version_artist
+                entry.is_vip = processed_entry.is_vip
+                entry.unicode_cleaned_entry = processed_entry.unicode_cleaned_entry
+                entry.prefix_cleaned_entry = processed_entry.prefix_cleaned_entry
+                entry.is_unidentified = processed_entry.is_unidentified
+
+                top_candidates = TracklistPredictionService.find_top_track_matches(
+                    processed_entry,
+                    database_tracks,
+                    top_n=1,
+                    min_score=0.0
+                )
+
+                if top_candidates:
+                    top_track, top_score = top_candidates[0]
+                    entry.predicted_track_id = top_track.id
+                    entry.predicted_track_confidence = top_score
+                else:
+                    entry.predicted_track_id = None
+                    entry.predicted_track_confidence = None
+
+                updated_entries += 1
+        else:
+            if processed_entries is not None:
+                logger.warning(
+                    "Tracklist %s entry count mismatch (existing=%s, processed=%s); using existing entries",
+                    tracklist_id,
+                    len(entries),
+                    len(processed_entries)
+                )
+
+            for entry in entries:
+                if entry.confirmed_track_id:
+                    continue
+
+                top_candidates = TracklistPredictionService.find_top_track_matches(
+                    entry,
+                    database_tracks,
+                    top_n=1,
+                    min_score=0.0
+                )
+
+                if top_candidates:
+                    top_track, top_score = top_candidates[0]
+                    entry.predicted_track_id = top_track.id
+                    entry.predicted_track_confidence = top_score
+                else:
+                    entry.predicted_track_id = None
+                    entry.predicted_track_confidence = None
+
+                updated_entries += 1
+
+        commit_with_retries(db.session)
+        logger.info("Refreshed tracklist %s with %s updated entries", tracklist_id, updated_entries)
+        return jsonify(tracklist.to_dict()), 200
+
+    except Exception as e:
+        logger.error("Error refreshing tracklist: %s", e, exc_info=True)
+        db.session.rollback()
+        return jsonify({'error': 'Failed to refresh tracklist', 'message': str(e)}), 500
 
 
 @api.route('/api/tracklists/<int:tracklist_id>', methods=['DELETE'])

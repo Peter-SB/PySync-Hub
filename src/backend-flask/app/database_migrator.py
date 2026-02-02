@@ -75,6 +75,12 @@ class DatabaseMigrator:
                 conn.commit()
                 logger.info("Applied migration: add_order_index_to_tracklist_entries")
 
+            if 'add_predicted_track_confidence_to_tracklist_entries' not in applied_migrations:
+                DatabaseMigrator._add_predicted_track_confidence_to_tracklist_entries(conn, cursor)
+                cursor.execute("INSERT INTO migration_history (migration_name) VALUES ('add_predicted_track_confidence_to_tracklist_entries')")
+                conn.commit()
+                logger.info("Applied migration: add_predicted_track_confidence_to_tracklist_entries")
+
             conn.close()
             logger.info("Database migration completed successfully")
             
@@ -219,3 +225,13 @@ class DatabaseMigrator:
             cursor.execute("ALTER TABLE tracklist_entries ADD COLUMN order_index INTEGER")
             conn.commit()
             logger.info("Added order_index field to tracklist_entries table")
+
+    @staticmethod
+    def _add_predicted_track_confidence_to_tracklist_entries(conn, cursor):
+        """Add predicted_track_confidence column to tracklist_entries table if it doesn't exist"""
+        cursor.execute("PRAGMA table_info(tracklist_entries)")
+        columns = {row[1] for row in cursor.fetchall()}
+        if 'predicted_track_confidence' not in columns:
+            cursor.execute("ALTER TABLE tracklist_entries ADD COLUMN predicted_track_confidence REAL")
+            conn.commit()
+            logger.info("Added predicted_track_confidence field to tracklist_entries table")

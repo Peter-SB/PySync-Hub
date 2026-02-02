@@ -49,12 +49,15 @@ class TracklistPredictionService:
             print(f"No candidates found for tracklist entry {tracklist_entry.artist} - {tracklist_entry.full_title}")
             return tracklist_entry
 
-        # Store predicted tracks with confidence scores as a temporary attribute
-        tracklist_entry.predicted_tracks = top_candidates
-        
         top_candidate, top_candidate_score = top_candidates[0]
-        if top_candidate_score >= 0.9:
-            tracklist_entry.predicted_track_id = top_candidate.id
+
+        if top_candidate_score < 0.15:
+            tracklist_entry.predicted_track_id = None
+            return tracklist_entry
+
+        tracklist_entry.predicted_tracks = top_candidates
+        tracklist_entry.predicted_track_id = top_candidate.id
+        tracklist_entry.predicted_track_confidence = top_candidate_score
 
         return tracklist_entry
 

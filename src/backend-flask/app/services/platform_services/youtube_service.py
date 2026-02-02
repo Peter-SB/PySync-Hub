@@ -114,7 +114,7 @@ class YouTubeService:
                         continue                    
 
                     track_data = YouTubeService._format_track_data(entry)
-                    track_data["album"] = info.get("title")  # Use playlist title as album
+                    track_data["album"] = "" #info.get("title")  # Use playlist title as album
                     tracks_data.append(track_data)
                 
                 logger.info("Fetched %d tracks from YouTube playlist", len(tracks_data))
