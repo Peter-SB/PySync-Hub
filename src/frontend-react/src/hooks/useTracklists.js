@@ -1,12 +1,13 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
-    fetchTracklists,
     fetchTracklistById,
     processTracklist,
     saveTracklist,
     updateTracklist,
     deleteTracklist,
-    refreshTracklist
+    refreshTracklist,
+    searchTracks,
+    fetchTracklists
 } from '../api/tracklists';
 
 export function useTracklists() {
@@ -65,5 +66,11 @@ export function useDeleteTracklist() {
 export function useRefreshTracklist() {
     return useMutation({
         mutationFn: refreshTracklist,
+    });
+}
+
+export function useSearchTracks() {
+    return useMutation({
+        mutationFn: ({ query, limit }) => searchTracks(query, limit),
     });
 }

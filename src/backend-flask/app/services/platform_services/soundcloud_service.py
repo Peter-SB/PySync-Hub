@@ -9,6 +9,7 @@ from bs4 import BeautifulSoup
 
 from app.models import Track
 from app.repositories.playlist_repository import PlaylistRepository
+from app.services.platform_services.base_platform_service import BasePlatformService
 from app.utils.file_download_utils import FileDownloadUtils
 from config import Config
 from app.extensions import emit_error_message
@@ -32,7 +33,7 @@ headers = {
 }
 
 
-class SoundcloudService:
+class SoundcloudService(BasePlatformService):
     @staticmethod
     def _make_http_get_request(url: str, headers: dict, query_params=None) -> dict:
         """
@@ -338,3 +339,41 @@ class SoundcloudService:
         except Exception as e:
             logger.error("Error fetching SoundCloud playlist tracks: %s", e, exc_info=True)
             raise e
+
+    @staticmethod
+    def search_track(query: str, limit: int = 3) -> list[dict]:
+        """ 
+        Search for track on SoundCloud by query string. 
+        
+        Example query: "Artist - Title Name" = "https://soundcloud.com/search?q=Artist%20-%20Title%20Name"
+        
+        :param query: Search query (e.g., "Artist - Title - Version")
+        :param limit: Maximum number of results to return (default 3)
+        :return: List of track dictionaries
+        """
+        try:
+            client_id = Config.SOUNDCLOUD_CLIENT_ID
+            if not client_id:
+                raise ValueError("Missing SoundCloud client ID in environment variables.")
+            
+            search_url = "https://api-v2.soundcloud.com/search/tracks"
+            params = {
+                'q': query,
+                'client_id': client_id,
+                'limit': limit,
+                'offset': 0
+            }
+            
+            logger.info("Searching SoundCloud for: %s", query)
+            data = SoundcloudService._make_http_get_request(search_url, headers, query_params=params)
+            
+            if not data or 'collection' not in data:
+                logger.warning("No search results found for query: %s", query)
+                return []
+            
+            tracks = data['collection']
+            return [SoundcloudService._parse_track(track) for track in tracks]
+            
+        except Exception as e:
+            logger.error("Error searching SoundCloud for query '%s': %s", query, e, exc_info=True)
+            raise

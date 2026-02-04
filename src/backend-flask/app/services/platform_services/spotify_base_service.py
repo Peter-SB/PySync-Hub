@@ -4,11 +4,12 @@ from datetime import datetime
 from typing import List, Dict, Any, Optional
 
 from dateutil.parser import isoparse, parse
+from app.services.platform_services.base_platform_service import BasePlatformService
 
 logger = logging.getLogger(__name__)
 
 
-class BaseSpotifyService(ABC):
+class BaseSpotifyService(BasePlatformService, ABC):
     """Base class for Spotify services with shared functionality."""
 
     @staticmethod

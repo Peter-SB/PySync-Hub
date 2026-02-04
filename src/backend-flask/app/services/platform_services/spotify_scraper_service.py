@@ -322,3 +322,11 @@ class SpotifyScraperService(BaseSpotifyService):
             logger.warning("Error scraping playlist page for mosaic image: %s", e)
         
         return None
+    
+
+    @staticmethod
+    def search_track(query: str, limit: int = 3) -> list[dict]:
+        """ 
+        Search for track using query. Not supported with scraper. 
+        """
+        raise NotImplementedError("Search track not possible for SpotifyScraperService.")

@@ -12,6 +12,49 @@ from app.utils.db_utils import commit_with_retries
 
 logger = logging.getLogger(__name__)
 
+@api.route('/api/tracks', methods=['POST'])
+def create_track():
+    """Create a new track or return existing track if it already exists."""
+    try:
+        data = request.get_json()
+        if not data:
+            return jsonify({'error': 'No data provided'}), 400
+        
+        required_fields = ['platform', 'platform_id', 'name', 'artist']
+        for field in required_fields:
+            if field not in data:
+                return jsonify({'error': f'Missing required field: {field}'}), 400
+        
+        # Check if track already exists
+        track = Track.query.filter_by(
+            platform=data['platform'],
+            platform_id=data['platform_id'],
+        ).first()
+        
+        # If track doesn't exist, create it
+        if not track:
+            track = Track(
+                platform_id=data['platform_id'],
+                platform=data['platform'],
+                name=data['name'],
+                artist=data['artist'],
+                album=data.get('album'),
+                album_art_url=data.get('album_art_url'),
+                download_url=data.get('download_url')
+            )
+            db.session.add(track)
+            commit_with_retries(db.session)
+            logger.info("Created new track: %s - %s (platform: %s)", track.artist, track.name, track.platform)
+            return jsonify(track.to_dict()), 201
+        else:
+            logger.info("Track already exists: %s - %s (id: %s)", track.artist, track.name, track.id)
+            return jsonify(track.to_dict()), 200
+        
+    except Exception as e:
+        logger.error("Error creating track: %s", e, exc_info=True)
+        db.session.rollback()
+        return jsonify({'error': 'Failed to create track', 'message': str(e)}), 500
+
 @api.route('/api/tracks', methods=['GET'])
 def get_tracks():
     try:

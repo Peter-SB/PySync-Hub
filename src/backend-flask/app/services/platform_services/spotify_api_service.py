@@ -173,3 +173,28 @@ class SpotifyApiService(BaseSpotifyService):
         except Exception as e:
             logger.error("Error retrieving liked tracks: %s", e)
             return []
+
+
+    @staticmethod
+    def search_track(query: str, limit: int = 3) -> list[dict]:
+        """ 
+        Search for track on Spotify with api by query string. 
+        
+        :param query: Search query (e.g., "Artist - Title - Version")
+        :param limit: Maximum number of results to return (default 3)
+        :return: List of track dictionaries
+        """
+        try:
+            client = SpotifyApiService.get_client()
+            results = client.search(q=query, type='track', limit=limit)
+            
+            if not results or 'tracks' not in results:
+                logger.warning("No search results found for query: %s", query)
+                return []
+            
+            tracks = results['tracks']['items']
+            return [SpotifyApiService._format_track_data(track) for track in tracks]
+            
+        except Exception as e:
+            logger.error("Error searching Spotify for query '%s': %s", query, e, exc_info=True)
+            raise

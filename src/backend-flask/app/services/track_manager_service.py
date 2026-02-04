@@ -32,7 +32,7 @@ class TrackManagerService:
 
         try:
             # Use PlatformServiceFactory to get the appropriate service class
-            service_cls = PlatformServiceFactory.get_service(playlist.platform)
+            service_cls = PlatformServiceFactory.get_service_by_platform(playlist.platform)
             tracks_data = service_cls.get_playlist_tracks(playlist.url)
 
             logger.info("Fetched %d tracks for playlist %s", len(tracks_data), playlist.name)

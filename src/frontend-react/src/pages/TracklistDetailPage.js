@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTracklistById, useSaveTracklist, useUpdateTracklist, useDeleteTracklist, useRefreshTracklist } from '../hooks/useTracklists';
+import TrackSearchModal from '../components/TrackSearchModal';
+import { backendUrl } from '../config';
 
 function TracklistDetailPage() {
     const { tracklistId } = useParams();
@@ -14,6 +16,8 @@ function TracklistDetailPage() {
     const [localEntries, setLocalEntries] = useState([]);
     const [tracklistName, setTracklistName] = useState('');
     const [hasChanges, setHasChanges] = useState(false);
+    const [searchModalEntry, setSearchModalEntry] = useState(null);
+    const [searchModalEntryIndex, setSearchModalEntryIndex] = useState(null);
 
     useEffect(() => {
         if (tracklist) {
@@ -25,9 +29,26 @@ function TracklistDetailPage() {
     const handleConfirmTrack = async (entryIndex, trackId) => {
         const updatedEntries = [...localEntries];
         const currentEntry = updatedEntries[entryIndex];
+        const isUnconfirming = currentEntry.confirmed_track_id === trackId;
+        let confirmedTrack = null;
+
+        if (!isUnconfirming) {
+            if (currentEntry.confirmed_track && currentEntry.confirmed_track.id === trackId) {
+                confirmedTrack = currentEntry.confirmed_track;
+            } else if (currentEntry.predicted_track && currentEntry.predicted_track.id === trackId) {
+                confirmedTrack = currentEntry.predicted_track;
+            } else if (currentEntry.predicted_tracks && currentEntry.predicted_tracks.length > 0) {
+                const match = currentEntry.predicted_tracks.find((prediction) => prediction.track && prediction.track.id === trackId);
+                if (match) {
+                    confirmedTrack = match.track;
+                }
+            }
+        }
+
         updatedEntries[entryIndex] = {
             ...currentEntry,
-            confirmed_track_id: currentEntry.confirmed_track_id === trackId ? null : trackId,
+            confirmed_track_id: isUnconfirming ? null : trackId,
+            confirmed_track: isUnconfirming ? null : confirmedTrack,
         };
         setLocalEntries(updatedEntries);
         setHasChanges(true);
@@ -44,6 +65,51 @@ function TracklistDetailPage() {
         setLocalEntries(updatedEntries);
         setHasChanges(true);
         await handleSave(updatedEntries);
+    };
+
+    const handleSearchClick = (entry, entryIndex) => {
+        setSearchModalEntry(entry);
+        setSearchModalEntryIndex(entryIndex);
+    };
+
+    const handleCloseSearchModal = () => {
+        setSearchModalEntry(null);
+        setSearchModalEntryIndex(null);
+    };
+
+    const handleSelectTrack = async (selectedTrack) => {
+        try {
+            // Create or get the track in the database
+            const response = await fetch(`${backendUrl}/api/tracks`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(selectedTrack),
+            });
+
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.message || 'Failed to create track');
+            }
+
+            const track = await response.json();
+
+            // Update the entry with the confirmed track
+            const updatedEntries = [...localEntries];
+            updatedEntries[searchModalEntryIndex] = {
+                ...updatedEntries[searchModalEntryIndex],
+                confirmed_track_id: track.id,
+                confirmed_track: track,
+            };
+            setLocalEntries(updatedEntries);
+            setHasChanges(true);
+            await handleSave(updatedEntries);
+
+        } catch (error) {
+            console.error('Error selecting track:', error);
+            alert(`Failed to select track: ${error.message}`);
+        }
     };
 
     const handleSave = async (entries = localEntries) => {
@@ -237,6 +303,9 @@ function TracklistDetailPage() {
                                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
                                         Suggested Track
                                     </th>
+                                    <th className="px-4 py-3 text-center text-xs font-medium text-gray-700 uppercase tracking-wider w-20">
+                                        Search
+                                    </th>
                                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider w-32">
                                         Confidence
                                     </th>
@@ -283,8 +352,10 @@ function TracklistDetailPage() {
                                         </td>
                                         <td className="px-4 py-3 text-sm">
                                             {(() => {
-                                                // Prefer entry.predicted_track if present, else fallback to predicted_tracks[0]?.track
-                                                const track = entry.predicted_track || (entry.predicted_tracks && entry.predicted_tracks.length > 0 ? entry.predicted_tracks[0].track : null);
+                                                const track = entry.confirmed_track
+                                                    || entry.predicted_track
+                                                    || (entry.predicted_tracks && entry.predicted_tracks.length > 0 ? entry.predicted_tracks[0].track : null);
+
                                                 return track ? (
                                                     <div className="flex items-center space-x-3">
                                                         {track.album_art_url && (
@@ -308,7 +379,28 @@ function TracklistDetailPage() {
                                                 );
                                             })()}
                                         </td>
-                                        <td className="px-4 py-3">
+                                        <td className="px-4 py-3 text-center">
+                                            <button
+                                                onClick={() => handleSearchClick(entry, index)}
+                                                className="p-1 rounded hover:bg-blue-100 transition-colors"
+                                                title="Search for track"
+                                            >
+                                                <svg
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                    className="w-5 h-5 text-blue-600"
+                                                    fill="none"
+                                                    viewBox="0 0 24 24"
+                                                    stroke="currentColor"
+                                                >
+                                                    <path
+                                                        strokeLinecap="round"
+                                                        strokeLinejoin="round"
+                                                        strokeWidth={2}
+                                                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                                                    />
+                                                </svg>
+                                            </button>
+                                        </td>                                        <td className="px-4 py-3">
                                             {(() => {
                                                 // Prefer entry.predicted_track.confidence if present, else fallback to predicted_tracks[0]?.confidence
                                                 let confidence = null;
@@ -370,6 +462,15 @@ function TracklistDetailPage() {
                     )}
                 </div>
             </div>
+
+            {/* Track Search Modal */}
+            {searchModalEntry && (
+                <TrackSearchModal
+                    entry={searchModalEntry}
+                    onClose={handleCloseSearchModal}
+                    onSelectTrack={handleSelectTrack}
+                />
+            )}
         </div>
     );
 }

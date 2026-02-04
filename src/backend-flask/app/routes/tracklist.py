@@ -6,13 +6,34 @@ from flask import Blueprint, request, jsonify, current_app
 from app.extensions import db, socketio
 from app.models import Track, Tracklist, TracklistEntry
 from app.repositories.tracklist_repository import TracklistRepository
+from app.repositories.track_repository import TrackRepository
 from app.routes import api
 from app.services.tracklist_services.tracklist_import_service import TracklistImportService
 from app.services.tracklist_services.tracklist_prediction_service import TracklistPredictionService
 from app.utils.db_utils import commit_with_retries
 from config import Config
 
+
 logger = logging.getLogger(__name__)
+
+@api.route('/api/tracklists/search-track', methods=['GET'])
+def search_track():
+    """Search for tracks by name or artist. Query params: q (query), limit (max results per platform, default 3)"""
+    query = request.args.get('q', '').strip()
+    if not query:
+        return jsonify({'error': 'Missing query parameter q'}), 400
+    
+    limit = request.args.get('limit', 3, type=int)
+    if limit < 1 or limit > 10:
+        return jsonify({'error': 'Limit must be between 1 and 10'}), 400
+    
+    try:
+        tracks = TracklistImportService.search_for_track_on_all_platforms(query, limit=limit)
+        return jsonify(tracks), 200
+    except Exception as e:
+        logger.error(f"Error searching tracks: {e}", exc_info=True)
+        return jsonify({'error': 'Failed to search tracks', 'message': str(e)}), 500
+
 
 @api.route('/api/tracklists', methods=['GET'])
 def get_tracklists():

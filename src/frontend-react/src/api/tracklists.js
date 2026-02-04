@@ -44,3 +44,9 @@ export function refreshTracklist(id) {
         method: 'POST',
     });
 }
+
+export function searchTracks(query, limit = 3) {
+    return request(`/api/tracklists/search-track?q=${encodeURIComponent(query)}&limit=${limit}`, {
+        method: 'GET',
+    });
+}

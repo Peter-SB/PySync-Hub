@@ -1,9 +1,11 @@
 import os
 import logging
+from typing import Any, Dict
 
 from app.models import Track, Tracklist, TracklistEntry
 import app.utils.tracklist_cleaning_utils as tracklist_cleaning_utils
 from app.services.tracklist_services.tracklist_prediction_service import TracklistPredictionService
+from app.services.platform_services.platform_services_factory import PlatformServiceFactory
 
 logger = logging.getLogger(__name__)
 
@@ -32,15 +34,32 @@ class TracklistImportService:
         return tracklist
     
     @staticmethod
-    def search_for_track_on_platforms(tracklist_entry: TracklistEntry) -> list[Track]:
-        """ Search for a track across multiple platforms and return matching Track objects. """
+    def search_for_track_on_all_platforms(query: str, limit: int = 3) -> list[dict[str, Any]]:
+        """ 
+        Search for a track across multiple platforms and return matching Track objects. 
+        
+        :param query: Search query string
+        :param limit: Maximum number of results per platform
+        :return: List of track dictionaries
+        """
         found_tracks = []
-
-        # Create each platform service and search
-        
-        
+        platforms = ['spotify', 'soundcloud', 'youtube']
+        for platform in platforms:
+            found_tracks.extend(TracklistImportService.search_for_track_on_platform(query, platform, limit))
         return found_tracks
     
+    @staticmethod
+    def search_for_track_on_platform(query: str, platform: str, limit: int = 3) -> list[dict[str, Any]]:
+        """
+        Search for a track on a specific platform and return matching Track objects. 
+        
+        :param query: Search query string
+        :param platform: Platform to search on
+        :param limit: Maximum number of results
+        :return: List of track dictionaries
+        """
+        platform_service = PlatformServiceFactory.get_service_by_platform(platform)
+        return platform_service.search_track(query, limit=limit)
 
     @staticmethod
     def pre_process_track(tracklist_entry: str) -> TracklistEntry:
