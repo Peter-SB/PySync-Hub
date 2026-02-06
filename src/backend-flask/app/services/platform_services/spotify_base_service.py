@@ -2,6 +2,7 @@ import logging
 from abc import ABC, abstractmethod
 from datetime import datetime
 from typing import List, Dict, Any, Optional
+from urllib.parse import urlparse
 
 from dateutil.parser import isoparse, parse
 from app.services.platform_services.base_platform_service import BasePlatformService
@@ -46,6 +47,7 @@ class BaseSpotifyService(BasePlatformService, ABC):
                 if track.get('album') and track['album'].get('images') else None,
             'download_url': None,  # Can be populated later
             'added_on': track_added_on,  # When the track was added to the playlist
+            'duration_ms': track.get('duration_ms'),
         }
 
     @staticmethod
@@ -56,6 +58,19 @@ class BaseSpotifyService(BasePlatformService, ABC):
         else:
             playlist_id = url
         return playlist_id
+
+    @staticmethod
+    def _extract_track_id(url: str) -> Optional[str]:
+        """Extract track ID from Spotify URL or URI."""
+        if not url:
+            return None
+        if url.startswith('spotify:track:'):
+            return url.split(':')[-1] or None
+        parsed = urlparse(url)
+        path_parts = parsed.path.strip('/').split('/')
+        if len(path_parts) >= 2 and path_parts[0] == 'track':
+            return path_parts[1].split('?')[0] or None
+        return None
 
     @staticmethod
     def _is_track_within_date_and_track_limit(playlist_length: int, track, track_limit, date_limit) -> bool:

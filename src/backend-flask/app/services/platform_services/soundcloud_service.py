@@ -97,6 +97,7 @@ class SoundcloudService(BasePlatformService):
             'album_art_url': track.get('artwork_url'),
             'download_url': permalink or None,
             'notes_errors': error,
+            'duration_ms': track.get('duration'),
         }
 
     @staticmethod
@@ -377,3 +378,50 @@ class SoundcloudService(BasePlatformService):
         except Exception as e:
             logger.error("Error searching SoundCloud for query '%s': %s", query, e, exc_info=True)
             raise
+
+    @staticmethod
+    def get_track_by_url(track_url: str) -> dict:
+        """Fetch a single track by SoundCloud URL."""
+        if not track_url:
+            raise ValueError("Missing SoundCloud track URL.")
+
+        client_id = Config.SOUNDCLOUD_CLIENT_ID
+        if client_id:
+            try:
+                resolve_url = "https://api-v2.soundcloud.com/resolve"
+                data = SoundcloudService._make_http_get_request(
+                    resolve_url,
+                    headers,
+                    query_params={"url": track_url, "client_id": client_id}
+                )
+                if data and data.get("kind") == "track":
+                    return SoundcloudService._parse_track(data)
+            except Exception as e:
+                logger.warning("SoundCloud resolve API failed: %s", e)
+
+        # Fallback to HTML hydration parsing
+        response_html = SoundcloudService._make_html_get_request(track_url, headers)
+        soup = BeautifulSoup(response_html, "html.parser")
+        script_tags = soup.find_all("script")
+
+        hydration_data = None
+        for script in script_tags:
+            if "window.__sc_hydration" in script.text:
+                match = re.search(r"window\.__sc_hydration\s*=\s*(\[\{.*?\}\]);", script.text, re.DOTALL)
+                if match:
+                    hydration_data = json.loads(match.group(1))
+                    break
+
+        if not hydration_data:
+            raise ValueError("Track data not found for SoundCloud URL.")
+
+        track_data = None
+        for item in hydration_data:
+            if item.get("hydratable") in ("sound", "track"):
+                track_data = item.get("data")
+                break
+
+        if not track_data:
+            raise ValueError("Track data not found for SoundCloud URL.")
+
+        return SoundcloudService._parse_track(track_data)

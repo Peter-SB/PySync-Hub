@@ -45,8 +45,28 @@ export function refreshTracklist(id) {
     });
 }
 
-export function searchTracks(query, limit = 3) {
-    return request(`/api/tracklists/search-track?q=${encodeURIComponent(query)}&limit=${limit}`, {
-        method: 'GET',
+export function downloadTracklist(id) {
+    return request(`/api/tracklists/${id}/download`, {
+        method: 'POST',
+    });
+}
+
+export function searchTracklistEntry(entryId, limit = 5) {
+    return request('/api/tracklists/search-tracklist-entry', {
+        method: 'POST',
+        body: {
+            tracklist_entry_id: entryId,
+            limit,
+        },
+    });
+}
+
+export function resolveTrackUrl(entryId, url) {
+    return request('/api/tracklists/resolve-track-url', {
+        method: 'POST',
+        body: {
+            tracklist_entry_id: entryId,
+            url,
+        },
     });
 }

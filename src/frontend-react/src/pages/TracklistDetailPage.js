@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useTracklistById, useSaveTracklist, useUpdateTracklist, useDeleteTracklist, useRefreshTracklist } from '../hooks/useTracklists';
+import { useTracklistById, useSaveTracklist, useUpdateTracklist, useDeleteTracklist, useRefreshTracklist, useDownloadTracklist } from '../hooks/useTracklists';
 import TrackSearchModal from '../components/TrackSearchModal';
+import { FaDownload } from 'react-icons/fa';
 import { backendUrl } from '../config';
 
 function TracklistDetailPage() {
@@ -12,10 +13,12 @@ function TracklistDetailPage() {
     const updateMutation = useUpdateTracklist();
     const deleteMutation = useDeleteTracklist();
     const refreshMutation = useRefreshTracklist();
+    const downloadMutation = useDownloadTracklist();
 
     const [localEntries, setLocalEntries] = useState([]);
     const [tracklistName, setTracklistName] = useState('');
     const [hasChanges, setHasChanges] = useState(false);
+    const [isDownloading, setIsDownloading] = useState(false);
     const [searchModalEntry, setSearchModalEntry] = useState(null);
     const [searchModalEntryIndex, setSearchModalEntryIndex] = useState(null);
 
@@ -77,7 +80,7 @@ function TracklistDetailPage() {
         setSearchModalEntryIndex(null);
     };
 
-    const handleSelectTrack = async (selectedTrack) => {
+    const handleSelectTrack = async (selectedTrack, confidence) => {
         try {
             // Create or get the track in the database
             const response = await fetch(`${backendUrl}/api/tracks`, {
@@ -101,6 +104,7 @@ function TracklistDetailPage() {
                 ...updatedEntries[searchModalEntryIndex],
                 confirmed_track_id: track.id,
                 confirmed_track: track,
+                predicted_track_confidence: typeof confidence === 'number' ? confidence : updatedEntries[searchModalEntryIndex].predicted_track_confidence,
             };
             setLocalEntries(updatedEntries);
             setHasChanges(true);
@@ -121,6 +125,7 @@ function TracklistDetailPage() {
             tracklist_entries: entries.map(entry => ({
                 id: entry.id,
                 predicted_track_id: entry.predicted_track_id,
+                predicted_track_confidence: entry.predicted_track_confidence,
                 confirmed_track_id: entry.confirmed_track_id,
                 favourite: entry.favourite || false,
             }))
@@ -162,6 +167,39 @@ function TracklistDetailPage() {
         }
     };
 
+    const getDownloadableTracks = (entries) => {
+        const trackMap = new Map();
+        entries.forEach((entry) => {
+            const track = entry.confirmed_track;
+            if (track && !track.download_location && !trackMap.has(track.id)) {
+                trackMap.set(track.id, track);
+            }
+        });
+        return Array.from(trackMap.values());
+    };
+
+    const handleDownloadTracklist = async () => {
+        const tracksToDownload = getDownloadableTracks(localEntries);
+
+        if (tracksToDownload.length === 0) {
+            return;
+        }
+
+        setIsDownloading(true);
+
+        try {
+            const response = await downloadMutation.mutateAsync(tracklistId);
+            if (response?.failed?.length > 0) {
+                alert(`Failed to download ${response.failed.length} track(s). Check console for details.`);
+            }
+        } catch (error) {
+            console.error('Error downloading tracklist:', error);
+            alert(`Failed to download tracklist: ${error.message}`);
+        } finally {
+            setIsDownloading(false);
+        }
+    };
+
     const getConfidenceColor = (score) => {
         if (score >= 0.7) return 'text-green-600 bg-green-50';
         if (score >= 0.4) return 'text-yellow-600 bg-yellow-50';
@@ -198,21 +236,23 @@ function TracklistDetailPage() {
         );
     }
 
+    const downloadCount = getDownloadableTracks(localEntries).length;
+
     return (
         <div className="flex flex-col h-screen p-4 pt-2">
             {/* Header */}
             <div className="bg-white p-5 rounded-lg mb-4 shadow">
-                <div className="flex justify-between items-start">
-                    <div className="flex-1">
-                        <input
-                            type="text"
+                <div className="flex flex-wrap justify-between items-start gap-3">
+                    <div className="flex-1 min-w-0">
+                        <textarea
+                            rows={2}
                             value={tracklistName}
                             onChange={(e) => {
                                 setTracklistName(e.target.value);
                                 setHasChanges(true);
                             }}
                             placeholder="Tracklist Name"
-                            className="text-3xl font-semibold text-gray-800 mb-2 border-b-2 border-transparent hover:border-gray-300 focus:border-blue-500 focus:outline-none w-full"
+                            className="text-3xl font-semibold text-gray-800 mb-2 border-b-2 border-transparent hover:border-gray-300 focus:border-blue-500 focus:outline-none w-full resize-none leading-tight"
                         />
                         <div className="flex items-center space-x-4 text-sm text-gray-600">
                             <span>
@@ -224,6 +264,17 @@ function TracklistDetailPage() {
                         </div>
                     </div>
                     <div className="flex items-center space-x-2">
+                        {downloadCount > 0 && (
+                            <button
+                                onClick={handleDownloadTracklist}
+                                disabled={isDownloading}
+                                className="flex items-center gap-2 px-3 py-2 rounded bg-green-600 hover:bg-green-700 text-white disabled:opacity-50 disabled:cursor-not-allowed"
+                                title={`Download ${downloadCount} track${downloadCount !== 1 ? 's' : ''}`}
+                            >
+                                <FaDownload className="w-4 h-4" />
+                                {isDownloading ? 'Downloading...' : `Download (${downloadCount})`}
+                            </button>
+                        )}
                         <button
                             onClick={handleRefreshClick}
                             className="mr-1 p-2 rounded bg-gray-400 hover:bg-gray-500 text-white disabled:opacity-50 disabled:cursor-not-allowed"
@@ -303,16 +354,15 @@ function TracklistDetailPage() {
                                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
                                         Suggested Track
                                     </th>
-                                    <th className="px-4 py-3 text-center text-xs font-medium text-gray-700 uppercase tracking-wider w-20">
-                                        Search
-                                    </th>
                                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider w-32">
                                         Confidence
                                     </th>
                                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider w-24">
                                         Status
                                     </th>
-
+                                    <th className="px-4 py-3 text-center text-xs font-medium text-gray-700 uppercase tracking-wider w-20">
+                                        Search
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody className="bg-white divide-y divide-gray-200">
@@ -350,7 +400,8 @@ function TracklistDetailPage() {
                                         <td className="px-4 py-3 text-sm text-gray-900">
                                             {entry.version || <span className="text-gray-400 italic">—</span>}
                                         </td>
-                                        <td className="px-4 py-3 text-sm">
+                                        <td className="flex justify-between items-center px-4 py-3 text-sm">
+
                                             {(() => {
                                                 const track = entry.confirmed_track
                                                     || entry.predicted_track
@@ -378,29 +429,12 @@ function TracklistDetailPage() {
                                                     <span className="text-gray-400 italic">No match found</span>
                                                 );
                                             })()}
+                                            {entry.confirmed_track && !entry.confirmed_track.download_location && (
+                                                <FaDownload className="ml-2 text-gray-500" title="No download location" />
+                                            )}
                                         </td>
-                                        <td className="px-4 py-3 text-center">
-                                            <button
-                                                onClick={() => handleSearchClick(entry, index)}
-                                                className="p-1 rounded hover:bg-blue-100 transition-colors"
-                                                title="Search for track"
-                                            >
-                                                <svg
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                    className="w-5 h-5 text-blue-600"
-                                                    fill="none"
-                                                    viewBox="0 0 24 24"
-                                                    stroke="currentColor"
-                                                >
-                                                    <path
-                                                        strokeLinecap="round"
-                                                        strokeLinejoin="round"
-                                                        strokeWidth={2}
-                                                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                                                    />
-                                                </svg>
-                                            </button>
-                                        </td>                                        <td className="px-4 py-3">
+
+                                        <td className="px-4 py-3">
                                             {(() => {
                                                 // Prefer entry.predicted_track.confidence if present, else fallback to predicted_tracks[0]?.confidence
                                                 let confidence = null;
@@ -454,6 +488,29 @@ function TracklistDetailPage() {
                                                 );
                                             })()}
                                         </td>
+                                        <td className="px-4 py-3 text-center">
+                                            <button
+                                                onClick={() => handleSearchClick(entry, index)}
+                                                className={`p-1 rounded transition-colors ${entry.id ? 'hover:bg-blue-100' : 'opacity-40 cursor-not-allowed'}`}
+                                                title={entry.id ? 'Search for track' : 'Save tracklist first to enable search'}
+                                                disabled={!entry.id}
+                                            >
+                                                <svg
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                    className="w-5 h-5 text-blue-600"
+                                                    fill="none"
+                                                    viewBox="0 0 24 24"
+                                                    stroke="currentColor"
+                                                >
+                                                    <path
+                                                        strokeLinecap="round"
+                                                        strokeLinejoin="round"
+                                                        strokeWidth={2}
+                                                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                                                    />
+                                                </svg>
+                                            </button>
+                                        </td>
 
                                     </tr>
                                 ))}
@@ -464,14 +521,16 @@ function TracklistDetailPage() {
             </div>
 
             {/* Track Search Modal */}
-            {searchModalEntry && (
-                <TrackSearchModal
-                    entry={searchModalEntry}
-                    onClose={handleCloseSearchModal}
-                    onSelectTrack={handleSelectTrack}
-                />
-            )}
-        </div>
+            {
+                searchModalEntry && (
+                    <TrackSearchModal
+                        entry={searchModalEntry}
+                        onClose={handleCloseSearchModal}
+                        onSelectTrack={handleSelectTrack}
+                    />
+                )
+            }
+        </div >
     );
 }
 

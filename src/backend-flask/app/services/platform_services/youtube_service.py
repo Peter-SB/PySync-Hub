@@ -150,6 +150,8 @@ class YouTubeService(BasePlatformService):
         # Get the best thumbnail
         thumbnails = entry.get('thumbnails', [])
         album_art_url = thumbnails[-1].get('url') if thumbnails else None
+        duration_seconds = entry.get('duration')
+        duration_ms = duration_seconds * 1000 if isinstance(duration_seconds, (int, float)) else None
         
         return {
             'platform_id': entry.get('id'),
@@ -160,6 +162,7 @@ class YouTubeService(BasePlatformService):
             'album_art_url': album_art_url,
             'download_url': entry.get('webpage_url') or f"https://www.youtube.com/watch?v={entry.get('id')}",
             'added_on': None,
+            'duration_ms': duration_ms,
         }
 
     @staticmethod
@@ -224,3 +227,23 @@ class YouTubeService(BasePlatformService):
         except Exception as e:
             logger.error("Error searching YouTube for query '%s': %s", query, e, exc_info=True)
             raise
+
+    @staticmethod
+    def get_track_by_url(track_url: str) -> dict:
+        """Fetch a single track by YouTube URL."""
+        if not track_url:
+            raise ValueError("Missing YouTube track URL.")
+
+        options = dict(YDL_OPTIONS)
+        options["extract_flat"] = False
+        options["dump_single_json"] = True
+
+        with YoutubeDL(options) as ydl:
+            info = ydl.extract_info(track_url, download=False)
+
+        if not info:
+            raise ValueError("Track not found on YouTube.")
+        if info.get("_type") == "playlist":
+            raise ValueError("Please provide a direct video URL, not a playlist.")
+
+        return YouTubeService._format_track_data(info)

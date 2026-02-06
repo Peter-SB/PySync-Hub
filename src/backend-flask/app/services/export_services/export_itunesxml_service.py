@@ -10,7 +10,7 @@ from mutagen.easyid3 import EasyID3
 from mutagen.mp3 import MP3
 
 from app.extensions import db
-from app.models import Playlist, Folder, Track
+from app.models import Playlist, Folder, Track, Tracklist
 from app.repositories.playlist_repository import PlaylistRepository
 
 logger = logging.getLogger(__name__)
@@ -30,6 +30,9 @@ class ExportItunesXMLService:
 
         # Process top-level items (those with no parent folder) using "PySyncDJ" as the root persistent ID
         ExportItunesXMLService._process_container(xml_lib, parent_folder_id=None, parent_persistent_id="PySyncDJ")
+
+        # Add tracklists under a dedicated root folder (ignore tracklist folders for now)
+        ExportItunesXMLService._add_tracklists_root_folder(xml_lib, parent_persistent_id="PySyncDJ")
 
         # Save the resulting XML
         xml_lib.save_xml(EXPORT_FOLDER, EXPORT_FILENAME)
@@ -117,6 +120,87 @@ class ExportItunesXMLService:
                     "Playlist Items": [{"Track ID": tid} for tid in track_ids]
                 }
                 xml_lib.add_playlist_from_elements(playlist_info)
+
+    @staticmethod
+    def _add_tracklists_root_folder(xml_lib, parent_persistent_id):
+        """
+        Adds a root "PySync Hub Tracklists" folder and all tracklists as playlists beneath it.
+        Tracklist folders are ignored (flattened).
+        """
+        tracklists = Tracklist.query.filter(
+            Tracklist.disabled == False
+        ).all()
+
+        tracklists = sorted(tracklists, key=lambda item: (item.custom_order, item.id))
+
+        tracklist_playlists = []
+        for tracklist in tracklists:
+            file_locations = ExportItunesXMLService._tracklist_file_locations(tracklist)
+            if file_locations:
+                tracklist_playlists.append((tracklist, file_locations))
+
+        if not tracklist_playlists:
+            return
+
+        folder_xml_id = xml_lib.gen_playlist_id()
+        folder_persistent_id = "PySyncTracklists"
+        folder_info = {
+            "Name": "PySync Hub Tracklists",
+            "Description": " ",
+            "Playlist ID": folder_xml_id,
+            "Playlist Persistent ID": folder_persistent_id,
+            "Parent Persistent ID": parent_persistent_id,
+            "Folder": True
+        }
+        xml_lib.add_playlist_from_elements(folder_info)
+
+        for tracklist, file_locations in tracklist_playlists:
+            playlist_xml_id = xml_lib.gen_playlist_id()
+
+            track_entries = []
+            track_ids = []
+            for file_location in file_locations:
+                if file_location:
+                    track_id = xml_lib.gen_track_id()
+                    track_ids.append(track_id)
+                    track_entries.append((track_id, file_location))
+
+            if not track_entries:
+                continue
+
+            xml_lib.add_to_all_track(track_entries)
+
+            playlist_info = {
+                "Name": tracklist.set_name,
+                "Description": " ",
+                "Playlist ID": playlist_xml_id,
+                "Playlist Persistent ID": f"{playlist_xml_id}",
+                "Parent Persistent ID": folder_persistent_id,
+                "All Items": True,
+                "Playlist Items": [{"Track ID": tid} for tid in track_ids]
+            }
+            xml_lib.add_playlist_from_elements(playlist_info)
+
+    @staticmethod
+    def _tracklist_file_locations(tracklist):
+        entries = list(tracklist.tracklist_entries or [])
+        entries.sort(
+            key=lambda entry: (
+                entry.order_index is None,
+                entry.order_index if entry.order_index is not None else entry.id
+            )
+        )
+
+        file_locations = []
+        for entry in entries:
+            track = entry.confirmed_track
+            if not track:
+                continue
+            file_location = track.absolute_download_path
+            if file_location:
+                file_locations.append(file_location)
+
+        return file_locations
 
 
 class RekordboxXMLLibrary:

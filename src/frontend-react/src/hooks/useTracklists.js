@@ -6,8 +6,10 @@ import {
     updateTracklist,
     deleteTracklist,
     refreshTracklist,
-    searchTracks,
-    fetchTracklists
+    searchTracklistEntry,
+    resolveTrackUrl,
+    fetchTracklists,
+    downloadTracklist
 } from '../api/tracklists';
 
 export function useTracklists() {
@@ -69,8 +71,25 @@ export function useRefreshTracklist() {
     });
 }
 
+export function useDownloadTracklist() {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: (id) => downloadTracklist(id),
+        onSuccess: (_data, tracklistId) => {
+            queryClient.invalidateQueries({ queryKey: ['tracklists'] });
+            queryClient.invalidateQueries({ queryKey: ['tracklists', tracklistId] });
+        },
+    });
+}
+
 export function useSearchTracks() {
     return useMutation({
-        mutationFn: ({ query, limit }) => searchTracks(query, limit),
+        mutationFn: ({ entryId, limit }) => searchTracklistEntry(entryId, limit),
+    });
+}
+
+export function useResolveTrackUrl() {
+    return useMutation({
+        mutationFn: ({ entryId, url }) => resolveTrackUrl(entryId, url),
     });
 }

@@ -1,29 +1,59 @@
 import React, { useState, useEffect } from 'react';
-import { useSearchTracks } from '../hooks/useTracklists';
+import { useResolveTrackUrl, useSearchTracks } from '../hooks/useTracklists';
+
+const SEARCH_RESULTS_CONFIDENCE_THRESHOLD = 0.1;
+const SEARCH_RESULTS_LIMIT = 2;
 
 const TrackSearchModal = ({ entry, onClose, onSelectTrack }) => {
     const [results, setResults] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
+    const [urlInput, setUrlInput] = useState('');
+    const [urlError, setUrlError] = useState('');
+    const [isResolvingUrl, setIsResolvingUrl] = useState(false);
     const searchMutation = useSearchTracks();
+    const resolveUrlMutation = useResolveTrackUrl();
+
+    const formatDuration = (durationMs) => {
+        if (typeof durationMs !== 'number' || Number.isNaN(durationMs)) {
+            return null;
+        }
+        const totalSeconds = Math.floor(durationMs / 1000);
+        const minutes = Math.floor(totalSeconds / 60);
+        const seconds = totalSeconds % 60;
+        return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+    };
+
+    const getConfidenceLabel = (score) => {
+        if (score >= 0.7) return 'High';
+        if (score >= 0.4) return 'Medium';
+        return 'Low';
+    };
+
+    const getConfidenceClass = (score) => {
+        if (score >= 0.7) return 'bg-green-100 text-green-700';
+        if (score >= 0.4) return 'bg-yellow-100 text-yellow-700';
+        return 'bg-red-100 text-red-700';
+    };
 
     useEffect(() => {
-        // Perform search when modal opens
         const performSearch = async () => {
             setIsLoading(true);
+            setErrorMessage('');
             try {
-                // Build search query from entry: Artist - Title - Version
-                const queryParts = [];
-                if (entry.artist) queryParts.push(entry.artist);
-                if (entry.short_title || entry.track_title) queryParts.push(entry.short_title || entry.track_title);
-                if (entry.version) queryParts.push(entry.version);
+                if (!entry?.id) {
+                    setResults([]);
+                    setErrorMessage('Missing tracklist entry ID.');
+                    return;
+                }
 
-                const query = queryParts.join(' - ');
-
-                const searchResults = await searchMutation.mutateAsync({ query, limit: 3 });
-                setResults(searchResults || []);
+                const response = await searchMutation.mutateAsync({ entryId: entry.id, limit: SEARCH_RESULTS_LIMIT });
+                const predicted = response?.predicted_tracks || [];
+                setResults(predicted);
             } catch (error) {
                 console.error('Error searching for tracks:', error);
                 setResults([]);
+                setErrorMessage('Search failed.');
             } finally {
                 setIsLoading(false);
             }
@@ -33,8 +63,8 @@ const TrackSearchModal = ({ entry, onClose, onSelectTrack }) => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [entry]);
 
-    const handleTrackSelect = (track) => {
-        onSelectTrack(track);
+    const handleTrackSelect = (track, confidence) => {
+        onSelectTrack(track, confidence);
         onClose();
     };
 
@@ -63,6 +93,36 @@ const TrackSearchModal = ({ entry, onClose, onSelectTrack }) => {
             ),
         };
         return icons[platform] || null;
+    };
+
+    const handleAddFromUrl = async () => {
+        const url = urlInput.trim();
+        if (!url) {
+            setUrlError('Enter a URL.');
+            return;
+        }
+        if (!entry?.id) {
+            setUrlError('Missing tracklist entry ID.');
+            return;
+        }
+
+        setUrlError('');
+        setIsResolvingUrl(true);
+        try {
+            const response = await resolveUrlMutation.mutateAsync({ entryId: entry.id, url });
+            if (!response?.track) {
+                setUrlError('No track found for that URL.');
+                return;
+            }
+
+            handleTrackSelect(response.track, response.confidence);
+            setUrlInput('');
+        } catch (error) {
+            console.error('Error resolving track URL:', error);
+            setUrlError(error?.message || 'Failed to resolve URL.');
+        } finally {
+            setIsResolvingUrl(false);
+        }
     };
 
     return (
@@ -94,47 +154,94 @@ const TrackSearchModal = ({ entry, onClose, onSelectTrack }) => {
                             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
                         </div>
                     ) : results.length === 0 ? (
-                        <div className="text-center py-12 text-gray-500">
-                            <p className="text-lg">No results found</p>
+                        <div className="text-center py-10 text-gray-500 text-sm">
+                            <p>{errorMessage || 'No results found'}</p>
                         </div>
                     ) : (
-                        <div className="space-y-2">
-                            {results.map((track, index) => (
-                                <div
-                                    key={`${track.platform}-${track.platform_id}-${index}`}
-                                    onClick={() => handleTrackSelect(track)}
-                                    className="flex items-center p-4 border rounded-lg hover:bg-blue-50 cursor-pointer transition-colors"
-                                >
-                                    {/* Album Art */}
-                                    {track.album_art_url && (
-                                        <img
-                                            src={track.album_art_url}
-                                            alt={track.name}
-                                            className="w-16 h-16 rounded object-cover mr-4"
-                                        />
-                                    )}
+                        <div className="space-y-1.5">
+                            {results.filter((result) => {
+                                if (result?.source === 'url') {
+                                    return true;
+                                }
+                                if (typeof result?.confidence === 'number') {
+                                    return result.confidence >= SEARCH_RESULTS_CONFIDENCE_THRESHOLD;
+                                }
+                                return true;
+                            }).map((result, index) => {
+                                const track = result?.track || result;
+                                const confidence = typeof result?.confidence === 'number' ? result.confidence : null;
+                                const confidencePct = confidence != null ? Math.round(confidence * 100) : null;
+                                const durationLabel = formatDuration(track?.duration_ms);
+                                return (
+                                    <div
+                                        key={`${track.platform}-${track.platform_id}-${index}`}
+                                        onClick={() => handleTrackSelect(track, confidence)}
+                                        className="flex items-center p-2 border rounded-lg hover:bg-blue-50 cursor-pointer transition-colors"
+                                    >
+                                        {/* Platform */}
+                                        <div className="mr-3 w-10 flex items-center justify-center">
+                                            {getPlatformIcon(track.platform)}
+                                        </div>
 
-                                    {/* Track Info */}
-                                    <div className="flex-1">
-                                        <div className="font-medium text-gray-900">{track.name}</div>
-                                        <div className="text-sm text-gray-600">{track.artist}</div>
-                                        {track.album && (
-                                            <div className="text-xs text-gray-500">{track.album}</div>
+                                        {/* Album Art */}
+                                        {track.album_art_url && (
+                                            <img
+                                                src={track.album_art_url}
+                                                alt={track.name}
+                                                className="w-10 h-10 rounded object-cover mr-3"
+                                            />
                                         )}
-                                    </div>
 
-                                    {/* Platform Icon */}
-                                    <div className="ml-4">
-                                        {getPlatformIcon(track.platform)}
+                                        {/* Title / Artist */}
+                                        <div className="flex-1">
+                                            <div className="font-medium text-gray-900 text-sm">{track.name}</div>
+                                            <div className="text-xs text-gray-600">{track.artist}  -  Length {durationLabel}</div>
+                                        </div>
+
+                                        {/* Confidence */}
+                                        <div className="mr-3 text-right min-w-[200px]">
+                                            {confidencePct != null ? (
+                                                <div className="flex items-center justify-end gap-2">
+                                                    <div className="text-right">
+                                                        <div className="text-xs font-medium text-gray-700">{confidencePct}%</div>
+                                                        <div className="text-[10px] text-gray-500">Confidence</div>
+                                                    </div>
+                                                    <span className='w-16 text-center'>
+                                                        <span className={`px-2 py-0.5 rounded text-[10px] font-medium ${getConfidenceClass(confidence)}`}>
+                                                            {getConfidenceLabel(confidence)}
+                                                        </span>
+                                                    </span>
+                                                </div>
+                                            ) : (
+                                                <div className="text-[11px] text-gray-400">—</div>
+                                            )}
+                                        </div>
                                     </div>
-                                </div>
-                            ))}
+                                );
+                            })}
                         </div>
                     )}
                 </div>
 
-                {/* Close Button */}
-                <div className="mt-4 pt-4 border-t flex justify-end">
+                {/* Add From URL + Close */}
+                <div className="mt-4 pt-4 border-t flex items-center gap-3">
+                    <div className="flex-1 flex items-center gap-2">
+                        <input
+                            type="text"
+                            value={urlInput}
+                            onChange={(e) => setUrlInput(e.target.value)}
+                            placeholder="Add from URL (Spotify, SoundCloud, YouTube)"
+                            className="flex-1 px-3 py-2 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            disabled={isResolvingUrl}
+                        />
+                        <button
+                            onClick={handleAddFromUrl}
+                            className="px-3 py-2 bg-blue-600 text-white rounded text-sm hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                            disabled={isResolvingUrl}
+                        >
+                            {isResolvingUrl ? 'Adding...' : 'Add from URL'}
+                        </button>
+                    </div>
                     <button
                         onClick={onClose}
                         className="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition-colors"
@@ -142,6 +249,11 @@ const TrackSearchModal = ({ entry, onClose, onSelectTrack }) => {
                         Close
                     </button>
                 </div>
+                {urlError && (
+                    <div className="mt-2 text-sm text-red-600">
+                        {urlError}
+                    </div>
+                )}
             </div>
         </div>
     );

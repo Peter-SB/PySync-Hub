@@ -198,3 +198,17 @@ class SpotifyApiService(BaseSpotifyService):
         except Exception as e:
             logger.error("Error searching Spotify for query '%s': %s", query, e, exc_info=True)
             raise
+
+    @staticmethod
+    def get_track_by_url(track_url: str) -> Dict[str, Any]:
+        """Fetch a single track by Spotify URL."""
+        track_id = SpotifyApiService._extract_track_id(track_url)
+        if not track_id:
+            raise ValueError("Invalid Spotify track URL.")
+
+        client = SpotifyApiService.get_client()
+        track = client.track(track_id)
+        if not track:
+            raise ValueError("Track not found on Spotify.")
+
+        return SpotifyApiService._format_track_data(track)

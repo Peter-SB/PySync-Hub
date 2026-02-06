@@ -104,6 +104,7 @@ example_artist_track_pairs = [
 edge_cases_to_test = [
     ("DRS & LSB - High As She (Break Remix) [FOOTNOTES]", "LSB, DRS, Break - High As She - Break Remix)"),
     ("Metrik - Dying Light (feat. ShockOne)", "Metrik, ShockOne - Dying Light")
+    ("Sub Focus & Subsonic	Roll Too Deep", " Sub Focus, Subsonic - Roll Too Deep (feat. Subsonic)")
 ]
 #High Contrast	If We Ever	Unglued Remix	 If We Ever - Unglued Remix If We Ever - Unglued Remix High Contrast, Unglued 
 #Netsky ft. Emeli Sande	Thunder	—	Thunder (feat. Emeli Sandé) Thunder (feat. Emeli Sandé) Netsky, Emeli Sandé

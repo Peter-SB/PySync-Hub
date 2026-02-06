@@ -285,6 +285,7 @@ class SpotifyScraperService(BaseSpotifyService):
             'album_art_url': album_art_url,
             'download_url': None,
             'added_on': None,  # Scraper doesn't provide this info
+            'duration_ms': track_info.get('duration_ms') or track_info.get('duration'),
         }
 
 
@@ -330,3 +331,25 @@ class SpotifyScraperService(BaseSpotifyService):
         Search for track using query. Not supported with scraper. 
         """
         raise NotImplementedError("Search track not possible for SpotifyScraperService.")
+
+    @staticmethod
+    def get_track_by_url(track_url: str) -> Dict[str, Any]:
+        """Fetch a single track by Spotify URL using the scraper."""
+        track_id = SpotifyScraperService._extract_track_id(track_url)
+        if not track_id:
+            raise ValueError("Invalid Spotify track URL.")
+
+        resolved_url = track_url
+        if "open.spotify.com" not in track_url:
+            resolved_url = SpotifyScraperService._get_track_url_from_id(track_id)
+
+        client = SpotifyScraperService._get_scraper_client()
+        try:
+            track_info = client.get_track_info(resolved_url)
+        finally:
+            client.close()
+
+        if not track_info:
+            raise ValueError("Track not found on Spotify.")
+
+        return SpotifyScraperService._format_track_data_from_scraper(track_info)
