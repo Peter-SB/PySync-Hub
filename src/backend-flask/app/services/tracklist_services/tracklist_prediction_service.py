@@ -33,9 +33,11 @@ class TracklistPredictionService:
     """ Service for feature scoring, string matching, and prediction. """
 
     @staticmethod
-    def predict_tracklist_matches(tracklist: Tracklist, database_tracks: list[Track]) -> Tracklist:
+    def predict_tracklist_matches(tracklist: Tracklist, database_tracks: list[Track], skip_confirmed: bool = True) -> Tracklist:
         """ Predict matches for all TracklistEntry in a Tracklist. """
         for tracklist_entry in tracklist.tracklist_entries:
+            if skip_confirmed and tracklist_entry.confirmed_track_id:
+                continue
             TracklistPredictionService.predict_tracklist_entry_match(tracklist_entry, database_tracks)
         return tracklist
 
@@ -51,8 +53,10 @@ class TracklistPredictionService:
 
         top_candidate, top_candidate_score = top_candidates[0]
 
-        if top_candidate_score < 0.15:
+        if top_candidate_score < 0.1:
             tracklist_entry.predicted_track_id = None
+            tracklist_entry.predicted_track_confidence = None
+            tracklist_entry.predicted_tracks = []
             return tracklist_entry
 
         tracklist_entry.predicted_tracks = top_candidates
