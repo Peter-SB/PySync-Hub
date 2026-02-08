@@ -2,6 +2,7 @@ import logging
 from typing import Type
 from urllib.parse import urlparse
 
+from app.services.platform_services.base_platform_service import BasePlatformService
 from app.services.platform_services.soundcloud_service import SoundcloudService
 from app.services.platform_services.spotify_api_service import SpotifyApiService
 from app.services.platform_services.spotify_scraper_service import SpotifyScraperService
@@ -36,7 +37,7 @@ class PlatformServiceFactory:
             return SpotifyScraperService
 
     @staticmethod
-    def get_service(platform: str) -> Type[SoundcloudService | SpotifyApiService | SpotifyScraperService | YouTubeService]:
+    def get_service_by_platform(platform: str) -> Type[BasePlatformService]:
         """Returns the appropriate service instance based on the platform."""
         if platform == "soundcloud":
             return SoundcloudService
@@ -48,7 +49,7 @@ class PlatformServiceFactory:
             raise ValueError(f"Unsupported platform: {platform}")
 
     @staticmethod
-    def get_service_by_url(url: str) -> Type[SoundcloudService | SpotifyApiService | SpotifyScraperService | YouTubeService]:
+    def get_service_by_url(url: str) -> Type[BasePlatformService]:
         """
         Returns the appropriate service instance based on the URL.
         Uses proper URL parsing to avoid substring sanitization vulnerabilities.

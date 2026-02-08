@@ -6,7 +6,6 @@ from app.repositories.playlist_repository import PlaylistRepository
 from app.services.playlist_manager_service import PlaylistManagerService
 from tests.mocks.mock_data_helper import MockPlaylistDataHelper
 
-
 @pytest.mark.usefixtures("client", "init_database")
 class TestGetPlaylists():
     """Tests for the GET /api/playlists endpoint."""

@@ -3,6 +3,7 @@ import re
 from typing import Optional
 
 from yt_dlp import YoutubeDL
+from app.services.platform_services.base_platform_service import BasePlatformService
 from app.utils.file_download_utils import FileDownloadUtils
 
 logger = logging.getLogger(__name__)
@@ -17,7 +18,7 @@ YDL_OPTIONS = {
     'dump_single_json': True,
 }
 
-class YouTubeService:
+class YouTubeService(BasePlatformService):
     """Service for fetching YouTube playlist data and tracks."""
 
     @staticmethod
@@ -114,7 +115,7 @@ class YouTubeService:
                         continue                    
 
                     track_data = YouTubeService._format_track_data(entry)
-                    track_data["album"] = info.get("title")  # Use playlist title as album
+                    track_data["album"] = "" #info.get("title")  # Use playlist title as album
                     tracks_data.append(track_data)
                 
                 logger.info("Fetched %d tracks from YouTube playlist", len(tracks_data))
@@ -149,6 +150,8 @@ class YouTubeService:
         # Get the best thumbnail
         thumbnails = entry.get('thumbnails', [])
         album_art_url = thumbnails[-1].get('url') if thumbnails else None
+        duration_seconds = entry.get('duration')
+        duration_ms = duration_seconds * 1000 if isinstance(duration_seconds, (int, float)) else None
         
         return {
             'platform_id': entry.get('id'),
@@ -159,6 +162,7 @@ class YouTubeService:
             'album_art_url': album_art_url,
             'download_url': entry.get('webpage_url') or f"https://www.youtube.com/watch?v={entry.get('id')}",
             'added_on': None,
+            'duration_ms': duration_ms,
         }
 
     @staticmethod
@@ -186,3 +190,60 @@ class YouTubeService:
             return url
         
         raise ValueError(f"Could not extract playlist ID from URL: {url}")
+
+    @staticmethod
+    def search_track(query: str, limit: int = 3) -> list[dict]:
+        """ 
+        Search for track on YouTube by query string using yt-dlp. 
+        
+        :param query: Search query (e.g., "Artist - Title - Version")
+        :param limit: Maximum number of results to return (default 3)
+        :return: List of track dictionaries
+        """
+        try:
+            search_url = f"ytsearch{limit}:{query}"
+            
+            with YoutubeDL(YDL_OPTIONS) as ydl:
+                logger.info("Searching YouTube for: %s", query)
+                info = ydl.extract_info(search_url, download=False)
+                
+                if not info or 'entries' not in info:
+                    logger.warning("No search results found for query: %s", query)
+                    return []
+                
+                entries = info.get('entries', [])
+                tracks_data = []
+                
+                for entry in entries:
+                    if entry is None:
+                        continue
+                    
+                    track_data = YouTubeService._format_track_data(entry)
+                    tracks_data.append(track_data)
+                
+                logger.info("Found %d YouTube results for query: %s", len(tracks_data), query)
+                return tracks_data
+                
+        except Exception as e:
+            logger.error("Error searching YouTube for query '%s': %s", query, e, exc_info=True)
+            raise
+
+    @staticmethod
+    def get_track_by_url(track_url: str) -> dict:
+        """Fetch a single track by YouTube URL."""
+        if not track_url:
+            raise ValueError("Missing YouTube track URL.")
+
+        options = dict(YDL_OPTIONS)
+        options["extract_flat"] = False
+        options["dump_single_json"] = True
+
+        with YoutubeDL(options) as ydl:
+            info = ydl.extract_info(track_url, download=False)
+
+        if not info:
+            raise ValueError("Track not found on YouTube.")
+        if info.get("_type") == "playlist":
+            raise ValueError("Please provide a direct video URL, not a playlist.")
+
+        return YouTubeService._format_track_data(info)

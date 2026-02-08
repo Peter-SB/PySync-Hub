@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { FaMusic, FaCog, FaList, FaGithub, FaExclamationTriangle } from "react-icons/fa";
+import { FaMusic, FaCog, FaList, FaGithub, FaExclamationTriangle, FaClipboardList, FaSyncAlt } from "react-icons/fa";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faQuestion } from "@fortawesome/free-solid-svg-icons";
 import { Link } from 'react-router-dom';
 import { version } from '../config';
+import ExportButton from './ExportButton';
+import ExportStatus from './ExportStatus';
 
-export default function Sidebar({ onExport }) {
+export default function Sidebar() {
   const [versionStatus, setVersionStatus] = useState(null);
+  const [exportMessage, setExportMessage] = useState('');
 
   useEffect(() => {
     const checkVersion = async () => {
@@ -97,6 +100,12 @@ export default function Sidebar({ onExport }) {
               </Link>
             </li>
             <li className="mb-4">
+              <Link to="/tracklists" className="flex items-center space-x-3 p-3 rounded hover:bg-gray-700 hover:text-white">
+                <FaClipboardList className="text-xl" />
+                <span>Tracklists</span>
+              </Link>
+            </li>
+            <li className="mb-4">
               <a href="https://github.com/Peter-SB/PySync-Hub/blob/master/docs/Help.md" target="_blank" rel="noopener noreferrer" className="flex items-center space-x-3 p-3 rounded hover:bg-gray-700 hover:text-white">
                 <FontAwesomeIcon icon={faQuestion} className="text-2xl mx-1" />
                 <span>Help</span>
@@ -126,6 +135,17 @@ export default function Sidebar({ onExport }) {
             {getVersionIcon()}
           </a>
         </div>
+        <div className="border-t border-gray-200 my-2" />
+        <nav>
+          <ul>
+            <li>
+              <div className="mt-1 pt-3 flex justify-center">
+                <ExportButton setExportMessage={setExportMessage} />
+              </div>
+            </li>
+          </ul>
+        </nav>
+        {exportMessage && <ExportStatus message={exportMessage} />}
       </div>
     </aside>
   );

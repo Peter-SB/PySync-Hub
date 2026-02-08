@@ -56,7 +56,7 @@ function ExportButton({ setExportMessage }) {
     return (
         <button
             onClick={handleExportClick}
-            className="flex items-center px-3 py-2 bg-gray-900 hover:bg-black text-white rounded-lg shadow-md"
+            className="flex items-center justify-center px-3 py-2 bg-gray-900 hover:bg-black text-white rounded-lg shadow-md h-12 w-52"
             disabled={exportMutation.isPending || (isCompleted && !exportMutation.isPending)}
         >
             <span className="font-medium text-l">
