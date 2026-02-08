@@ -74,19 +74,18 @@ function DownloadPage() {
   return (
     <div id="download-page" className="flex flex-col h-screen p-4 pt-2">
       {/* Header box */}
-      <div id="header-box" className="bg-white p-4 rounded-lg mb-1 shadow">
-        <h1 className="text-3xl font-semibold text-gray-800 mb-7">Playlist Downloads</h1>
-        <AddPlaylistForm />
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <ExportButton setExportMessage={setExportMessage} /> {/* Replaced button with ExportButton component */}
+      <div id="header-box" className="bg-white p-5 rounded-lg mb-1 shadow">
+        <h1 className="text-3xl font-semibold text-gray-800 mb-5">Playlist Downloads</h1>
+        <div className="flex flex-row flex-wrap items-center gap-4">
+          <div className="flex-1 min-w-0">
+            <AddPlaylistForm className="mb-0 mt-0" />
           </div>
           <div className="flex items-center gap-2 ml-auto">
             {/* <PlaylistSortOrder sortBy={sortBy} setSortBy={setSortBy} sortOrder={sortOrder} setSortOrder={setSortOrder} />  todo: reimplement*/}
             {selectedPlaylists.length > 0 && (
               <button
                 onClick={handleDelete}
-                className="flex items-center px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+                className="flex items-center px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 h-12"
                 disabled={deleteMutation.isLoading}
               >
                 {deleteMutation.isLoading ? 'Deleting...' : `Delete Selected (${selectedPlaylists.length})`}
@@ -94,7 +93,7 @@ function DownloadPage() {
             )}
             <button
               onClick={handleSync}
-              className="flex items-center px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+              className="flex items-center px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 h-12"
               disabled={syncMutation.isLoading}
             >
               {syncMutation.isLoading
@@ -113,8 +112,6 @@ function DownloadPage() {
         selectedPlaylists={selectedPlaylists}
         onSelectChange={handleCheckboxChange}
       />
-
-      {exportMessage && <ExportStatus message={exportMessage} />}
     </div>
   );
 }

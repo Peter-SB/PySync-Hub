@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTracklistById, useSaveTracklist, useUpdateTracklist, useDeleteTracklist, useRefreshTracklist, useDownloadTracklist } from '../hooks/useTracklists';
 import TrackSearchModal from '../components/TrackSearchModal';
@@ -19,15 +19,42 @@ function TracklistDetailPage() {
     const [tracklistName, setTracklistName] = useState('');
     const [hasChanges, setHasChanges] = useState(false);
     const [isDownloading, setIsDownloading] = useState(false);
+    const [downloadingTrackIds, setDownloadingTrackIds] = useState([]);
     const [searchModalEntry, setSearchModalEntry] = useState(null);
     const [searchModalEntryIndex, setSearchModalEntryIndex] = useState(null);
+    const lastSavedTitleRef = useRef('');
 
     useEffect(() => {
         if (tracklist) {
+            const initialTitle = tracklist.set_name || tracklist.name || '';
             setLocalEntries(tracklist.tracklist_entries || tracklist.entries || []);
-            setTracklistName(tracklist.set_name || tracklist.name || '');
+            setTracklistName(initialTitle);
+            lastSavedTitleRef.current = initialTitle;
         }
     }, [tracklist]);
+
+    useEffect(() => {
+        if (!tracklist?.id) {
+            return undefined;
+        }
+        if (tracklistName === lastSavedTitleRef.current) {
+            return undefined;
+        }
+
+        const timeoutId = setTimeout(async () => {
+            try {
+                await updateMutation.mutateAsync({
+                    id: tracklist.id,
+                    data: { set_name: tracklistName },
+                });
+                lastSavedTitleRef.current = tracklistName;
+            } catch (error) {
+                console.error('Error saving tracklist title:', error);
+            }
+        }, 1000);
+
+        return () => clearTimeout(timeoutId);
+    }, [tracklist?.id, tracklistName, updateMutation]);
 
     const handleConfirmTrack = async (entryIndex, trackId) => {
         const updatedEntries = [...localEntries];
@@ -197,6 +224,43 @@ function TracklistDetailPage() {
             alert(`Failed to download tracklist: ${error.message}`);
         } finally {
             setIsDownloading(false);
+        }
+    };
+
+    const handleDownloadTrack = async (entry) => {
+        const track = entry?.confirmed_track;
+        const trackId = track?.id;
+        if (!trackId || track?.download_location) {
+            return;
+        }
+        if (downloadingTrackIds.includes(trackId)) {
+            return;
+        }
+
+        setDownloadingTrackIds((prev) => [...prev, trackId]);
+        try {
+            const response = await fetch(`${backendUrl}/api/tracks/${trackId}/download`, {
+                method: 'POST',
+            });
+            if (!response.ok) {
+                const data = await response.json();
+                throw new Error(data.error || 'Failed to download track');
+            }
+            const updatedTrack = await response.json();
+            setLocalEntries((prevEntries) => prevEntries.map((currentEntry) => {
+                if (currentEntry?.confirmed_track_id === updatedTrack.id) {
+                    return {
+                        ...currentEntry,
+                        confirmed_track: updatedTrack,
+                    };
+                }
+                return currentEntry;
+            }));
+        } catch (error) {
+            console.error('Error downloading track:', error);
+            alert(`Failed to download track: ${error.message}`);
+        } finally {
+            setDownloadingTrackIds((prev) => prev.filter((id) => id !== trackId));
         }
     };
 
@@ -426,11 +490,23 @@ function TracklistDetailPage() {
                                                         </div>
                                                     </div>
                                                 ) : (
-                                                    <span className="text-gray-400 italic">No match found</span>
+                                                    <span className=" text-gray-400 italic">No match found</span>
                                                 );
                                             })()}
                                             {entry.confirmed_track && !entry.confirmed_track.download_location && (
-                                                <FaDownload className="ml-2 text-gray-500" title="No download location" />
+                                                <button
+                                                    type="button"
+                                                    onClick={() => handleDownloadTrack(entry)}
+                                                    disabled={downloadingTrackIds.includes(entry.confirmed_track.id)}
+                                                    className="ml-2 text-gray-500 hover:text-green-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                                    title="Download track"
+                                                >
+                                                    {downloadingTrackIds.includes(entry.confirmed_track.id) ? (
+                                                        <span className="inline-block h-4 w-4 animate-spin rounded-full border-b-2 border-gray-500"></span>
+                                                    ) : (
+                                                        <FaDownload className="h-4 w-4" />
+                                                    )}
+                                                </button>
                                             )}
                                         </td>
 

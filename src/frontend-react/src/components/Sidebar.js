@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { FaMusic, FaCog, FaList, FaGithub, FaExclamationTriangle, FaClipboardList } from "react-icons/fa";
+import { FaMusic, FaCog, FaList, FaGithub, FaExclamationTriangle, FaClipboardList, FaSyncAlt } from "react-icons/fa";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faQuestion } from "@fortawesome/free-solid-svg-icons";
 import { Link } from 'react-router-dom';
 import { version } from '../config';
+import ExportButton from './ExportButton';
+import ExportStatus from './ExportStatus';
 
-export default function Sidebar({ onExport }) {
+export default function Sidebar() {
   const [versionStatus, setVersionStatus] = useState(null);
+  const [exportMessage, setExportMessage] = useState('');
 
   useEffect(() => {
     const checkVersion = async () => {
@@ -132,6 +135,17 @@ export default function Sidebar({ onExport }) {
             {getVersionIcon()}
           </a>
         </div>
+        <div className="border-t border-gray-200 my-2" />
+        <nav>
+          <ul>
+            <li>
+              <div className="mt-1 pt-3 flex justify-center">
+                <ExportButton setExportMessage={setExportMessage} />
+              </div>
+            </li>
+          </ul>
+        </nav>
+        {exportMessage && <ExportStatus message={exportMessage} />}
       </div>
     </aside>
   );

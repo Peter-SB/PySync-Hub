@@ -45,16 +45,19 @@ function TrackPage() {
       {/* Search Bar Header */}
       <div id="header-box" className="bg-white p-5 pb-4 pt-7 rounded-lg mb-2 shadow flex flex-col">
         <div className="flex items-center flex-grow mb-2">
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-500 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 19a8 8 0 100-16 8 8 0 000 16zM21 21l-4.35-4.35" />
-          </svg>
-          <input
-            type="text"
-            placeholder="Search by title, artist, or album..."
-            className="w-full p-3 text-gray-800 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
+          <div className="flex items-center bg-white border border-gray-300 rounded-lg px-3 w-full" style={{ height: '44px' }}>
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 19a8 8 0 100-16 8 8 0 000 16zM21 21l-4.35-4.35" />
+            </svg>
+            <input
+              type="text"
+              placeholder="Search by title, artist, or album..."
+              className="w-full p-2 text-gray-800 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none border-none"
+              style={{ height: '40px' }}
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </div>
         </div>
         <div className="text-gray-600 text-sm text-left ml-9">
           {filteredTracks.length} {filteredTracks.length === 1 ? 'song' : 'songs'} found

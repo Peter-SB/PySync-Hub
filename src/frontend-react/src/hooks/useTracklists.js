@@ -55,6 +55,47 @@ export function useUpdateTracklist() {
     });
 }
 
+export function useToggleTracklist() {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: ({ tracklistId, disabled }) => updateTracklist(tracklistId, { disabled }),
+        onMutate: async ({ tracklistId, disabled }) => {
+            await queryClient.cancelQueries({ queryKey: ['tracklists'] });
+            await queryClient.cancelQueries({ queryKey: ['tracklists', tracklistId] });
+
+            const previousTracklists = queryClient.getQueryData(['tracklists']);
+            const previousTracklist = queryClient.getQueryData(['tracklists', tracklistId]);
+
+            queryClient.setQueryData(['tracklists'], (old = []) =>
+                old.map((tracklist) =>
+                    tracklist.id === tracklistId ? { ...tracklist, disabled } : tracklist
+                )
+            );
+
+            if (previousTracklist) {
+                queryClient.setQueryData(['tracklists', tracklistId], {
+                    ...previousTracklist,
+                    disabled,
+                });
+            }
+
+            return { previousTracklists, previousTracklist };
+        },
+        onError: (_error, variables, context) => {
+            if (context?.previousTracklists) {
+                queryClient.setQueryData(['tracklists'], context.previousTracklists);
+            }
+            if (context?.previousTracklist) {
+                queryClient.setQueryData(['tracklists', variables.tracklistId], context.previousTracklist);
+            }
+        },
+        onSettled: (_data, _error, variables) => {
+            queryClient.invalidateQueries({ queryKey: ['tracklists'] });
+            queryClient.invalidateQueries({ queryKey: ['tracklists', variables.tracklistId] });
+        },
+    });
+}
+
 export function useDeleteTracklist() {
     const queryClient = useQueryClient();
     return useMutation({

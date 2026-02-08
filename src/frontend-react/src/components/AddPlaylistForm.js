@@ -2,7 +2,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useAddPlaylist } from '../hooks/usePlaylistMutations';
 
-function AddPlaylistForm() {
+function AddPlaylistForm({ className = '' }) {
   const [playlistUrl, setPlaylistUrl] = useState('');
   const [trackLimit, setTrackLimit] = useState('');
   const [dateLimit, setDateLimit] = useState('');
@@ -48,7 +48,7 @@ function AddPlaylistForm() {
   return (
     <form
       onSubmit={handleSubmit}
-      className="space-y-4 mb-5 mt-6"
+      className={`${className}`}
       ref={containerRef}
     >
       <div className="relative">

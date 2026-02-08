@@ -11,6 +11,7 @@ const TrackSearchModal = ({ entry, onClose, onSelectTrack }) => {
     const [urlInput, setUrlInput] = useState('');
     const [urlError, setUrlError] = useState('');
     const [isResolvingUrl, setIsResolvingUrl] = useState(false);
+    const [showAllResults, setShowAllResults] = useState(false);
     const searchMutation = useSearchTracks();
     const resolveUrlMutation = useResolveTrackUrl();
 
@@ -144,7 +145,18 @@ const TrackSearchModal = ({ entry, onClose, onSelectTrack }) => {
                             </>
                         )}
                     </h2>
-                    <div className="text-gray-600"> Track Search Results </div>
+                    <div className="flex items-center justify-between text-gray-600">
+                        <div>Track Search Results</div>
+                        <label className="flex items-center gap-2 text-sm select-none">
+                            <span>Show all results</span>
+                            <input
+                                type="checkbox"
+                                className="h-4 w-4 accent-blue-600"
+                                checked={showAllResults}
+                                onChange={(e) => setShowAllResults(e.target.checked)}
+                            />
+                        </label>
+                    </div>
                 </div>
 
                 {/* Results */}
@@ -160,6 +172,9 @@ const TrackSearchModal = ({ entry, onClose, onSelectTrack }) => {
                     ) : (
                         <div className="space-y-1.5">
                             {results.filter((result) => {
+                                if (showAllResults) {
+                                    return true;
+                                }
                                 if (result?.source === 'url') {
                                     return true;
                                 }
