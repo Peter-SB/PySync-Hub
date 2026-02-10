@@ -38,7 +38,7 @@ function AppContent() {
 
   return (
     <Router>
-      <div className="flex h-screen bg-gray-100">
+      <div className="flex min-h-screen bg-gray-100">
         <Sidebar />
         <main className="flex-1">
           <Routes>
