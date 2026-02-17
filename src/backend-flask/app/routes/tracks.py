@@ -9,6 +9,7 @@ from app.extensions import db, socketio
 from app.models import Track
 from app.routes import api
 from app.utils.db_utils import commit_with_retries
+from app.services.download_services.download_service_factory import DownloadServiceFactory
 
 logger = logging.getLogger(__name__)
 
@@ -126,6 +127,9 @@ def re_download_track(track_id):
         db.session.commit()
 
         # Determine which download service to use based on platform
+        # download_service = DownloadServiceFactory.get_service_by_platform(track.platform)
+        # download_service.download_track(track)
+
         if track.platform.lower() == "spotify":
             from app.services.download_services.spotify_download_service import SpotifyDownloadService
             SpotifyDownloadService.download_track(track)
