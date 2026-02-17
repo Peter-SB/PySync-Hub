@@ -60,17 +60,17 @@ def create_app(app_config=Config):
     logger.info(f"Settings Path={os.path.normpath(Config.SETTINGS_PATH)}")
     logger.info("Flask application initialized")
 
+    # Initialize database
+    with app.app_context():
+        from app.models import Playlist, Folder
+        db.create_all()
+
     # todo: refactor to a setup_database function
     # Run database migrations
     db_path = app_config.SQLALCHEMY_DATABASE_URI.replace('sqlite:///', '')
     if os.path.exists(db_path) and not app.config.get("TESTING"):
         logger.info(f"Running database migrations on {db_path}")
         DatabaseMigrator.run_migrations(db_path)
-    
-    # Initialize database
-    with app.app_context():
-        from app.models import Playlist, Folder
-        db.create_all()
 
     # Register folder routes
     # todo: refactor to function, make new blueprints for other routes

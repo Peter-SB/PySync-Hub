@@ -2,13 +2,15 @@
 .env
 venv/
 __pycache__/
-*.pytest_cache
+.pytest*
 *.pyc
 *.pyo
 *.pyd
 .DS_Store
 .idea/
 *.db
+*.db-*
+
 
 downloads/
 music_downloads/

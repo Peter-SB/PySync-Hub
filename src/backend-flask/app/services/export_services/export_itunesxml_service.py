@@ -3,19 +3,12 @@ import os
 import urllib
 import xml.etree.ElementTree as ET
 from typing import Optional, Union, Any
-from xml.dom import minidom
-from datetime import datetime
-
-from mutagen.easyid3 import EasyID3
-from mutagen.mp3 import MP3
-
-from app.extensions import db
-from app.models import Playlist, Folder, Track
-from app.repositories.playlist_repository import PlaylistRepository
+from app.models import Playlist, Folder, Track, Tracklist, TracklistEntry, PlaylistTrack
+from sqlalchemy.orm import selectinload
 
 logger = logging.getLogger(__name__)
 
-DownloadedTrackType = tuple[int, str]
+DownloadedTrackType = tuple[int, Track]
 
 
 class ExportItunesXMLService:
@@ -31,6 +24,9 @@ class ExportItunesXMLService:
         # Process top-level items (those with no parent folder) using "PySyncDJ" as the root persistent ID
         ExportItunesXMLService._process_container(xml_lib, parent_folder_id=None, parent_persistent_id="PySyncDJ")
 
+        # Add tracklists under a dedicated root folder (ignore tracklist folders for now)
+        ExportItunesXMLService._add_tracklists_root_folder(xml_lib, parent_persistent_id="PySyncDJ")
+
         # Save the resulting XML
         xml_lib.save_xml(EXPORT_FOLDER, EXPORT_FILENAME)
         return os.path.join(EXPORT_FOLDER, EXPORT_FILENAME)
@@ -43,7 +39,9 @@ class ExportItunesXMLService:
         For folders, the method calls itself recursively.
         """
         # Fetch playlists that belong to the current container
-        playlists = Playlist.query.filter(
+        playlists = Playlist.query.options(
+            selectinload(Playlist.tracks).selectinload(PlaylistTrack.track)
+        ).filter(
             Playlist.folder_id == parent_folder_id,
             Playlist.disabled == False
         ).all()
@@ -82,26 +80,20 @@ class ExportItunesXMLService:
                 )
 
             elif isinstance(item, Playlist):
-                # For a playlist, grab the absolute file paths from its tracks
-                file_locations = [
-                    pt.track.absolute_download_path 
-                    for pt in item.tracks 
-                    if pt.track and pt.track.download_location
-                ]
-                
-                if not file_locations:
+                track_entries = []
+                track_ids = []
+                for pt in item.tracks:
+                    track = pt.track
+                    if not track or not track.download_location:
+                        continue
+                    track_id = xml_lib.gen_track_id()
+                    track_ids.append(track_id)
+                    track_entries.append((track_id, track))
+
+                if not track_entries:
                     continue
 
                 playlist_xml_id = xml_lib.gen_playlist_id()
-                
-                # Build track entries
-                track_entries = []
-                track_ids = []
-                for file_location in file_locations:
-                    if file_location:  # Only add if the path is valid
-                        track_id = xml_lib.gen_track_id()
-                        track_ids.append(track_id)
-                        track_entries.append((track_id, file_location))
                 
                 # Add the track info to the XML's tracks dictionary
                 xml_lib.add_to_all_track(track_entries)
@@ -117,6 +109,87 @@ class ExportItunesXMLService:
                     "Playlist Items": [{"Track ID": tid} for tid in track_ids]
                 }
                 xml_lib.add_playlist_from_elements(playlist_info)
+
+    @staticmethod
+    def _add_tracklists_root_folder(xml_lib, parent_persistent_id):
+        """
+        Adds a root "PySync Hub Tracklists" folder and all tracklists as playlists beneath it.
+        Tracklist folders are ignored (flattened).
+        """
+        tracklists = Tracklist.query.options(
+            selectinload(Tracklist.tracklist_entries).selectinload(TracklistEntry.confirmed_track)
+        ).filter(
+            Tracklist.disabled == False
+        ).all()
+
+        tracklists = sorted(tracklists, key=lambda item: (item.custom_order, item.id))
+
+        tracklist_playlists = []
+        for tracklist in tracklists:
+            tracks = ExportItunesXMLService._tracklist_file_locations(tracklist)
+            if tracks:
+                tracklist_playlists.append((tracklist, tracks))
+
+        if not tracklist_playlists:
+            return
+
+        folder_xml_id = xml_lib.gen_playlist_id()
+        folder_persistent_id = "PySyncTracklists"
+        folder_info = {
+            "Name": "PySync Hub Tracklists",
+            "Description": " ",
+            "Playlist ID": folder_xml_id,
+            "Playlist Persistent ID": folder_persistent_id,
+            "Parent Persistent ID": parent_persistent_id,
+            "Folder": True
+        }
+        xml_lib.add_playlist_from_elements(folder_info)
+
+        for tracklist, tracks in tracklist_playlists:
+            playlist_xml_id = xml_lib.gen_playlist_id()
+
+            track_entries = []
+            track_ids = []
+            for track in tracks:
+                track_id = xml_lib.gen_track_id()
+                track_ids.append(track_id)
+                track_entries.append((track_id, track))
+
+            if not track_entries:
+                continue
+
+            xml_lib.add_to_all_track(track_entries)
+
+            playlist_info = {
+                "Name": tracklist.set_name,
+                "Description": " ",
+                "Playlist ID": playlist_xml_id,
+                "Playlist Persistent ID": f"{playlist_xml_id}",
+                "Parent Persistent ID": folder_persistent_id,
+                "All Items": True,
+                "Playlist Items": [{"Track ID": tid} for tid in track_ids]
+            }
+            xml_lib.add_playlist_from_elements(playlist_info)
+
+    @staticmethod
+    def _tracklist_file_locations(tracklist):
+        entries = list(tracklist.tracklist_entries or [])
+        entries.sort(
+            key=lambda entry: (
+                entry.order_index is None,
+                entry.order_index if entry.order_index is not None else entry.id
+            )
+        )
+
+        file_locations = []
+        for entry in entries:
+            track = entry.confirmed_track
+            if not track:
+                continue
+            if track.download_location:
+                file_locations.append(track)
+
+        return file_locations
 
 
 class RekordboxXMLLibrary:
@@ -171,10 +244,11 @@ class RekordboxXMLLibrary:
         self.add_root_playlist()
 
     def save_xml(self, EXPORT_FOLDER, EXPORT_FILENAME: str = "PySyncLibrary.xml") -> None:
-        # Convert to a pretty XML string
-        rough_string = ET.tostring(self.plist, "utf-8")
-        reparsed = minidom.parseString(rough_string)
-        pretty_xml_str = reparsed.toprettyxml(indent="  ", encoding="UTF-8")
+        try:
+            ET.indent(self.plist, space="  ")
+        except AttributeError:
+            pass
+        pretty_xml_str = ET.tostring(self.plist, "utf-8")
 
         # Write the doctype manually since ElementTree won't do it for us (needed by Rekordbox)
         doctype = '<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">'
@@ -187,15 +261,15 @@ class RekordboxXMLLibrary:
             f.write(final_xml_content)
         logger.info(f"Exported XML file to {file_location}")
 
-    def add_playlist(self, playlist_name: str, file_locations: list[str], parent_persistent_id: str = "PySyncDJ") -> None:
+    def add_playlist(self, playlist_name: str, tracks: list[Track], parent_persistent_id: str = "PySyncDJ") -> None:
         """
         Adds playlist information to the playlists element.
 
         :param playlist_name: Name of the playlist.
-        :param file_locations: List of file locations for tracks.
+        :param tracks: List of tracks.
         :param parent_persistent_id: ID of the parent folder.
         """
-        track_dict = [(self.gen_track_id(), file_location) for file_location in file_locations]
+        track_dict = [(self.gen_track_id(), track) for track in tracks]
 
         self.add_to_all_track(track_dict)
 
@@ -233,7 +307,7 @@ class RekordboxXMLLibrary:
         """
         Adds track information to the Tracks element.
 
-        :param tracks_dict: List of tuples (track_id, file_location)
+        :param tracks_dict: List of tuples (track_id, track)
         """
         formatted_tracks = self.format_tracks_dic(tracks_dict)
         if formatted_tracks is None:
@@ -256,31 +330,27 @@ class RekordboxXMLLibrary:
         """
         formatted_track_dict = {}
 
-        for track_id, file_location in downloaded_tracks_dict:
-            file_location = os.path.join(file_location)
-            try:
-                audio = MP3(file_location, ID3=EasyID3)
-                name = audio['title'][0] if 'title' in audio else 'Unknown'
-                artist = audio['artist'][0] if 'artist' in audio else 'Unknown'
-                album = audio['album'][0] if 'album' in audio else 'Unknown'
-                # Optionally, add track length or other data here
+        for track_id, track in downloaded_tracks_dict:
+            absolute_path = track.absolute_download_path
+            if not absolute_path:
+                continue
+            name = track.name or 'Unknown'
+            artist = track.artist or 'Unknown'
+            album = track.album or 'Unknown'
 
-                location = f"file://localhost/{urllib.parse.quote(file_location)}"
+            normalized_path = absolute_path.replace("\\", "/")
+            location = f"file://localhost/{urllib.parse.quote(normalized_path)}"
 
-                formatted_track_dict[track_id] = {
-                    "Track ID": track_id,
-                    "Name": name,
-                    "Artist": artist,
-                    "Album": album,
-                    "Kind": "MPEG audio file",
-                    "Persistent ID": track_id,
-                    "Track Type": "File",
-                    "Location": location
-                }
-
-            except Exception as e:
-                logger.error(f"Error reading file {file_location}: {e}")
-                return None
+            formatted_track_dict[track_id] = {
+                "Track ID": track_id,
+                "Name": name,
+                "Artist": artist,
+                "Album": album,
+                "Kind": "MPEG audio file",
+                "Persistent ID": track_id,
+                "Track Type": "File",
+                "Location": location
+            }
 
         return formatted_track_dict
 
