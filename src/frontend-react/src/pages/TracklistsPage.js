@@ -103,7 +103,7 @@ function TracklistsPage() {
 
     return (
         <div className="flex flex-col h-screen p-4 pt-2">
-            <div className="bg-white p-5 rounded-lg mb-4 shadow">
+            <div className="bg-white p-5 rounded-lg shadow flex flex-col flex-1 min-h-0">
                 <div className="flex items-center justify-between mb-4">
                     <h1 className="text-3xl font-semibold text-gray-800">Set Tracklists</h1>
                     <div className="flex items-center gap-3">
@@ -141,73 +141,75 @@ function TracklistsPage() {
                         <p className="text-sm">Try a different search</p>
                     </div>
                 ) : (
-                    <div className="space-y-2">
-                        {filteredTracklists.map((tracklist) => {
-                            const downloadableTracks = getDownloadableTracks(tracklist);
-                            const downloadCount = downloadableTracks.length;
-                            const isDownloading = downloadingTracklistIds.includes(tracklist.id);
-                            const isToggling = togglingTracklistIds.includes(tracklist.id);
+                    <div className="flex-1 min-h-0 overflow-y-auto pr-1">
+                        <div className="space-y-2">
+                            {filteredTracklists.map((tracklist) => {
+                                const entries = tracklist.tracklist_entries || tracklist.entries || [];
+                                const confirmedEntriesCount = entries.filter((entry) => entry.confirmed_track_id).length;
+                                const downloadableTracks = getDownloadableTracks(tracklist);
+                                const downloadCount = downloadableTracks.length;
+                                const isDownloading = downloadingTracklistIds.includes(tracklist.id);
+                                const isToggling = togglingTracklistIds.includes(tracklist.id);
 
-                            return (
-                                <div
-                                    key={tracklist.id}
-                                    onClick={() => handleTracklistClick(tracklist.id)}
-                                    className={`flex items-center justify-between p-4 border border-gray-300 rounded-lg cursor-pointer transition-colors ${tracklist.disabled ? 'bg-gray-200 hover:bg-gray-200' : 'hover:bg-gray-50'}`}
-                                >
-                                    <div className="flex-1">
-                                        <h3 className={`text-lg font-semibold ${tracklist.disabled ? 'text-gray-600' : 'text-gray-800'}`}>
-                                            {tracklist.set_name || `Tracklist ${tracklist.id}`}
-                                        </h3>
-                                        <div className={`flex items-center space-x-4 text-sm mt-1 ${tracklist.disabled ? 'text-gray-500' : 'text-gray-600'}`}>
-                                            <span>
-                                                {tracklist.tracklist_entries?.length || 0} entries
-                                                {/*todo: add downloaded count  */}
-                                            </span>
-                                            {tracklist.created_at && (
-                                                <span>
-                                                    Created: {new Date(tracklist.created_at).toLocaleDateString()}
+                                return (
+                                    <div
+                                        key={tracklist.id}
+                                        onClick={() => handleTracklistClick(tracklist.id)}
+                                        className={`flex items-center justify-between p-3 border border-gray-300 rounded-lg cursor-pointer transition-colors ${tracklist.disabled ? 'bg-gray-200 hover:bg-gray-200' : 'hover:bg-gray-50'}`}
+                                    >
+                                        <div className={`flex-1 min-w-0 ${tracklist.disabled ? 'text-gray-500' : 'text-gray-600'}`}>
+                                            <div className="flex items-center flex-wrap gap-x-3 gap-y-1">
+                                                <h3 className={`text-lg font-semibold truncate ${tracklist.disabled ? 'text-gray-600' : 'text-gray-800'}`}>
+                                                    {tracklist.set_name || `Tracklist ${tracklist.id}`}
+                                                </h3>
+                                                <span className="text-sm">
+                                                    {confirmedEntriesCount} confirmed
                                                 </span>
-                                            )}
-                                            {tracklist.folder_id && (
-                                                <span className="px-2 py-0.5 bg-blue-100 text-blue-700 rounded text-xs">
-                                                    In Folder
-                                                </span>
-                                            )}
-                                        </div>
-                                    </div>
-                                    <div className="flex items-center space-x-2">
-                                        {downloadCount > 0 && (
-                                            <button
-                                                onClick={(e) => handleDownloadTracklist(e, tracklist)}
-                                                disabled={isDownloading}
-                                                className="flex items-center gap-2 px-3 py-2 text-green-700 bg-green-50 rounded hover:bg-green-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                                                title={`Download ${downloadCount} track${downloadCount !== 1 ? 's' : ''}`}
-                                            >
-                                                <FaDownload className="h-4 w-4" />
-                                                <span className="text-xs font-medium">
-                                                    {isDownloading ? 'Downloading...' : `Download (${downloadCount})`}
-                                                </span>
-                                            </button>
-                                        )}
-                                        <label
-                                            htmlFor={`toggle-tracklist-${tracklist.id}`}
-                                            className="relative inline-flex items-center cursor-pointer ml-2"
-                                            onClick={(e) => e.stopPropagation()}
-                                        >
-                                            <input
-                                                type="checkbox"
-                                                id={`toggle-tracklist-${tracklist.id}`}
-                                                onChange={(e) => handleToggleDisabled(e, tracklist.id, !tracklist.disabled)}
-                                                checked={tracklist.disabled}
-                                                disabled={isToggling}
-                                                className="sr-only peer"
-                                            />
-                                            <div className="relative w-[35px] h-[21px] bg-gray-400 border border-gray-300 rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:ring-gray-600 disabled:opacity-50 disabled:pointer-events-none
-                                                peer-checked:bg-gray-100
-                                                before:inline-block before:w-4 before:h-4 before:bg-white before:rounded-full before:shadow before:transition-all before:ease-in-out before:duration-200
-                                                before:translate-x-[17px] before:translate-y-[-0.5px] peer-checked:before:translate-x-0">
+                                                {tracklist.created_at && (
+                                                    <span className="text-sm">
+                                                        Created: {new Date(tracklist.created_at).toLocaleDateString()}
+                                                    </span>
+                                                )}
+                                                {tracklist.folder_id && (
+                                                    <span className="px-2 py-0.5 bg-blue-100 text-blue-700 rounded text-xs">
+                                                        In Folder
+                                                    </span>
+                                                )}
                                             </div>
-                                        </label>
+                                        </div>
+                                        <div className="flex items-center space-x-2">
+                                            {downloadCount > 0 && (
+                                                <button
+                                                    onClick={(e) => handleDownloadTracklist(e, tracklist)}
+                                                    disabled={isDownloading}
+                                                    className="flex items-center gap-2 px-3 py-2 text-green-700 bg-green-50 rounded hover:bg-green-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                                    title={`Download ${downloadCount} track${downloadCount !== 1 ? 's' : ''}`}
+                                                >
+                                                    <FaDownload className="h-4 w-4" />
+                                                    <span className="text-xs font-medium">
+                                                        {isDownloading ? 'Downloading...' : `Download (${downloadCount})`}
+                                                    </span>
+                                                </button>
+                                            )}
+                                            <label
+                                                htmlFor={`toggle-tracklist-${tracklist.id}`}
+                                                className="relative inline-flex items-center cursor-pointer ml-2"
+                                                onClick={(e) => e.stopPropagation()}
+                                            >
+                                                <input
+                                                    type="checkbox"
+                                                    id={`toggle-tracklist-${tracklist.id}`}
+                                                    onChange={(e) => handleToggleDisabled(e, tracklist.id, !tracklist.disabled)}
+                                                    checked={tracklist.disabled}
+                                                    disabled={isToggling}
+                                                    className="sr-only peer"
+                                                />
+                                                <div className="relative w-[35px] h-[21px] bg-gray-400 border border-gray-300 rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:ring-gray-600 disabled:opacity-50 disabled:pointer-events-none
+                                                    peer-checked:bg-gray-100
+                                                    before:inline-block before:w-4 before:h-4 before:bg-white before:rounded-full before:shadow before:transition-all before:ease-in-out before:duration-200
+                                                    before:translate-x-[17px] before:translate-y-[-0.5px] peer-checked:before:translate-x-0">
+                                                </div>
+                                            </label>
                                         {/* <button
                                             onClick={(e) => handleDelete(e, tracklist.id)}
                                             disabled={deleteMutation.isPending}
@@ -229,10 +231,11 @@ function TracklistsPage() {
                                                 />
                                             </svg>
                                         </button> */}
+                                        </div>
                                     </div>
-                                </div>
-                            );
-                        })}
+                                );
+                            })}
+                        </div>
                     </div>
                 )}
             </div>

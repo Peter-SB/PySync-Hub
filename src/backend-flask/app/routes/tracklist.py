@@ -17,6 +17,9 @@ from app.utils.db_utils import commit_with_retries
 from app.utils import feature_scoring_utils
 from config import Config
 
+# todo: Fix emptry/bad rows
+# todo: Check tracklist title when adding to avoid duplicates
+
 
 logger = logging.getLogger(__name__)
 
