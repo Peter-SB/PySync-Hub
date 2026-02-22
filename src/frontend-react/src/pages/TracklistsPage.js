@@ -242,6 +242,7 @@ function TracklistsPage() {
 
             {showAddModal && (
                 <AddTracklistModal
+                    existingTracklists={tracklists}
                     onClose={() => setShowAddModal(false)}
                     onSuccess={(createdTracklist) => {
                         setShowAddModal(false);

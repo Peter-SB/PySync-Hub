@@ -1,11 +1,28 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
+import { FaExclamationTriangle } from 'react-icons/fa';
 import { useProcessTracklist } from '../hooks/useTracklists';
 
-function AddTracklistModal({ onClose, onSuccess }) {
+function normalizeTitle(value) {
+    return (value || '').trim().replace(/\s+/g, ' ').toLowerCase();
+}
+
+function AddTracklistModal({ onClose, onSuccess, existingTracklists = [] }) {
     const [tracklistString, setTracklistString] = useState('');
     const [name, setName] = useState('');
     const [isArtistFirst, setIsArtistFirst] = useState(true);
     const processMutation = useProcessTracklist();
+    const existingTitleMap = useMemo(() => {
+        const titleMap = new Map();
+        existingTracklists.forEach((tracklist) => {
+            const existingTitle = tracklist?.set_name || tracklist?.name || '';
+            const normalized = normalizeTitle(existingTitle);
+            if (normalized && !titleMap.has(normalized)) {
+                titleMap.set(normalized, existingTitle);
+            }
+        });
+        return titleMap;
+    }, [existingTracklists]);
+    const duplicateTitle = existingTitleMap.get(normalizeTitle(name));
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -85,15 +102,24 @@ function AddTracklistModal({ onClose, onSuccess }) {
                             <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
                                 Tracklist Name (Optional)
                             </label>
-                            <input
-                                type="text"
-                                id="name"
-                                value={name}
-                                onChange={(e) => setName(e.target.value)}
-                                placeholder="e.g Tomorrowland 2016 Set"
-                                className="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                disabled={processMutation.isPending}
-                            />
+                            <div className="relative">
+                                <input
+                                    type="text"
+                                    id="name"
+                                    value={name}
+                                    onChange={(e) => setName(e.target.value)}
+                                    placeholder="e.g Tomorrowland 2016 Set"
+                                    className={`w-full p-3 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500 ${duplicateTitle ? 'border-amber-400 pr-11' : 'border-gray-300'}`}
+                                    disabled={processMutation.isPending}
+                                />
+                                {duplicateTitle && (
+                                    <FaExclamationTriangle
+                                        className="w-5 h-5 absolute right-3 top-1/2 -translate-y-1/2 text-amber-500"
+                                        title={`A tracklist named "${duplicateTitle}" already exists.`}
+                                        aria-label="Duplicate title warning"
+                                    />
+                                )}
+                            </div>
                         </div>
 
                         {/* Format Toggle */}
@@ -148,7 +174,7 @@ function AddTracklistModal({ onClose, onSuccess }) {
                                 required
                             />
                             <p className="text-xs text-gray-500 mt-1">
-                                Enter one track per line. The format should match your selection above.
+                                Enter one track per line.
                             </p>
                         </div>
                     </div>
