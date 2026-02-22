@@ -8,6 +8,7 @@ from flask_migrate import upgrade, init, stamp
 
 from app.extensions import db, socketio, migrate
 from app.repositories.playlist_repository import PlaylistRepository
+from app.services.soundcloud_client_id_service import refresh_soundcloud_client_id
 from app.workers.download_worker import DownloadManager
 from app.database_migrator import DatabaseMigrator
 from config import Config
@@ -59,6 +60,14 @@ def create_app(app_config=Config):
     logger.info(f"DB Path={os.path.normpath(Config.SQLALCHEMY_DATABASE_URI)}")
     logger.info(f"Settings Path={os.path.normpath(Config.SETTINGS_PATH)}")
     logger.info("Flask application initialized")
+
+    if not app.config.get("TESTING"):
+        try:
+            refreshed_client_id = refresh_soundcloud_client_id(app_config, persist=True)
+            app.config["SOUNDCLOUD_CLIENT_ID"] = refreshed_client_id
+            logger.info("SoundCloud client_id auto-refreshed on startup")
+        except Exception as exc:
+            logger.warning("SoundCloud client_id auto-refresh failed on startup: %s", exc)
 
     # Initialize database
     with app.app_context():
