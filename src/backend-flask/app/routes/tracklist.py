@@ -214,6 +214,8 @@ def add_tracklist():
         
         if not data or 'tracklist_string' not in data or 'set_name' not in data:
             return jsonify({'error': 'Missing required fields: tracklist_string and set_name'}), 400
+        artist_first_raw = data.get('artist_first', True)
+        assume_artist_first = artist_first_raw if isinstance(artist_first_raw, bool) else str(artist_first_raw).lower() not in ('false', '0', 'no')
         
         logger.info(f"Processing tracklist: {data.get('set_name')}")
         
@@ -229,7 +231,11 @@ def add_tracklist():
         
         # Process the tracklist and predict
         database_tracks = Track.query.all()
-        tracklist_with_predictions = TracklistImportService.process_and_predict_tracklist(tracklist, database_tracks)
+        tracklist_with_predictions = TracklistImportService.process_and_predict_tracklist(
+            tracklist,
+            database_tracks,
+            assume_artist_first=assume_artist_first
+        )
 
         # Save to db
         db.session.add(tracklist_with_predictions)

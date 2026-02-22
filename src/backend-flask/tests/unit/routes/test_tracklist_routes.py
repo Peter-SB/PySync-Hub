@@ -408,3 +408,28 @@ class TestTracklistRoutes:
         # Should only have 2 entries (ID track filtered out)
         assert len(data['tracklist_entries']) == 2
         assert all(not e['is_unidentified'] for e in data['tracklist_entries'])
+
+    def test_process_tracklist_track_artist_format_with_id_track(self, app, init_database):
+        """Test track-title first format parsing and filtering of unidentified ID tracks."""
+        # Arrange
+        client = app.test_client()
+
+        tracklist_data = {
+            'set_name': 'Track First Mix',
+            'tracklist_string': '2:28 No Problem - Chase & Status\n1:20 ID - K motionz',
+            'artist_first': False
+        }
+
+        # Act
+        response = client.post(
+            '/api/tracklists/add',
+            data=json.dumps(tracklist_data),
+            content_type='application/json'
+        )
+
+        # Assert
+        assert response.status_code == 200
+        data = json.loads(response.data)
+        assert len(data['tracklist_entries']) == 1
+        assert data['tracklist_entries'][0]['short_title'] == 'No Problem'
+        assert data['tracklist_entries'][0]['artist'] == 'Chase & Status'

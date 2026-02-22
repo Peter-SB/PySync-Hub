@@ -14,17 +14,27 @@ class TracklistImportService:
     """ Service for importing and processing tracklists. """
 
     @staticmethod
-    def process_and_predict_tracklist(tracklist: Tracklist, database_tracks: list[Track]) -> Tracklist:
+    def process_and_predict_tracklist(
+        tracklist: Tracklist,
+        database_tracks: list[Track],
+        assume_artist_first: bool = True
+    ) -> Tracklist:
         """ Take a raw tracklist string and process it into a Tracklist with TracklistEntry including predicted matches. """
-        processed_tracklist = TracklistImportService.process_tracklist(tracklist)
+        processed_tracklist = TracklistImportService.process_tracklist(
+            tracklist,
+            assume_artist_first=assume_artist_first
+        )
         tracklist_evaluated = TracklistPredictionService.predict_tracklist_matches(processed_tracklist, database_tracks)
         return tracklist_evaluated
 
     @staticmethod
-    def process_tracklist(tracklist: Tracklist) -> Tracklist:
+    def process_tracklist(tracklist: Tracklist, assume_artist_first: bool = True) -> Tracklist:
         """ Processes a single tracklist string into Tracklist objects. """
         split_track_list = tracklist_cleaning_utils.split_tracks(tracklist.tracklist_string)
-        import_tracks = [TracklistImportService.pre_process_track(entry) for entry in split_track_list]
+        import_tracks = [
+            TracklistImportService.pre_process_track(entry, assume_artist_first=assume_artist_first)
+            for entry in split_track_list
+        ]
         
         # Filter out unidentified tracks and assign to the tracklist
         # Note: For in-memory processing, we create temporary TracklistEntry objects
@@ -62,7 +72,7 @@ class TracklistImportService:
         return platform_service.search_track(query, limit=limit)
 
     @staticmethod
-    def pre_process_track(tracklist_entry: str) -> TracklistEntry:
+    def pre_process_track(tracklist_entry: str, assume_artist_first: bool = True) -> TracklistEntry:
         """ 
         Process a single tracklist entry string into a TracklistEntry object. 
         
@@ -75,7 +85,10 @@ class TracklistImportService:
         prefix_cleaned_entry = tracklist_cleaning_utils.clean_track_prefix(unicode_cleaned_entry)
         label_cleaned_entry = tracklist_cleaning_utils.remove_label_info(prefix_cleaned_entry)
         # 3. Extract artist and title
-        artist, full_title = tracklist_cleaning_utils.extract_artist_and_title(label_cleaned_entry)
+        artist, full_title = tracklist_cleaning_utils.extract_artist_and_title(
+            label_cleaned_entry,
+            assume_artist_first=assume_artist_first
+        )
         # 4. Extract title and version
         short_title, version = tracklist_cleaning_utils.extract_title_and_version(full_title)
         # 5. Identified check
