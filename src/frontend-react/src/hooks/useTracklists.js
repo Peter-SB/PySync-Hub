@@ -2,7 +2,6 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
     fetchTracklistById,
     processTracklist,
-    saveTracklist,
     updateTracklist,
     deleteTracklist,
     refreshTracklist,
@@ -32,16 +31,6 @@ export function useTracklistById(id) {
 export function useProcessTracklist() {
     return useMutation({
         mutationFn: processTracklist,
-    });
-}
-
-export function useSaveTracklist() {
-    const queryClient = useQueryClient();
-    return useMutation({
-        mutationFn: saveTracklist,
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['tracklists'] });
-        },
     });
 }
 

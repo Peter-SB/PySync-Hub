@@ -13,7 +13,6 @@ class TestTracklistRoutes:
     - GET /api/tracklists - Get all tracklists
     - GET /api/tracklists/<id> - Get specific tracklist
     - POST /api/tracklists/add - Process tracklist with predictions
-    - POST /api/tracklists - Save tracklist to database
     - PUT /api/tracklists/<id> - Update tracklist
     - DELETE /api/tracklists/<id> - Delete tracklist
     """
@@ -167,88 +166,6 @@ class TestTracklistRoutes:
         data = json.loads(response.data)
         assert 'error' in data
 
-    def test_save_tracklist(self, app, init_database):
-        """Test saving a confirmed tracklist to the database."""
-        # Arrange
-        client = app.test_client()
-        
-        tracklist_data = {
-            'set_name': 'Saved Mix',
-            'artist': 'DJ Save',
-            'tracklist_string': '1. Artist - Track',
-            'rating': 5,
-            'tracklist_entries': [
-                {
-                    'full_tracklist_entry': '1. Artist - Track',
-                    'artist': 'Artist',
-                    'short_title': 'Track',
-                    'full_title': 'Track',
-                    'confirmed_track_id': None
-                }
-            ]
-        }
-        
-        # Act
-        response = client.post(
-            '/api/tracklists',
-            data=json.dumps(tracklist_data),
-            content_type='application/json'
-        )
-        
-        # Assert
-        assert response.status_code == 201
-        data = json.loads(response.data)
-        assert data['set_name'] == 'Saved Mix'
-        assert data['artist'] == 'DJ Save'
-        assert data['rating'] == 5
-        assert 'id' in data
-        assert len(data['tracklist_entries']) == 1
-        
-        # Verify it was saved to database
-        tracklist = Tracklist.query.get(data['id'])
-        assert tracklist is not None
-        assert tracklist.set_name == 'Saved Mix'
-
-    def test_save_tracklist_with_confirmed_tracks(self, app, init_database):
-        """Test saving a tracklist with confirmed track IDs."""
-        # Arrange
-        client = app.test_client()
-        
-        track = Track(
-            platform_id='confirmed1',
-            platform='spotify',
-            name='Confirmed Track',
-            artist='Confirmed Artist'
-        )
-        db.session.add(track)
-        db.session.commit()
-        
-        tracklist_data = {
-            'set_name': 'Confirmed Mix',
-            'tracklist_string': '1. Confirmed Artist - Confirmed Track',
-            'tracklist_entries': [
-                {
-                    'full_tracklist_entry': '1. Confirmed Artist - Confirmed Track',
-                    'artist': 'Confirmed Artist',
-                    'short_title': 'Confirmed Track',
-                    'full_title': 'Confirmed Track',
-                    'confirmed_track_id': track.id
-                }
-            ]
-        }
-        
-        # Act
-        response = client.post(
-            '/api/tracklists',
-            data=json.dumps(tracklist_data),
-            content_type='application/json'
-        )
-        
-        # Assert
-        assert response.status_code == 201
-        data = json.loads(response.data)
-        assert data['tracklist_entries'][0]['confirmed_track_id'] == track.id
-
     def test_update_tracklist(self, app, init_database):
         """Test updating an existing tracklist."""
         # Arrange
@@ -335,30 +252,6 @@ class TestTracklistRoutes:
         
         # Assert
         assert response.status_code == 404
-
-    def test_save_tracklist_minimal_data(self, app, init_database):
-        """Test saving a tracklist with minimal required data."""
-        # Arrange
-        client = app.test_client()
-        
-        tracklist_data = {
-            'set_name': 'Minimal Mix',
-            'tracklist_string': 'Some tracks'
-        }
-        
-        # Act
-        response = client.post(
-            '/api/tracklists',
-            data=json.dumps(tracklist_data),
-            content_type='application/json'
-        )
-        
-        # Assert
-        assert response.status_code == 201
-        data = json.loads(response.data)
-        assert data['set_name'] == 'Minimal Mix'
-        assert data['artist'] is None
-        assert data['rating'] is None
 
     def test_process_tracklist_with_vip_tracks(self, app, init_database):
         """Test processing a tracklist containing VIP tracks."""

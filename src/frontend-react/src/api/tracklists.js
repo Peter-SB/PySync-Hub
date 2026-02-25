@@ -19,13 +19,6 @@ export function processTracklist(tracklistData) {
     });
 }
 
-export function saveTracklist(tracklistData) {
-    return request('/api/tracklists', {
-        method: 'POST',
-        body: tracklistData,
-    });
-}
-
 export function updateTracklist(id, tracklistData) {
     return request(`/api/tracklists/${id}`, {
         method: 'PUT',

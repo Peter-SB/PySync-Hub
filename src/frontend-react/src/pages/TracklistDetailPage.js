@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useTracklistById, useSaveTracklist, useUpdateTracklist, useDeleteTracklist, useRefreshTracklist, useDownloadTracklist } from '../hooks/useTracklists';
+import { useTracklistById, useUpdateTracklist, useDeleteTracklist, useRefreshTracklist, useDownloadTracklist } from '../hooks/useTracklists';
 import TrackSearchModal from '../components/TrackSearchModal';
 import { FaDownload } from 'react-icons/fa';
 import { backendUrl } from '../config';
@@ -9,7 +9,6 @@ function TracklistDetailPage() {
     const { tracklistId } = useParams();
     const navigate = useNavigate();
     const { data: tracklist, isLoading, error } = useTracklistById(tracklistId);
-    const saveMutation = useSaveTracklist();
     const updateMutation = useUpdateTracklist();
     const deleteMutation = useDeleteTracklist();
     const refreshMutation = useRefreshTracklist();
@@ -159,11 +158,7 @@ function TracklistDetailPage() {
         };
 
         try {
-            if (tracklist.id) {
-                await updateMutation.mutateAsync({ id: tracklist.id, data: payload });
-            } else {
-                await saveMutation.mutateAsync(payload);
-            }
+            await updateMutation.mutateAsync({ id: tracklist.id, data: payload });
             setHasChanges(false);
         } catch (error) {
             console.error('Error saving tracklist:', error);
