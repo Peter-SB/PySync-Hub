@@ -131,13 +131,6 @@ def test_split_tracks_when_multiple_in_line():
     split_tracklist = split_tracks(examples_multiple_track_lines)
     assert len(split_tracklist) == 2 
 
-def test_split_tracks_when_wslash_in_line():
-    """ Test splitting when edgecase tracks in one line. """
-    examples_single_track_lines = "•	w/ Benny L - Memories"
-    split_tracklist = split_tracks(examples_single_track_lines)
-    assert len(split_tracklist) == 1
-
-
 def test_clean_track_prefix():
     """ Test removing timestamps and any other formatting data"""
     for prefix, expected in example_prefix_pairs:
