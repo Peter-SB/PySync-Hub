@@ -2,6 +2,7 @@ import hashlib
 import json
 import os
 import logging
+import re
 
 from app.services.platform_services.soundcloud_service import SoundcloudService, PlaylistNotFoundException
 
@@ -13,6 +14,14 @@ logger = logging.getLogger(__name__)
 class MockSoundcloudService(SoundcloudService):
     """ Mock Spotify Client overrides the _make_http_get_request and _resolve_playlist methods and returns saved
     response objects for seamless unit testing. """
+
+    @staticmethod
+    def _normalize_tracks_request_url(url: str) -> str:
+        """
+        Normalize tracks request URLs so fixtures are stable across environments.
+        We ignore client_id because it varies by local settings and CI secrets.
+        """
+        return re.sub(r"([?&]client_id=)[^&]*", r"\1", url)
 
     @staticmethod
     def return_data_from_mock_file(filename: str):
@@ -39,7 +48,8 @@ class MockSoundcloudService(SoundcloudService):
             raise PlaylistNotFoundException("Playlist not found. Could it be private or deleted?", 404)
 
         if "tracks?ids=" in url:
-            url_hash = hashlib.md5(url.encode("utf-8")).hexdigest()  # Has the url for a short unique filename
+            normalized_url = MockSoundcloudService._normalize_tracks_request_url(url)
+            url_hash = hashlib.md5(normalized_url.encode("utf-8")).hexdigest()  # Hash url for unique filename
             file_path = os.path.join(current_dir, "../mock_data", f"soundcloud_request_{url_hash}.json")
             return json.loads(MockSoundcloudService.return_data_from_mock_file(file_path))
 

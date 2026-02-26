@@ -52,22 +52,23 @@ class TracklistRepository:
         
         tracklist = Tracklist.query.get(tracklist_id)
         if not tracklist:
-            # Create if not found
-            tracklist = Tracklist(
-                set_name=update_data.get('set_name'),
-                artist=update_data.get('artist'),
-                tracklist_string=update_data.get('tracklist_string'),
-                rating=update_data.get('rating'),
-                disabled=update_data.get('disabled', False),
-                image_url=update_data.get('image_url'),
-                custom_order=update_data.get('custom_order', 0),
-                download_progress=update_data.get('download_progress', 0),
-                folder_id=update_data.get('folder_id')
-            )
-            db.session.add(tracklist)
-            commit_with_retries(db.session)
-            logger.info(f"Created tracklist with ID: {tracklist.id}")
-            return tracklist
+            # # Create if not found
+            # tracklist = Tracklist(
+            #     set_name=update_data.get('set_name'),
+            #     artist=update_data.get('artist'),
+            #     tracklist_string=update_data.get('tracklist_string'),
+            #     rating=update_data.get('rating'),
+            #     disabled=update_data.get('disabled', False),
+            #     image_url=update_data.get('image_url'),
+            #     custom_order=update_data.get('custom_order', 0),
+            #     download_progress=update_data.get('download_progress', 0),
+            #     folder_id=update_data.get('folder_id')
+            # )
+            # db.session.add(tracklist)
+            # commit_with_retries(db.session)
+            # logger.info(f"Created tracklist with ID: {tracklist.id}")
+            logger.warning(f"Tracklist with ID {tracklist_id} not found for update")
+            return None
         
         # Update fields if provided
         if 'set_name' in update_data:
