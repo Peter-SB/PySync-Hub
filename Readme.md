@@ -56,6 +56,7 @@ Alternatively PySync Hub can be run with a docker container, [docker instruction
 ## How To Use
 
 See the Help Page for all usage instructions: [Help](docs/Help.md)
+See the tracklist workflow guide here: [Tracklists](docs/Tracklists.md)
 
 ## Troubleshooting
 If you are having trouble with the app, please check the [Troubleshooting Section](docs/Help.md#troubleshooting) for common issues and solutions.

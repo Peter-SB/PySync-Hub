@@ -61,6 +61,12 @@ Once the file is added, the PySync-Hub folder will be available in the library s
 
 Enjoy!
 
+## 4. Tracklists (Set Tracklists)
+
+Tracklists let you add a set's tracklist and an advanced ai system will match the tracklist to tracks in your library. It will also search for and find any tracks not already in your library.
+
+For full details and API references, see: [Tracklists Guide](./Tracklists.md)
+
 
 # Tips and Hints
 ### Track and Date Limits
