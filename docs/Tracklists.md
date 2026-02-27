@@ -2,6 +2,10 @@
 
 Tracklists let you import a DJ set tracklist, auto-match each entry to tracks in your library, then confirm. Also quickly and easily find and download tracks not already in your library.
 
+<div align="center">
+    <img src="images/tracklist-page.png" alt="Tracklist Page" style="width:80%; height:auto;">
+</div>
+
 ## What You Can Do
 
 - Import a raw text tracklist and process it into saved tracklists ready for playing.

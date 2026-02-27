@@ -459,50 +459,51 @@ function TracklistDetailPage() {
                                         <td className="px-4 py-3 text-sm text-gray-900">
                                             {entry.version || <span className="text-gray-400 italic">—</span>}
                                         </td>
-                                        <td className="flex justify-between items-center px-4 py-3 text-sm">
+                                        <td className="px-4 py-3 text-sm align-middle">
+                                            <div className="flex justify-between items-center min-h-10">
+                                                {(() => {
+                                                    const track = entry.confirmed_track
+                                                        || entry.predicted_track
+                                                        || (entry.predicted_tracks && entry.predicted_tracks.length > 0 ? entry.predicted_tracks[0].track : null);
 
-                                            {(() => {
-                                                const track = entry.confirmed_track
-                                                    || entry.predicted_track
-                                                    || (entry.predicted_tracks && entry.predicted_tracks.length > 0 ? entry.predicted_tracks[0].track : null);
-
-                                                return track ? (
-                                                    <div className="flex items-center space-x-3">
-                                                        {track.album_art_url && (
-                                                            <img
-                                                                src={track.album_art_url}
-                                                                alt={track.name}
-                                                                className="w-10 h-10 rounded object-cover"
-                                                            />
-                                                        )}
-                                                        <div className="flex flex-col">
-                                                            <span className="font-medium text-gray-900">
-                                                                {track.name}
-                                                            </span>
-                                                            <span className="text-xs text-gray-500">
-                                                                {track.artist}
-                                                            </span>
+                                                    return track ? (
+                                                        <div className="flex items-center space-x-3">
+                                                            {track.album_art_url && (
+                                                                <img
+                                                                    src={track.album_art_url}
+                                                                    alt={track.name}
+                                                                    className="w-10 h-10 rounded object-cover"
+                                                                />
+                                                            )}
+                                                            <div className="flex flex-col">
+                                                                <span className="font-medium text-gray-900">
+                                                                    {track.name}
+                                                                </span>
+                                                                <span className="text-xs text-gray-500">
+                                                                    {track.artist}
+                                                                </span>
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                ) : (
-                                                    <span className=" text-gray-400 italic">No match found</span>
-                                                );
-                                            })()}
-                                            {entry.confirmed_track && !entry.confirmed_track.download_location && (
-                                                <button
-                                                    type="button"
-                                                    onClick={() => handleDownloadTrack(entry)}
-                                                    disabled={downloadingTrackIds.includes(entry.confirmed_track.id)}
-                                                    className="ml-2 text-gray-500 hover:text-green-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                                                    title="Download track"
-                                                >
-                                                    {downloadingTrackIds.includes(entry.confirmed_track.id) ? (
-                                                        <span className="inline-block h-4 w-4 animate-spin rounded-full border-b-2 border-gray-500"></span>
                                                     ) : (
-                                                        <FaDownload className="h-4 w-4" />
-                                                    )}
-                                                </button>
-                                            )}
+                                                        <span className="text-gray-400 italic">No match found</span>
+                                                    );
+                                                })()}
+                                                {entry.confirmed_track && !entry.confirmed_track.download_location && (
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => handleDownloadTrack(entry)}
+                                                        disabled={downloadingTrackIds.includes(entry.confirmed_track.id)}
+                                                        className="ml-2 text-gray-500 hover:text-green-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                                        title="Download track"
+                                                    >
+                                                        {downloadingTrackIds.includes(entry.confirmed_track.id) ? (
+                                                            <span className="inline-block h-4 w-4 animate-spin rounded-full border-b-2 border-gray-500"></span>
+                                                        ) : (
+                                                            <FaDownload className="h-4 w-4" />
+                                                        )}
+                                                    </button>
+                                                )}
+                                            </div>
                                         </td>
 
                                         <td className="px-4 py-3">
