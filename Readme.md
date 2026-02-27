@@ -8,7 +8,7 @@
 PySync DJ Hub is a desktop app that allows you to seamlessly sync your playlists from multiple music platforms to your Rekordbox library. This tool streamlines the laborious task of DJ library management and lets you get straight to mixing music!
 
 <div align="center">
-    <img src="docs/images/pysync-29-04-25-home.png" alt="PySync Hub" style="width:80%; height:auto;">
+    <img src="docs/images/pysync-27-02-26-home.png" alt="PySync Hub" style="width:80%; height:auto;">
 </div>
 <br>
 
@@ -37,6 +37,8 @@ This app is built with Flask (Python) backend, React (Javascript) frontend, and 
 # Demo
 
 Demonstration of a simple user flow: Adding a playlist, dragging and dropping in the right folder, syncing and downloading the playlist, before lastly exporting to Rekordbox. [HD Demo Video Link](docs/PySync%20Hub%20Demo.mp4)
+
+(Demo Interface From v0.3.1)
 
 ![Demo Gif](docs/PySync%20Hub%20Demo.gif)
 
