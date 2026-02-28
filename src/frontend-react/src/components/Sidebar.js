@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { FaMusic, FaCog, FaList, FaGithub, FaExclamationTriangle, FaClipboardList, FaSyncAlt } from "react-icons/fa";
+import { useState, useEffect } from 'react';
+import { FaMusic, FaCog, FaList, FaGithub, FaExclamationTriangle, FaClipboardList } from "react-icons/fa";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faQuestion } from "@fortawesome/free-solid-svg-icons";
 import { Link } from 'react-router-dom';

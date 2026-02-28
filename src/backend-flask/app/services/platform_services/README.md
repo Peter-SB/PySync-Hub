@@ -46,7 +46,7 @@ The `BasePlatformService` abstract base class defines two required methods:
 The `PlatformServiceFactory` provides methods to get the appropriate service:
 
 ```python
-service = PlatformServiceFactory.get_service('soundcloud')
+service = PlatformServiceFactory.get_service_by_platform('soundcloud')
 service = PlatformServiceFactory.get_service_by_url('https://soundcloud.com/...')
 ```
 

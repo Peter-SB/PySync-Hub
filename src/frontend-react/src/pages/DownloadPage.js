@@ -2,14 +2,11 @@ import React, { useState, useMemo } from 'react';
 import AddPlaylistForm from '../components/AddPlaylistForm';
 import PlaylistList from '../components/PlaylistList';
 // import PlaylistSortOrder from '../components/PlaylistSortOrder'; // todo: reimplement
-import ExportStatus from '../components/ExportStatus';
 import { ErrorMessage } from '../components/ErrorMessage';
 import { usePlaylists } from '../hooks/usePlaylists';
-import { useSyncPlaylists, useDeletePlaylists } from '../hooks/usePlaylistMutations'; // Removed useExportAll
-import ExportButton from '../components/ExportButton'; // Added import for the new component
+import { useSyncPlaylists, useDeletePlaylists } from '../hooks/usePlaylistMutations';
 
 function DownloadPage() {
-  const [exportMessage, setExportMessage] = useState('');
   const [selectedPlaylists, setSelectedPlaylists] = useState([]);
   const [sortBy, setSortBy] = useState("created_at");
   const [sortOrder, setSortOrder] = useState("dec");

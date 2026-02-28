@@ -55,7 +55,12 @@ class TracklistImportService:
         found_tracks = []
         platforms = ['spotify', 'soundcloud', 'youtube']
         for platform in platforms:
-            found_tracks.extend(TracklistImportService.search_for_track_on_platform(query, platform, limit))
+            try:
+                found_tracks.extend(TracklistImportService.search_for_track_on_platform(query, platform, limit))
+            except NotImplementedError as e:
+                logger.warning(f"Search not available for platform '{platform}': {str(e)}")
+            except Exception as e:
+                logger.error(f"Error searching on platform '{platform}': {str(e)}")
         return found_tracks
     
     @staticmethod

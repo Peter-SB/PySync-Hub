@@ -6,7 +6,6 @@ from app.repositories.playlist_repository import PlaylistRepository
 from app.services.platform_services.soundcloud_service import SoundcloudService
 from app.services.platform_services.youtube_service import YouTubeService
 from app.utils.db_utils import commit_with_retries
-from datetime import datetime
 from app.services.platform_services.platform_services_factory import PlatformServiceFactory
 from app.extensions import db
 

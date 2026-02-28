@@ -4,7 +4,9 @@ from typing import Any
 from dataclasses import dataclass
 from app.models import Track, Tracklist, TracklistEntry
 import app.utils.feature_scoring_utils as feature_scoring_utils
+import logging
 
+logger = logging.getLogger(__name__)
 
 @dataclass
 class FeatureScores:
@@ -48,7 +50,7 @@ class TracklistPredictionService:
         top_candidates = TracklistPredictionService.find_top_track_matches(tracklist_entry, database_tracks, top_n=5)
 
         if not top_candidates or len(top_candidates) == 0:
-            print(f"No candidates found for tracklist entry {tracklist_entry.artist} - {tracklist_entry.full_title}")
+            logger.info(f"No candidates found for tracklist entry {tracklist_entry.artist} - {tracklist_entry.full_title}")
             return tracklist_entry
 
         top_candidate, top_candidate_score = top_candidates[0]

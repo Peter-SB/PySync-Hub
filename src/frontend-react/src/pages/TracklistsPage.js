@@ -13,7 +13,6 @@ const SORT_DEFAULT_DIRECTION = {
 function TracklistsPage() {
     const navigate = useNavigate();
     const { data: tracklists = [], isLoading, error, refetch } = useTracklists();
-    const deleteMutation = useDeleteTracklist();
     const downloadMutation = useDownloadTracklist();
     const toggleMutation = useToggleTracklist();
     const [showAddModal, setShowAddModal] = useState(false);
@@ -25,17 +24,6 @@ function TracklistsPage() {
 
     const handleTracklistClick = (tracklistId) => {
         navigate(`/tracklist/${tracklistId}`);
-    };
-
-    const handleDelete = async (e, tracklistId) => {
-        e.stopPropagation();
-        if (!window.confirm('Are you sure you want to delete this tracklist?')) return;
-
-        try {
-            await deleteMutation.mutateAsync(tracklistId);
-        } catch (error) {
-            console.error('Error deleting tracklist:', error);
-        }
     };
 
     const getDownloadableTracks = (tracklist) => {

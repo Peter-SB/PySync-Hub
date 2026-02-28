@@ -1,7 +1,6 @@
 alembic==1.14.1
 async-timeout==5.0.1
 altgraph==0.17.4
-anyascii==0.3.3
 beautifulsoup4==4.13.3
 bidict==0.23.1
 blinker==1.9.0

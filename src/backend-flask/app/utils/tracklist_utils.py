@@ -1,5 +1,4 @@
 import ftfy
-from anyascii import anyascii
 import unicodedata
 import re
 
@@ -76,7 +75,7 @@ def is_unidentified_track(track:str) -> bool:
     # and not be something like "ID remix" or "ID edit"
     if re.match(r"^ID(\b|$)", title, flags=re.IGNORECASE):
         # Disallow musical descriptors after ID
-        if not re.search(r"\b(remix|edit|vip|mix|bootleg|version)\b", title, re.I):
+        if not re.search(r"\b(remix|edit|vip|mix|bootleg|version|flip|cut)\b", title, re.I):
             return True
 
     return False

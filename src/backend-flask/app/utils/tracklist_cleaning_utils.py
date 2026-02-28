@@ -99,41 +99,17 @@ def remove_junk_tags(track: str) -> str:
 
 
 def is_unidentified_track(track: str) -> bool:
-    """ Checks if a track is unidentified. E.g "artist - ID" """
+    """ Checks if a track is unidentified. E.g "ID" 
+    :param track: The track string to check. short_title"""
     track = track.strip()
 
     if not track:
         return True
 
-    if track.lower() == "id":
+    if track.lower() == "id": 
         return True
-    
+
     return False
-
-    # Exact "ID"
-    # if re.fullmatch(r"ID", track, flags=re.IGNORECASE):
-    #     return True
-
-    # # Track starts with ID (e.g. "ID - ID", "ID (unreleased)")
-    # if re.match(r"^ID(\b|$)", track, flags=re.IGNORECASE):
-    #     if not re.search(r"\b(remix|edit|vip|mix|bootleg|version)\b", track, re.I):
-    #         return True
-    
-    # # Split into artist / title if possible
-    # if " - " in track:
-    #     _, title = track.split(" - ", 1)
-    # else:
-    #     title = track
-    # title = title.strip()
-
-    # # Title must START with "ID" as a whole word
-    # # and not be something like "ID remix" or "ID edit"
-    # if re.match(r"^ID(\b|$)", title, flags=re.IGNORECASE):
-    #     # Disallow musical descriptors after ID
-    #     if not re.search(r"\b(remix|edit|vip|mix|bootleg|version)\b", title, re.I):
-    #         return True
-
-    # return False
 
 def extract_artist_and_title(
         track:str, 
