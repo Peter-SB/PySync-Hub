@@ -30,7 +30,7 @@ class PlaylistManagerService:
         """
         for playlist in playlists:
             try:
-                data = PlatformServiceFactory.get_service(playlist.platform).get_playlist_data(playlist.url)
+                data = PlatformServiceFactory.get_service_by_platform(playlist.platform).get_playlist_data(playlist.url)
                 playlist.name = data['name']
                 playlist.last_synced = datetime.utcnow()
                 playlist.image_url = data['image_url']

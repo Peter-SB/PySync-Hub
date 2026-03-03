@@ -1,10 +1,13 @@
+import logging
+from datetime import datetime
+
 from app.models import *
 from app.repositories.playlist_repository import PlaylistRepository
 from app.services.platform_services.soundcloud_service import SoundcloudService
 from app.services.platform_services.youtube_service import YouTubeService
 from app.utils.db_utils import commit_with_retries
-from datetime import datetime
 from app.services.platform_services.platform_services_factory import PlatformServiceFactory
+from app.extensions import db
 
 logger = logging.getLogger(__name__)
 
@@ -28,7 +31,7 @@ class TrackManagerService:
 
         try:
             # Use PlatformServiceFactory to get the appropriate service class
-            service_cls = PlatformServiceFactory.get_service(playlist.platform)
+            service_cls = PlatformServiceFactory.get_service_by_platform(playlist.platform)
             tracks_data = service_cls.get_playlist_tracks(playlist.url)
 
             logger.info("Fetched %d tracks for playlist %s", len(tracks_data), playlist.name)

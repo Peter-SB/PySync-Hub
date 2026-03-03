@@ -8,7 +8,7 @@ The program consists of three primary stages: adding playlists, downloading the 
 
 ## 1. Adding Playlists:
 
-If you have the, be sure you have set you API keys in `settings.py` before running the program. Program will work without them but is slower. You can get these keys by following the instructions in the instructions in the [Getting Started](../Readme.md#getting-started) guide.
+If you have them, be sure you have set your API keys in the settings page before running the program. Spotify key is not required for basic syncing, but it is faster with it and needed for liked songs/private playlists. You can get these keys by following the instructions in the instructions in the [Getting Started](../Readme.md#getting-started) guide.
 
 To add a playlist, get the url of the playlist you want to add and paste it into the input box on the home page. The software will then communicate with the platform for the playlist information and keep it in a local database.
 Once added you will see, from left to right, a select box, the playlist image, the name, platform and sync status of the playlist. On the right you will see a downloaded/total track count. Then a Sync Playlist Button. Lastly, a toggle playlist display button. Disabled playlists are not downloaded or added to the exported rekordbox file.
@@ -19,7 +19,7 @@ https://open.spotify.com/playlist/1sbpRux2JYvosuikC01AY
 https://soundcloud.com/tname/sets/chill-liquid-dnb
 https://www.youtube.com/playlist?list=PLMC9KNkIncKtPzgY-5rmhvj7fax8fdxoj
 ```
-Soundcloud users liked songs can be added if using spotify api keys like: 
+Soundcloud users liked songs can be added if using a Soundcloud api key like: 
 ```
 https://soundcloud.com/subfocus/likes                               
 ```
@@ -61,6 +61,12 @@ Once the file is added, the PySync-Hub folder will be available in the library s
 
 Enjoy!
 
+## 4. Tracklists (Set Tracklists)
+
+Tracklists let you add a set's tracklist and an advanced ai system will match the tracklist to tracks in your library. It will also search for and find any tracks not already in your library.
+
+For full details and API references, see: [Tracklists Guide](./Tracklists.md)
+
 
 # Tips and Hints
 ### Track and Date Limits
@@ -72,11 +78,11 @@ You can limit how many tracks are downloaded, this is particularly useful for li
 If you are having trouble, try turn off any VPNs as this came get you detected as a robot by the websites.
 
 ### Troubleshooting Adding Playlists - 401 Unauthorized Error
-1. Make sure you have set your API keys in the settings page. Without them the software cannot communicate with the relevant platform. You can get these keys by following the instructions in the instructions in the [Getting Started](../Readme.md#getting-started) guide.
+1. Make sure you have set your API keys in the settings page. Spotify can still sync basic playlists without a key (just slower and no liked songs), but Soundcloud needs a valid key. You can get these keys by following the instructions in the instructions in the [Getting Started](../Readme.md#getting-started) guide.
 2. Disconnect from any VPNs or proxies you may be using. 
 3. If you are downloading a private spotify playlist, make sure you have logged in.
-4. If you are downloading a soundcloud playlist, its possible that the app my need updating. Go to the [GitHub Page](https://github.com/Peter-SB/PySync-Hub)
-
+4. If you are downloading a soundcloud playlist, try refreshing your Soundcloud key from the Settings page first (Soundcloud refresh button). If it still fails, its possible that the app my need updating. Go to the [GitHub Page](https://github.com/Peter-SB/PySync-Hub)
+5.  If you are downloading a soundcloud playlist, its possible that the app my need updating. Go to the [GitHub Page](https://github.com/Peter-SB/PySync-Hub)
 ### Antivirus 
 Anti virus software may cause the app not to start properly.
 

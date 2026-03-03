@@ -17,7 +17,7 @@ class TestPlatformServiceFactory:
 
     def test_get_service_soundcloud_returns_correct_type(self):
         """Test that get_service returns SoundcloudService for soundcloud platform."""
-        service = PlatformServiceFactory.get_service("soundcloud")
+        service = PlatformServiceFactory.get_service_by_platform("soundcloud")
         # May be MockSoundcloudService due to conftest, but should have the name SoundcloudService
         assert service.__name__ in ('SoundcloudService', 'MockSoundcloudService')
 
@@ -29,7 +29,7 @@ class TestPlatformServiceFactory:
         monkeypatch.setattr(Config, 'SPOTIFY_CLIENT_ID', 'test_client_id')
         monkeypatch.setattr(Config, 'SPOTIFY_CLIENT_SECRET', 'test_client_secret')
         
-        service = PlatformServiceFactory.get_service("spotify")
+        service = PlatformServiceFactory.get_service_by_platform("spotify")
         assert service == SpotifyApiService
 
     def test_get_service_spotify_without_credentials_returns_scraper_service(self, monkeypatch):
@@ -40,19 +40,19 @@ class TestPlatformServiceFactory:
         monkeypatch.setattr(Config, 'SPOTIFY_CLIENT_ID', '')
         monkeypatch.setattr(Config, 'SPOTIFY_CLIENT_SECRET', '')
         
-        service = PlatformServiceFactory.get_service("spotify")
+        service = PlatformServiceFactory.get_service_by_platform("spotify")
         assert service == SpotifyScraperService
 
     def test_get_service_youtube_returns_correct_type(self):
         """Test that get_service returns YouTubeService for youtube platform."""
-        service = PlatformServiceFactory.get_service("youtube")
+        service = PlatformServiceFactory.get_service_by_platform("youtube")
         assert service == YouTubeService
         assert service is YouTubeService
 
     def test_get_service_unsupported_platform_raises_value_error(self):
         """Test that get_service raises ValueError for unsupported platform."""
         with pytest.raises(ValueError, match="Unsupported platform: invalid"):
-            PlatformServiceFactory.get_service("invalid")
+            PlatformServiceFactory.get_service_by_platform("invalid")
 
     def test_get_service_by_url_soundcloud_returns_correct_type(self):
         """Test that get_service_by_url returns SoundcloudService for SoundCloud URLs."""

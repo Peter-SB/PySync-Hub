@@ -8,6 +8,7 @@ from flask_migrate import upgrade, init, stamp
 
 from app.extensions import db, socketio, migrate
 from app.repositories.playlist_repository import PlaylistRepository
+from app.services.soundcloud_client_id_service import refresh_soundcloud_client_id
 from app.workers.download_worker import DownloadManager
 from app.database_migrator import DatabaseMigrator
 from config import Config
@@ -60,17 +61,25 @@ def create_app(app_config=Config):
     logger.info(f"Settings Path={os.path.normpath(Config.SETTINGS_PATH)}")
     logger.info("Flask application initialized")
 
+    if not app.config.get("TESTING"):
+        try:
+            refreshed_client_id = refresh_soundcloud_client_id(app_config, persist=True)
+            app.config["SOUNDCLOUD_CLIENT_ID"] = refreshed_client_id
+            logger.info("SoundCloud client_id auto-refreshed on startup")
+        except Exception as exc:
+            logger.warning("SoundCloud client_id auto-refresh failed on startup: %s", exc)
+
+    # Initialize database
+    with app.app_context():
+        from app.models import Playlist, Folder
+        db.create_all()
+
     # todo: refactor to a setup_database function
     # Run database migrations
     db_path = app_config.SQLALCHEMY_DATABASE_URI.replace('sqlite:///', '')
     if os.path.exists(db_path) and not app.config.get("TESTING"):
         logger.info(f"Running database migrations on {db_path}")
         DatabaseMigrator.run_migrations(db_path)
-    
-    # Initialize database
-    with app.app_context():
-        from app.models import Playlist, Folder
-        db.create_all()
 
     # Register folder routes
     # todo: refactor to function, make new blueprints for other routes

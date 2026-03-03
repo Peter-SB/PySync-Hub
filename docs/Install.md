@@ -25,14 +25,16 @@ Alternatively PySync Hub can be run with a docker container, [docker instruction
 
 **Anti Virus** You may need to check your antivirus settings if you have an overzealous software like Norton
 
+**VPN** VPNs may interfere so disable if needed.
+
 **Port Issues** The backend runs on port 5000 which may cause problems if you have other apps running on that port.
 
 # How To Get API Keys
 
-To be able to connect with the music platforms with this app, you will need to get api keys for each platform.
-
 ### Spotify
 You can get a Spotify API key by going to the [Spotify Developer Dashboard](https://developer.spotify.com/dashboard/applications) and creating a new app. Once you have created the app, you will be able to get the client id and client secret.
+
+**Note:** Spotify API keys are not required for basic syncing. But they do make Spotify syncing faster, and are needed if you want access to liked songs (and private playlists).
 
 You must set a Redirect URLs if you wish to sync liked songs or a private playlist. Your dashboard should look like this:
 
@@ -43,7 +45,15 @@ You must set a Redirect URLs if you wish to sync liked songs or a private playli
 
 ### Soundcloud
 
-The Soundcloud API key can be simply found:
+If your Soundcloud key expires, you can refresh it from the Settings screen with the Soundcloud refresh button.
+
+<br>
+<div align="center">
+    <img src="images/Soundcloud Button.png" alt="Soundcloud Refresh Button" style="width:60%; height:auto;">
+</div>
+
+
+Manual Finding:
 1. Opening incognito.
 2. Developer Tools and going to the Network Tab (`ctr+shift+i`)
 3. Going to Soundcloud.com
@@ -51,9 +61,11 @@ The Soundcloud API key can be simply found:
 5. Save this in your settings. 
 
 <br>
+
 <div align="center">
     <img src="images/Scoundcloud-API.png" alt="Spotify API" style="width:%95; height:auto;">
 </div>
+<br>
 <br>
 
 ### Settings
