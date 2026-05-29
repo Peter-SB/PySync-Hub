@@ -36,7 +36,13 @@ You can get a Spotify API key by going to the [Spotify Developer Dashboard](http
 
 **Note:** Spotify API keys are not required for basic syncing. But they do make Spotify syncing faster, and are needed if you want access to liked songs (and private playlists).
 
-You must set a Redirect URLs if you wish to sync liked songs or a private playlist. Your dashboard should look like this:
+You must set a Redirect URI in your Spotify app settings if you wish to sync liked songs or a private playlist. Add the following URI:
+
+```
+http://127.0.0.1:5000/api/spotify_auth/callback
+```
+
+Your dashboard should look like this:
 
 <div align="center">
     <img src="images/Spotify-Developer-Dashboard.png" alt="Spotify API" style="width:80%; height:auto;">
