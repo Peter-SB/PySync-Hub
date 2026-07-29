@@ -44,7 +44,7 @@ class Config:
     SPOTIFY_CLIENT_SECRET = None
     SPOTIFY_OAUTH_SCOPE = 'user-library-read playlist-read-private'
     SPOTIFY_REDIRECT_URI = 'http://127.0.0.1:5000/api/spotify_auth/callback'
-    SPOTIFY_TOKEN_CACHE = '.spotipyoauthcache'
+    SPOTIFY_TOKEN_CACHE = os.path.join(BASE_PATH, '.spotipyoauthcache')
 
     SOUNDCLOUD_CLIENT_ID = None
 

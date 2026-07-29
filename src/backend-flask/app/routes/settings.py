@@ -64,7 +64,8 @@ def spotify_callback():
         client_id=Config.SPOTIFY_CLIENT_ID,
         client_secret=Config.SPOTIFY_CLIENT_SECRET,
         redirect_uri=Config.SPOTIFY_REDIRECT_URI,
-        scope=Config.SPOTIFY_OAUTH_SCOPE
+        scope=Config.SPOTIFY_OAUTH_SCOPE,
+        cache_path=Config.SPOTIFY_TOKEN_CACHE
     )
     code = request.args.get('code')
     if not code:
