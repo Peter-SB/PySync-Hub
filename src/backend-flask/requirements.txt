@@ -93,7 +93,7 @@ websockets==13.1
 Werkzeug==3.1.3
 wsproto==1.2.0
 yarg==0.1.10
-yt-dlp>=2026.2.4
+yt-dlp>=2026.8.19
 zope.event==5.0
 zope.interface==7.2
 pillow==12.1.0
